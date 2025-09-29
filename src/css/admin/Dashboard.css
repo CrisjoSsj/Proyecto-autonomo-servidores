@@ -1,0 +1,537 @@
+/* ===================================
+   DASHBOARD.CSS - PANEL ADMIN GOLDIFOX
+   Sistema de administración con diseño profesional
+   =================================== */
+
+/* Dashboard Principal - Estilo Goldifox Admin */
+.dashboard-admin {
+  background: var(--color-background-main);
+  min-height: 100vh;
+  font-family: var(--font-family-primary);
+}
+
+/* Header del Dashboard */
+.header-dashboard {
+  background: var(--color-surface-elevated);
+  padding: var(--spacing-2xl) var(--spacing-md) var(--spacing-xl);
+  border-bottom: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.contenedor-header {
+  max-width: 1400px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.titulo-dashboard {
+  font-size: var(--font-size-3xl);
+  font-weight: 400;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-sm) 0;
+  font-family: var(--font-family-heading);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.subtitulo-dashboard {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-lg) 0;
+  opacity: var(--opacity-text-muted);
+}
+
+.fecha-actual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.fecha {
+  font-weight: 500;
+}
+
+.hora-actual {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* Secciones Generales */
+.seccion-estadisticas,
+.seccion-estado-actual,
+.seccion-acciones-rapidas,
+.seccion-alertas-admin {
+  padding: var(--spacing-2xl) var(--spacing-md);
+}
+
+.contenedor-estadisticas,
+.contenedor-estado-actual,
+.contenedor-acciones,
+.contenedor-alertas-admin {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.titulo-seccion-admin {
+  font-size: var(--font-size-2xl);
+  font-weight: 400;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-xl) 0;
+  font-family: var(--font-family-heading);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  text-align: center;
+  position: relative;
+}
+
+.titulo-seccion-admin::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 2px;
+  background: var(--color-primary);
+  opacity: 0.8;
+}
+
+/* Grilla de Estadísticas */
+.grilla-estadisticas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-xl);
+}
+
+.tarjeta-estadistica {
+  background: var(--color-background-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  transition: var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.tarjeta-estadistica:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary-alpha);
+}
+
+.tarjeta-estadistica::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--color-primary);
+}
+
+.tarjeta-estadistica.ventas::before { background: #10b981; }
+.tarjeta-estadistica.ordenes::before { background: #3b82f6; }
+.tarjeta-estadistica.clientes::before { background: #8b5cf6; }
+.tarjeta-estadistica.tiempo-promedio::before { background: #f59e0b; }
+
+.icono-estadistica {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--border-radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-2xl);
+  color: white;
+  flex-shrink: 0;
+}
+
+.ventas-icon { background: #10b981; }
+.ordenes-icon { background: #3b82f6; }
+.clientes-icon { background: #8b5cf6; }
+.tiempo-icon { background: #f59e0b; }
+
+.ventas-icon::before { content: '💰'; }
+.ordenes-icon::before { content: '📋'; }
+.clientes-icon::before { content: '👥'; }
+.tiempo-icon::before { content: '⏱️'; }
+
+.contenido-estadistica {
+  flex: 1;
+}
+
+.titulo-estadistica {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-xs) 0;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.valor-estadistica {
+  font-size: var(--font-size-3xl);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-xs) 0;
+  font-family: var(--font-family-heading);
+}
+
+.comparacion {
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+}
+
+.comparacion.positiva {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.comparacion.negativa {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.comparacion.neutra {
+  color: var(--color-text-secondary);
+  background: var(--color-surface-muted);
+}
+
+/* Estado Actual del Restaurante */
+.grilla-estado-actual {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-xl);
+}
+
+.tarjeta-estado {
+  background: var(--color-background-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  transition: var(--transition-smooth);
+  box-shadow: var(--shadow-sm);
+}
+
+.tarjeta-estado:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.titulo-estado {
+  font-size: var(--font-size-lg);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-md) 0;
+  font-family: var(--font-family-heading);
+}
+
+.indicador-mesas {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+}
+
+.numero-mesas {
+  font-size: var(--font-size-3xl);
+  font-weight: 600;
+  color: var(--color-primary);
+  font-family: var(--font-family-heading);
+}
+
+.total-mesas {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+}
+
+.progreso-ocupacion {
+  margin-top: var(--spacing-md);
+}
+
+.barra-progreso {
+  width: 100%;
+  height: 8px;
+  background: var(--color-surface-muted);
+  border-radius: var(--border-radius-full);
+  overflow: hidden;
+  margin-bottom: var(--spacing-xs);
+}
+
+.progreso-actual {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
+  transition: width var(--transition-smooth);
+}
+
+.porcentaje-ocupacion {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.info-cola,
+.info-reservas,
+.info-personal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.numero-espera,
+.numero-reservas,
+.numero-personal {
+  font-size: var(--font-size-2xl);
+  font-weight: 600;
+  color: var(--color-primary);
+  font-family: var(--font-family-heading);
+}
+
+.tiempo-espera-promedio,
+.proxima-reserva,
+.distribucion-personal {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* Acciones Rápidas */
+.grilla-acciones {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-xl);
+}
+
+.tarjeta-accion {
+  background: var(--color-background-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  text-align: center;
+  transition: var(--transition-smooth);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.tarjeta-accion:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-primary-alpha);
+}
+
+.icono-accion {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--border-radius-full);
+  background: var(--color-primary-alpha);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--spacing-lg);
+  font-size: var(--font-size-3xl);
+  transition: var(--transition-smooth);
+}
+
+.mesas-icon::before { content: '🪑'; }
+.reservas-icon::before { content: '📅'; }
+.menu-icon::before { content: '📋'; }
+.reportes-icon::before { content: '📊'; }
+
+.tarjeta-accion:hover .icono-accion {
+  background: var(--color-primary);
+  transform: scale(1.1);
+}
+
+.titulo-accion {
+  font-size: var(--font-size-xl);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-sm) 0;
+  font-family: var(--font-family-heading);
+}
+
+.descripcion-accion {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-lg) 0;
+  line-height: var(--line-height-relaxed);
+}
+
+.boton-accion {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-xl);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.boton-accion:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Alertas y Notificaciones */
+.lista-alertas-admin {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.alerta-admin {
+  background: var(--color-background-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  transition: var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.alerta-admin::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+}
+
+.alerta-admin.urgente::before { background: #ef4444; }
+.alerta-admin.importante::before { background: #f59e0b; }
+.alerta-admin.informativa::before { background: #3b82f6; }
+
+.icono-alerta-admin {
+  width: 50px;
+  height: 50px;
+  border-radius: var(--border-radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xl);
+  color: white;
+  flex-shrink: 0;
+}
+
+.urgente-icon { background: #ef4444; }
+.importante-icon { background: #f59e0b; }
+.info-icon { background: #3b82f6; }
+
+.urgente-icon::before { content: '⚠️'; }
+.importante-icon::before { content: '📦'; }
+.info-icon::before { content: 'ℹ️'; }
+
+.contenido-alerta-admin {
+  flex: 1;
+}
+
+.titulo-alerta-admin {
+  font-size: var(--font-size-lg);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-xs) 0;
+}
+
+.mensaje-alerta-admin {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-xs) 0;
+  line-height: var(--line-height-relaxed);
+}
+
+.tiempo-alerta {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.boton-resolver-alerta {
+  background: var(--color-surface-elevated);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-light);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: var(--transition-normal);
+  white-space: nowrap;
+}
+
+.boton-resolver-alerta:hover {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header-dashboard {
+    padding: var(--spacing-xl) var(--spacing-sm);
+  }
+  
+  .titulo-dashboard {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .fecha-actual {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+  
+  .grilla-estadisticas,
+  .grilla-estado-actual,
+  .grilla-acciones {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+  
+  .seccion-estadisticas,
+  .seccion-estado-actual,
+  .seccion-acciones-rapidas,
+  .seccion-alertas-admin {
+    padding: var(--spacing-xl) var(--spacing-sm);
+  }
+  
+  .alerta-admin {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .titulo-dashboard {
+    font-size: var(--font-size-xl);
+  }
+  
+  .tarjeta-estadistica,
+  .tarjeta-estado,
+  .tarjeta-accion {
+    padding: var(--spacing-lg);
+  }
+  
+  .valor-estadistica {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .icono-accion {
+    width: 60px;
+    height: 60px;
+  }
+}

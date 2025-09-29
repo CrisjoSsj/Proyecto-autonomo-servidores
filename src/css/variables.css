@@ -1,0 +1,343 @@
+/* ========================================
+   VARIABLES.CSS - GOLDIFOX COLOR SYSTEM
+   Sistema de colores globales inspirado en Pace Law
+   ======================================== */
+
+:root {
+  /* PALETA DE COLORES GOLDIFOX - PACE LAW
+     ===================================== 
+     - Trigo Dorado: #a39274 (acentos, bordes, enlaces)
+     - Trigo Blando: #dfd8c8 (fondos de secciones, textos secundarios)
+     - Gris Oscuro: #252523 (textos principales, navbar, footer)
+     - Plomo Oscuro: #6b6b6b (derechos reservados, textos terciarios)
+     - Blanco: #ffffff (fondos de tarjetas y contenido)
+     ===================================== */
+
+  /* Colores Principales */
+  --color-primary: #a39274;        /* Trigo Dorado - Acentos principales */
+  --color-primary-light: #b5a688;  /* Variante más clara del dorado */
+  --color-primary-dark: #8a7a5f;   /* Variante más oscura del dorado */
+  
+  /* Colores de Fondo */
+  --color-background-main: #dfd8c8;    /* Trigo Blando - Fondo principal */
+  --color-background-card: #ffffff;    /* Blanco - Fondos de tarjetas */
+  --color-background-alt: #f5f5f5;     /* Gris muy claro - Alternativo */
+  
+  /* Colores de Superficie (Navbar, Footer) */
+  --color-surface-dark: #252523;       /* Gris Oscuro - Navbar/Footer */
+  --color-surface-light: #dfd8c8;     /* Para superficies claras */
+  
+  /* Colores de Texto */
+  --color-text-primary: #252523;       /* Gris Oscuro - Texto principal */
+  --color-text-secondary: #6b6b6b;     /* Plomo Oscuro - Texto secundario */
+  --color-text-light: #dfd8c8;        /* Trigo Blando - Texto en fondos oscuros */
+  --color-text-accent: #a39274;       /* Trigo Dorado - Texto de acento */
+  
+  /* Colores de Estado */
+  --color-success: #38a169;           /* Verde para éxito */
+  --color-warning: #d69e2e;           /* Naranja para advertencias */
+  --color-error: #e53e3e;             /* Rojo para errores */
+  --color-info: #3182ce;              /* Azul para información */
+  
+  /* Bordes y Líneas */
+  --color-border-main: #a39274;       /* Borde principal dorado */
+  --color-border-light: #e2e2e2;      /* Borde sutil */
+  --color-border-dark: rgba(163, 146, 116, 0.2); /* Borde dorado translúcido */
+  
+  /* Sombras */
+  --shadow-sm: 0 2px 4px rgba(37, 37, 35, 0.1);
+  --shadow-md: 0 4px 12px rgba(163, 146, 116, 0.15);
+  --shadow-lg: 0 8px 25px rgba(163, 146, 116, 0.2);
+  --shadow-navbar: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-footer: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  
+  /* Transparencias */
+  --opacity-overlay: rgba(37, 37, 35, 0.7);
+  --opacity-hover: rgba(163, 146, 116, 0.1);
+  --opacity-disabled: 0.6;
+  --opacity-text-muted: 0.7;
+  
+  /* Typography */
+  --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-family-heading: 'Inter', sans-serif;
+  
+  /* Espaciado - Más compacto y proporcionado */
+  --spacing-xs: 0.25rem;    /* 4px */
+  --spacing-sm: 0.5rem;     /* 8px */
+  --spacing-md: 1rem;       /* 16px */
+  --spacing-lg: 1.5rem;     /* 24px */
+  --spacing-xl: 2rem;       /* 32px */
+  --spacing-2xl: 2.5rem;    /* 40px - Reducido de 48px */
+  --spacing-3xl: 3rem;      /* 48px - Reducido de 64px */
+  
+  /* Tamaños de Fuente - Responsivos y proporcionados */
+  --font-size-xs: 0.75rem;     /* 12px */
+  --font-size-sm: 0.875rem;    /* 14px */
+  --font-size-base: 1rem;      /* 16px */
+  --font-size-lg: 1.125rem;    /* 18px */
+  --font-size-xl: 1.25rem;     /* 20px */
+  --font-size-2xl: 1.5rem;     /* 24px */
+  --font-size-3xl: 1.75rem;    /* 28px - Más compacto */
+  --font-size-4xl: 2rem;       /* 32px - Más compacto */
+  --font-size-5xl: 2.5rem;     /* 40px - Para títulos principales */
+  
+  /* Letter Spacing */
+  --letter-spacing-tight: -0.05em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.05em;
+  --letter-spacing-wider: 0.1em;
+  
+  /* Line Heights */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.6;
+  --line-height-loose: 1.8;
+  
+  /* Border Radius - Más compacto */
+  --border-radius-none: 0;
+  --border-radius-sm: 0.25rem;    /* 4px */
+  --border-radius-md: 0.5rem;     /* 8px */
+  --border-radius-lg: 0.75rem;    /* 12px */
+  --border-radius-full: 9999px;
+  
+  /* Transiciones - Más rápidas e intuitivas */
+  --transition-fast: 0.1s ease-out;
+  --transition-smooth: 0.2s ease-out;
+  --transition-normal: 0.3s ease-out;
+  
+  /* Z-Index */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal: 1040;
+  --z-popover: 1050;
+  --z-tooltip: 1060;
+  
+  /* Breakpoints (para uso en media queries) */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+}
+
+/* ========================================
+   UTILITY CLASSES - GOLDIFOX SYSTEM
+   Clases de utilidad para uso rápido
+   ======================================== */
+
+/* Colores de Texto */
+.text-primary { color: var(--color-text-primary) !important; }
+.text-secondary { color: var(--color-text-secondary) !important; }
+.text-light { color: var(--color-text-light) !important; }
+.text-accent { color: var(--color-text-accent) !important; }
+
+/* Colores de Fondo */
+.bg-main { background-color: var(--color-background-main) !important; }
+.bg-card { background-color: var(--color-background-card) !important; }
+.bg-surface-dark { background-color: var(--color-surface-dark) !important; }
+.bg-primary { background-color: var(--color-primary) !important; }
+
+/* Bordes */
+.border-main { border-color: var(--color-border-main) !important; }
+.border-light { border-color: var(--color-border-light) !important; }
+
+/* Sombras */
+.shadow-sm { box-shadow: var(--shadow-sm) !important; }
+.shadow-md { box-shadow: var(--shadow-md) !important; }
+.shadow-lg { box-shadow: var(--shadow-lg) !important; }
+
+/* Typography */
+.font-primary { font-family: var(--font-family-primary) !important; }
+.font-heading { font-family: var(--font-family-heading) !important; }
+
+/* Espaciado rápido */
+.p-xs { padding: var(--spacing-xs) !important; }
+.p-sm { padding: var(--spacing-sm) !important; }
+.p-md { padding: var(--spacing-md) !important; }
+.p-lg { padding: var(--spacing-lg) !important; }
+.p-xl { padding: var(--spacing-xl) !important; }
+
+.m-xs { margin: var(--spacing-xs) !important; }
+.m-sm { margin: var(--spacing-sm) !important; }
+.m-md { margin: var(--spacing-md) !important; }
+.m-lg { margin: var(--spacing-lg) !important; }
+.m-xl { margin: var(--spacing-xl) !important; }
+
+/* ========================================
+   COMPONENTES BASE - GOLDIFOX SYSTEM
+   Estilos base para componentes comunes
+   ======================================== */
+
+/* Botones */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+  border: 2px solid var(--color-primary);
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-family: var(--font-family-primary);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  transition: var(--transition-normal);
+  border-radius: var(--radius-none);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-family: var(--font-family-primary);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  transition: var(--transition-normal);
+  border-radius: var(--radius-none);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-outline:hover {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+/* Tarjetas */
+.card {
+  background-color: var(--color-background-card);
+  border: 1px solid var(--color-border-light);
+  padding: var(--spacing-xl);
+  transition: var(--transition-normal);
+  box-shadow: var(--shadow-sm);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-border-main);
+}
+
+/* Enlaces */
+.link {
+  color: var(--color-text-accent);
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+.link:hover {
+  color: var(--color-primary-dark);
+  text-decoration: none;
+}
+
+/* Títulos profesionales */
+.heading-primary {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-4xl);
+  font-weight: 300;
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wider);
+  line-height: var(--line-height-tight);
+  margin-bottom: var(--spacing-lg);
+}
+
+.heading-secondary {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-2xl);
+  font-weight: 400;
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  line-height: var(--line-height-normal);
+  margin-bottom: var(--spacing-md);
+}
+
+/* Texto con opacidad */
+.text-muted {
+  opacity: var(--opacity-text-muted);
+}
+
+/* Contenedores */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-xl);
+}
+
+.container-wide {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-xl);
+}
+
+/* ========================================
+   GOLDIFOX DARK MODE (FUTURO)
+   Variables preparadas para modo oscuro
+   ======================================== */
+
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    Preparado para futuras implementaciones de modo oscuro
+    Las variables se pueden sobrescribir aquí
+  }
+} */
+
+/* ========================================
+   RESPONSIVE HELPERS
+   Utilidades para diseño responsivo
+   ======================================== */
+
+@media (max-width: 768px) {
+  :root {
+    --font-size-4xl: 2rem;      /* 32px en móvil */
+    --font-size-3xl: 1.75rem;   /* 28px en móvil */
+    --spacing-3xl: 3rem;        /* 48px en móvil */
+  }
+  
+  .container,
+  .container-wide {
+    padding: 0 var(--spacing-md);
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --font-size-5xl: 2rem;      /* 32px - Título principal móvil */
+    --font-size-4xl: 1.75rem;   /* 28px en móvil pequeño */
+    --font-size-3xl: 1.5rem;    /* 24px en móvil pequeño */
+    --spacing-3xl: 2rem;        /* 32px en móvil pequeño */
+    --spacing-2xl: 1.5rem;      /* 24px en móvil pequeño */
+  }
+}
+
+/* Utilidades responsive globales */
+.text-responsive {
+  font-size: clamp(var(--font-size-sm), 2.5vw, var(--font-size-lg));
+}
+
+.title-responsive {
+  font-size: clamp(var(--font-size-2xl), 4vw, var(--font-size-4xl));
+}
+
+.hero-title-responsive {
+  font-size: clamp(var(--font-size-3xl), 6vw, var(--font-size-5xl));
+}
+
+.padding-responsive {
+  padding: clamp(var(--spacing-lg), 4vw, var(--spacing-3xl));
+}
+
+.margin-responsive {
+  margin: clamp(var(--spacing-md), 3vw, var(--spacing-2xl));
+}

@@ -1,0 +1,217 @@
+/* ========================================
+   INDEX.CSS - ENTRADA PRINCIPAL DE ESTILOS
+   Sistema Goldifox con Tailwind CSS
+   ======================================== */
+
+/* Importar variables globales Goldifox */
+@import './css/variables.css';
+
+/* Tailwind CSS */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========================================
+   ESTILOS GLOBALES BASE
+   Aplicación de variables Goldifox
+   ======================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-family-primary) !important;
+  color: var(--color-text-primary) !important;
+  background-color: var(--color-background-main) !important;
+  line-height: var(--line-height-normal);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+  background-color: transparent;
+}
+
+/* ========================================
+   RESET DE ELEMENTOS COMUNES
+   ======================================== */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-heading);
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: var(--line-height-tight);
+}
+
+p {
+  margin: 0 0 var(--spacing-md) 0;
+  line-height: var(--line-height-relaxed);
+}
+
+a {
+  color: var(--color-text-accent);
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-primary-dark);
+}
+
+button {
+  font-family: var(--font-family-primary);
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+}
+
+input, textarea, select {
+  font-family: var(--font-family-primary);
+  color: var(--color-text-primary);
+}
+
+/* ========================================
+   UTILIDADES GLOBALES GOLDIFOX
+   ======================================== */
+
+.goldifox-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-xl);
+}
+
+.goldifox-section {
+  padding: var(--spacing-3xl) 0;
+}
+
+.goldifox-card {
+  background-color: var(--color-background-card);
+  border: 1px solid var(--color-border-light);
+  padding: var(--spacing-xl);
+  transition: var(--transition-normal);
+  box-shadow: var(--shadow-sm);
+}
+
+.goldifox-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-border-main);
+}
+
+.goldifox-text-muted {
+  opacity: var(--opacity-text-muted);
+}
+
+/* ========================================
+   RESPONSIVE DESIGN GLOBALES
+   ======================================== */
+
+@media (max-width: 768px) {
+  .goldifox-container {
+    padding: 0 var(--spacing-md);
+  }
+  
+  .goldifox-section {
+    padding: var(--spacing-2xl) 0;
+  }
+}
+
+/* ========================================
+   SCROLLBAR PERSONALIZADA GOLDIFOX
+   ======================================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(--color-background-main);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-primary);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-primary-dark);
+}
+
+/* Firefox scrollbar */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) var(--color-background-main);
+}
+
+/* ========================================
+   UTILIDADES RESPONSIVE AVANZADAS
+   Sistema adaptativo para elementos gigantes
+   ======================================== */
+
+/* Títulos adaptativos */
+.responsive-title-hero {
+  font-size: clamp(2rem, 8vw, var(--font-size-5xl));
+  line-height: var(--line-height-tight);
+}
+
+.responsive-title-section {
+  font-size: clamp(1.5rem, 5vw, var(--font-size-4xl));
+  line-height: var(--line-height-tight);
+}
+
+.responsive-title-card {
+  font-size: clamp(1.25rem, 3vw, var(--font-size-2xl));
+}
+
+/* Espaciado adaptativo */
+.responsive-padding {
+  padding: clamp(var(--spacing-lg), 5vw, var(--spacing-3xl));
+}
+
+.responsive-margin {
+  margin: clamp(var(--spacing-md), 4vw, var(--spacing-2xl));
+}
+
+/* Botones adaptativos */
+.responsive-button {
+  padding: clamp(var(--spacing-sm), 2vw, var(--spacing-md)) clamp(var(--spacing-md), 4vw, var(--spacing-lg));
+  font-size: clamp(var(--font-size-sm), 2.5vw, var(--font-size-base));
+  border-radius: var(--border-radius-sm);
+  transition: var(--transition-smooth);
+}
+
+/* Grid responsivo inteligente */
+.responsive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: clamp(var(--spacing-md), 3vw, var(--spacing-xl));
+}
+
+/* Optimizaciones móviles específicas */
+@media (max-width: 480px) {
+  .hide-mobile {
+    display: none;
+  }
+  
+  .stack-mobile {
+    flex-direction: column !important;
+  }
+  
+  .full-width-mobile {
+    width: 100% !important;
+  }
+  
+  .text-center-mobile {
+    text-align: center !important;
+  }
+}

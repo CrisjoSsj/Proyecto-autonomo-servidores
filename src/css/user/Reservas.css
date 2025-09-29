@@ -1,0 +1,958 @@
+/* ===================================
+   RESERVAS.CSS - PÁGINA DE RESERVAS GOLDIFOX
+   Diseño profesional con sistema de variables
+   =================================== */
+
+/* Banner de Reservas - Estilo Goldifox optimizado */
+.banner-reservas {
+  background: var(--color-surface-dark);
+  color: var(--color-text-light);
+  padding: var(--spacing-2xl) var(--spacing-md);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.banner-reservas::before {
+  display: none; /* Eliminamos patrones complejos */
+}
+
+.contenedor-banner-reservas {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.titulo-reservas {
+  font-size: var(--font-size-3xl);
+  font-weight: 300;
+  margin-bottom: var(--spacing-lg);
+  font-family: var(--font-family-heading);
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wider);
+  text-shadow: none;
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: unset;
+  background-clip: unset;
+  animation: none;
+}
+
+.subtitulo-reservas {
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--spacing-md);
+  font-weight: 400;
+  opacity: var(--opacity-text-muted);
+  letter-spacing: var(--letter-spacing-normal);
+  font-family: var(--font-family-primary);
+}
+
+.descripcion-reservas {
+  font-size: var(--font-size-base);
+  opacity: var(--opacity-text-muted);
+  font-style: normal;
+  max-width: 600px;
+  margin: var(--spacing-md) auto 0;
+  color: var(--color-text-light);
+  line-height: var(--line-height-relaxed);
+  font-family: var(--font-family-primary);
+}
+
+/* Contenedor Principal de Reservas - Fondo consistente */
+.contenedor-reservas {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 3rem 1rem;
+  background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-main) 50%, var(--color-background-main) 100%);
+  min-height: 100vh;
+}
+
+/* Sección de Ventajas de Reservar - Premium */
+.seccion-ventajas-reserva {
+  padding: 5rem 1rem;
+  background: linear-gradient(135deg, var(--color-background-main) 0%, var(--color-background-main) 50%, var(--color-background-main) 100%);
+  position: relative;
+}
+
+.contenedor-ventajas {
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+.titulo-ventajas {
+  font-size: 3rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 3.5rem;
+  color: var(--color-text-primary);
+  font-family: 'Playfair Display', 'Georgia', serif;
+  position: relative;
+}
+
+.titulo-ventajas::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-dark));
+  border-radius: 2px;
+}
+
+.grilla-ventajas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.tarjeta-ventaja {
+  background: var(--color-background-card);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-none);
+  text-align: left;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-normal);
+  border: 1px solid var(--color-border-light);
+  position: relative;
+  overflow: hidden;
+}
+
+.tarjeta-ventaja::before {
+  display: none; /* Eliminamos efectos complejos */
+}
+
+.tarjeta-ventaja:hover::before {
+  display: none;
+}
+
+.tarjeta-ventaja:hover {
+  transform: translateY(-12px) scale(1.02);
+  box-shadow: 0 25px 60px rgba(45, 27, 19, 0.15);
+  border-color: var(--color-primary);
+}
+
+.icono-ventaja {
+  width: 5rem;
+  height: 5rem;
+  margin: 0 auto 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: white;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.icono-ventaja.garantia {
+  background: linear-gradient(135deg, var(--color-success), var(--color-success));
+}
+
+.icono-ventaja.fechas-especiales {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+}
+
+.icono-ventaja.atencion-preferencial {
+  background: linear-gradient(135deg, var(--color-text-secondary), var(--color-text-secondary));
+}
+
+.icono-ventaja.horarios-premium {
+  background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary-dark));
+}
+
+.titulo-ventaja {
+  font-size: 1.375rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--color-text-primary);
+  font-family: 'Playfair Display', 'Georgia', serif;
+}
+
+.descripcion-ventaja {
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+  font-size: 1rem;
+}
+
+.descripcion-ventaja {
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+  font-size: 1rem;
+}
+
+/* Información de Reservas - Premium */
+.seccion-informacion-reservas {
+  margin-bottom: 4rem;
+}
+
+.tarjeta-informacion-reservas {
+  background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-card) 100%);
+  border: 2px solid var(--color-primary);
+  border-radius: 20px;
+  padding: 3rem;
+  box-shadow: 0 10px 40px rgba(218, 165, 32, 0.2);
+}
+
+.titulo-informacion-reservas {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: var(--color-text-primary);
+  text-align: center;
+  font-family: 'Playfair Display', 'Georgia', serif;
+}
+
+.contenido-informacion {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 3rem;
+}
+
+.subtitulo-informacion {
+  font-size: 1.375rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--color-primary);
+  font-family: 'Playfair Display', 'Georgia', serif;
+}
+
+.lista-informacion-reservas {
+  list-style: none;
+  padding: 0;
+}
+
+.item-informacion-reservas {
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(218, 165, 32, 0.2);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.item-informacion-reservas:last-child {
+  border-bottom: none;
+}
+
+/* Formulario de Reserva - Premium */
+.seccion-formulario-reserva {
+  margin-bottom: 4rem;
+}
+
+.contenedor-formulario {
+  background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-card) 100%);
+  border-radius: 20px;
+  padding: 3rem;
+  box-shadow: 0 15px 50px rgba(45, 27, 19, 0.1);
+  border: 1px solid rgba(218, 165, 32, 0.2);
+}
+
+.titulo-formulario {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--color-text-primary);
+  text-align: center;
+  font-family: 'Playfair Display', 'Georgia', serif;
+}
+
+.descripcion-formulario {
+  text-align: center;
+  color: var(--color-text-secondary);
+  margin-bottom: 2.5rem;
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+
+/* Estilos del Formulario de Reserva - Sistema Goldifox Responsivo */
+.formulario-reserva {
+  max-width: 500px;
+  margin: 0 auto;
+  background: var(--color-background-card);
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border-light);
+}
+
+.grupo-campo {
+  margin-bottom: var(--spacing-md);
+}
+
+.fila-campos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-sm);
+}
+
+.etiqueta-campo {
+  display: block;
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-text-primary);
+  font-weight: 500;
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  font-family: var(--font-family-heading);
+}
+
+.campo-entrada,
+.campo-seleccion {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  background: var(--color-background-card);
+  transition: var(--transition-smooth);
+  font-family: var(--font-family-primary);
+  height: 40px;
+}
+
+.campo-entrada:focus,
+.campo-seleccion:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(163, 146, 116, 0.1);
+}
+
+.campo-textarea {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  background: var(--color-background-card);
+  transition: var(--transition-smooth);
+  font-family: var(--font-family-primary);
+  resize: vertical;
+  min-height: 80px;
+}
+
+.campo-textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(163, 146, 116, 0.1);
+}
+
+.boton-enviar-reserva {
+  width: 100%;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--color-primary);
+  color: var(--color-background-card);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-normal);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  font-family: var(--font-family-heading);
+  margin-top: var(--spacing-md);
+  height: 45px;
+}
+
+.boton-enviar-reserva:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.nota-confirmacion {
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-md);
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .fila-campos {
+    grid-template-columns: 1fr;
+  }
+  
+  .formulario-reserva {
+    padding: var(--spacing-md);
+    margin: var(--spacing-sm);
+    max-width: 95%;
+  }
+  
+  .campo-entrada,
+  .campo-seleccion,
+  .campo-textarea {
+    font-size: var(--font-size-base);
+  }
+}
+
+@media (max-width: 480px) {
+  .formulario-reserva {
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius-sm);
+  }
+  
+  .etiqueta-campo {
+    font-size: var(--font-size-xs);
+  }
+}
+
+/* Ocasiones Especiales - Premium */
+.seccion-ocasiones-especiales {
+  padding: 5rem 1rem;
+  background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-card) 100%);
+  margin-bottom: 4rem;
+}
+
+.contenedor-ocasiones {
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+.titulo-ocasiones {
+  font-size: 3rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: var(--color-text-primary);
+  font-family: 'Playfair Display', 'Georgia', serif;
+  position: relative;
+}
+
+.titulo-ocasiones::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-dark));
+  border-radius: 2px;
+}
+
+.descripcion-ocasiones {
+  text-align: center;
+  color: var(--color-text-secondary);
+  margin-bottom: 3.5rem;
+  font-size: 1.125rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 3.5rem;
+  line-height: 1.6;
+}
+
+.grilla-ocasiones {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2.5rem;
+}
+
+.tarjeta-ocasion {
+  background: linear-gradient(135deg, var(--color-background-main) 0%, var(--color-background-card) 100%);
+  border-radius: 16px;
+  padding: 2.5rem;
+  text-align: center;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(218, 165, 32, 0.1);
+  box-shadow: 0 8px 32px rgba(45, 27, 19, 0.08);
+}
+
+.tarjeta-ocasion:hover {
+  background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-card) 100%);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 50px rgba(45, 27, 19, 0.15);
+  border-color: var(--color-primary);
+}
+
+.icono-ocasion {
+  width: 4rem;
+  height: 4rem;
+  margin: 0 auto 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  color: white;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.icono-ocasion.cumpleanos {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+}
+
+.icono-ocasion.aniversario {
+  background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary-dark));
+}
+
+.icono-ocasion.cita {
+  background: linear-gradient(135deg, var(--color-text-secondary), var(--color-text-secondary));
+}
+
+.icono-ocasion.celebracion {
+  background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary-dark));
+}
+
+.icono-ocasion.cumpleanos::after { content: '🎂'; }
+.icono-ocasion.aniversario::after { content: '💕'; }
+.icono-ocasion.cita::after { content: '🌹'; }
+.icono-ocasion.celebracion::after { content: '🎉'; }
+
+.titulo-ocasion {
+  font-size: 1.375rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--color-text-primary);
+  font-family: 'Playfair Display', 'Georgia', serif;
+}
+
+.descripcion-ocasion {
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+/* Horarios de Reservas - Premium */
+.seccion-horarios-reservas {
+  margin-bottom: 4rem;
+}
+
+.contenedor-horarios-reservas {
+  background: linear-gradient(135deg, var(--color-background-main) 0%, var(--color-background-main) 100%);
+  border-radius: 20px;
+  padding: 3rem;
+  border: 1px solid rgba(218, 165, 32, 0.2);
+  box-shadow: 0 10px 40px rgba(45, 27, 19, 0.1);
+}
+
+.titulo-horarios-reservas {
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 2.5rem;
+  color: var(--color-text-primary);
+  font-family: 'Playfair Display', 'Georgia', serif;
+}
+
+.grilla-horarios-reservas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2.5rem;
+}
+
+.bloque-horario {
+  background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-card) 100%);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(45, 27, 19, 0.1);
+  border: 1px solid rgba(218, 165, 32, 0.1);
+}
+
+.dia-horario {
+  font-size: 1.375rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--color-text-primary);
+  text-align: center;
+  font-family: 'Playfair Display', 'Georgia', serif;
+}
+
+.horarios-disponibles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.horario-item {
+  background: linear-gradient(135deg, var(--color-background-main) 0%, var(--color-background-main) 100%);
+  color: var(--color-text-secondary);
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(218, 165, 32, 0.2);
+}
+
+.horario-item:hover {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: var(--color-text-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(218, 165, 32, 0.3);
+}
+
+.horario-item.premium {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: var(--color-text-primary);
+  font-weight: 700;
+  border-color: var(--color-primary-dark);
+}
+
+.nota-horario {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  text-align: center;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+/* Contacto Especial - Premium */
+.seccion-contacto-especial {
+  margin-bottom: 4rem;
+}
+
+.tarjeta-contacto-especial {
+  background: linear-gradient(135deg, var(--color-text-primary), var(--color-text-secondary));
+  color: var(--color-text-light);
+  border-radius: 20px;
+  padding: 3rem;
+  text-align: center;
+  box-shadow: 0 15px 50px rgba(45, 27, 19, 0.2);
+}
+
+.titulo-contacto-especial {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  font-family: 'Playfair Display', 'Georgia', serif;
+  color: var(--color-text-light);
+}
+
+.descripcion-contacto-especial {
+  font-size: 1.25rem;
+  margin-bottom: 2.5rem;
+  color: rgba(244, 228, 188, 0.9);
+  line-height: 1.6;
+}
+
+.informacion-contacto-especial {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2.5rem;
+}
+
+.metodo-contacto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem;
+  background: rgba(244, 228, 188, 0.1);
+  border-radius: 16px;
+  border: 1px solid rgba(218, 165, 32, 0.2);
+  transition: all 0.3s ease;
+}
+
+.metodo-contacto:hover {
+  background: rgba(244, 228, 188, 0.15);
+  transform: translateY(-5px);
+  border-color: var(--color-primary);
+}
+
+.icono-contacto {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.icono-contacto.telefono {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  color: var(--color-text-primary);
+}
+
+.icono-contacto.whatsapp {
+  background: linear-gradient(135deg, var(--color-text-secondary), var(--color-text-secondary));
+  color: var(--color-text-light);
+}
+
+.icono-contacto.email {
+  background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary-dark));
+  color: var(--color-text-light);
+}
+
+.titulo-metodo {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--color-primary);
+  font-family: 'Playfair Display', 'Georgia', serif;
+}
+
+.detalle-metodo {
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--color-text-light);
+  font-size: 1.1rem;
+}
+
+.horario-contacto {
+  font-size: 0.9rem;
+  color: rgba(244, 228, 188, 0.8);
+}
+
+/* Sección de Contacto General - Premium */
+.seccion-contacto {
+  padding: 5rem 1rem;
+  background: linear-gradient(135deg, var(--color-text-primary) 0%, var(--color-text-secondary) 40%, var(--color-surface-dark) 100%);
+  color: var(--color-text-light);
+}
+
+.contenedor-contacto {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.titulo-contacto {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--color-text-light);
+  font-family: 'Playfair Display', 'Georgia', serif;
+  position: relative;
+}
+
+.titulo-contacto::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-dark));
+  border-radius: 2px;
+}
+
+.descripcion-contacto {
+  font-size: 1.125rem;
+  margin-bottom: 3rem;
+  color: rgba(244, 228, 188, 0.9);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 3rem;
+  line-height: 1.6;
+}
+
+.grilla-contacto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 3rem;
+}
+
+.tarjeta-contacto {
+  background: linear-gradient(135deg, rgba(244, 228, 188, 0.1) 0%, rgba(218, 165, 32, 0.08) 100%);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(244, 228, 188, 0.2);
+  border-radius: 20px;
+  padding: 3rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tarjeta-contacto:hover {
+  background: linear-gradient(135deg, rgba(244, 228, 188, 0.15) 0%, rgba(218, 165, 32, 0.12) 100%);
+  transform: translateY(-8px);
+  border-color: rgba(218, 165, 32, 0.4);
+  box-shadow: 0 20px 50px rgba(218, 165, 32, 0.1);
+}
+
+.icono-contacto-general {
+  width: 5rem;
+  height: 5rem;
+  margin: 0 auto 2rem;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  box-shadow: 0 10px 30px rgba(218, 165, 32, 0.3);
+}
+
+.titulo-metodo-contacto {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--color-primary);
+  font-family: 'Playfair Display', 'Georgia', serif;
+}
+
+.informacion-contacto {
+  color: rgba(244, 228, 188, 0.9);
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.boton-contacto {
+  display: inline-block;
+  margin-top: 1.5rem;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: var(--color-text-primary);
+  padding: 0.875rem 2rem;
+  border-radius: 50px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid transparent;
+}
+
+.boton-contacto:hover {
+  background: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(218, 165, 32, 0.2);
+}
+
+/* Llamada a la acción final - Premium */
+.cta-reservas-urgentes {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 50%, var(--color-primary-light) 100%);
+  padding: 5rem 1rem;
+  text-align: center;
+  color: var(--color-text-primary);
+}
+
+.titulo-cta-urgente {
+  font-size: 2.75rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--color-text-primary);
+  font-family: 'Playfair Display', 'Georgia', serif;
+}
+
+.descripcion-cta-urgente {
+  font-size: 1.25rem;
+  margin-bottom: 2.5rem;
+  color: var(--color-text-secondary);
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+}
+
+.boton-cta-urgente {
+  display: inline-block;
+  background: var(--color-text-primary);
+  color: var(--color-text-light);
+  padding: 1.25rem 3rem;
+  border-radius: 50px;
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 3px solid transparent;
+  box-shadow: 0 10px 30px rgba(45, 27, 19, 0.3);
+}
+
+.boton-cta-urgente:hover {
+  background: transparent;
+  color: var(--color-text-primary);
+  border-color: var(--color-text-primary);
+  transform: translateY(-4px);
+  box-shadow: 0 15px 40px rgba(45, 27, 19, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .titulo-reservas {
+    font-size: 2.5rem;
+  }
+  
+  .subtitulo-reservas {
+    font-size: 1.25rem;
+  }
+  
+  .grilla-ventajas {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .contenido-informacion {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .grilla-ocasiones {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .grilla-horarios-reservas {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .informacion-contacto-especial {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .contenedor-formulario,
+  .tarjeta-informacion-reservas,
+  .contenedor-horarios-reservas {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .banner-reservas {
+    padding: 2rem 1rem;
+  }
+  
+  .titulo-reservas {
+    font-size: 2rem;
+  }
+  
+  .subtitulo-reservas {
+    font-size: 1.125rem;
+  }
+  
+  .tarjeta-ventaja,
+  .tarjeta-ocasion {
+    padding: 1.5rem;
+  }
+  
+  .contenedor-formulario,
+  .tarjeta-contacto-especial {
+    padding: 1.5rem;
+  }
+}
+
+/* Animaciones */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tarjeta-ventaja,
+.tarjeta-ocasion,
+.bloque-horario {
+  animation: slideInUp 0.6s ease-out;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}

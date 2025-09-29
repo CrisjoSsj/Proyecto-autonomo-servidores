@@ -1,0 +1,588 @@
+/* ===================================
+   GESTION-MESAS.CSS - GESTIÓN DE MESAS ADMIN GOLDIFOX
+   Sistema de gestión de mesas con diseño profesional
+   =================================== */
+
+/* Página Principal Gestión Mesas */
+.gestion-mesas-admin {
+  background: var(--color-background-main);
+  min-height: 100vh;
+  font-family: var(--font-family-primary);
+}
+
+/* Header Gestión de Mesas */
+.header-gestion-mesas {
+  background: var(--color-surface-elevated);
+  padding: var(--spacing-2xl) var(--spacing-md) var(--spacing-xl);
+  border-bottom: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.contenedor-header-mesas {
+  max-width: 1400px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.titulo-gestion-mesas {
+  font-size: var(--font-size-3xl);
+  font-weight: 400;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-sm) 0;
+  font-family: var(--font-family-heading);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.subtitulo-gestion-mesas {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-lg) 0;
+  opacity: var(--opacity-text-muted);
+}
+
+.info-actualizacion {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.boton-actualizar {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: var(--transition-normal);
+}
+
+.boton-actualizar:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+
+/* Secciones Generales */
+.seccion-resumen-mesas,
+.seccion-estado-mesas,
+.seccion-cola-espera-admin {
+  padding: var(--spacing-2xl) var(--spacing-md);
+}
+
+.contenedor-resumen-mesas,
+.contenedor-estado-mesas,
+.contenedor-cola-admin {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.titulo-seccion-mesas {
+  font-size: var(--font-size-2xl);
+  font-weight: 400;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-xl) 0;
+  font-family: var(--font-family-heading);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  text-align: center;
+  position: relative;
+}
+
+.titulo-seccion-mesas::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 2px;
+  background: var(--color-primary);
+  opacity: 0.8;
+}
+
+/* Resumen de Mesas */
+.grilla-resumen-mesas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-xl);
+}
+
+.tarjeta-resumen {
+  background: var(--color-background-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  text-align: center;
+  transition: var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.tarjeta-resumen:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.tarjeta-resumen::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+}
+
+.tarjeta-resumen.disponibles::before { background: #10b981; }
+.tarjeta-resumen.ocupadas::before { background: #ef4444; }
+.tarjeta-resumen.reservadas::before { background: #3b82f6; }
+.tarjeta-resumen.tiempo-promedio::before { background: #f59e0b; }
+
+.titulo-resumen {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-sm) 0;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.numero-resumen {
+  font-size: var(--font-size-4xl);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-xs) 0;
+  font-family: var(--font-family-heading);
+}
+
+.tarjeta-resumen.disponibles .numero-resumen { color: #10b981; }
+.tarjeta-resumen.ocupadas .numero-resumen { color: #ef4444; }
+.tarjeta-resumen.reservadas .numero-resumen { color: #3b82f6; }
+.tarjeta-resumen.tiempo-promedio .numero-resumen { color: #f59e0b; }
+
+.detalle-resumen {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  opacity: var(--opacity-text-muted);
+}
+
+/* Grupos de Mesas */
+.grupo-mesas-admin {
+  margin-bottom: var(--spacing-3xl);
+}
+
+.titulo-grupo-mesas {
+  font-size: var(--font-size-xl);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-xl) 0;
+  font-family: var(--font-family-heading);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  border-bottom: 1px solid var(--color-border-light);
+  padding-bottom: var(--spacing-sm);
+}
+
+.grilla-mesas-admin {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--spacing-xl);
+}
+
+/* Tarjetas de Mesa */
+.tarjeta-mesa-admin {
+  background: var(--color-background-card);
+  border: 2px solid var(--color-border-light);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  transition: var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.tarjeta-mesa-admin:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.tarjeta-mesa-admin::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+}
+
+.tarjeta-mesa-admin.disponible::before { background: #10b981; }
+.tarjeta-mesa-admin.ocupada::before { background: #ef4444; }
+.tarjeta-mesa-admin.reservada::before { background: #3b82f6; }
+.tarjeta-mesa-admin.limpieza::before { background: #f59e0b; }
+
+.tarjeta-mesa-admin.disponible { border-color: rgba(16, 185, 129, 0.3); }
+.tarjeta-mesa-admin.ocupada { border-color: rgba(239, 68, 68, 0.3); }
+.tarjeta-mesa-admin.reservada { border-color: rgba(59, 130, 246, 0.3); }
+.tarjeta-mesa-admin.limpieza { border-color: rgba(245, 158, 11, 0.3); }
+
+/* Header de Mesa */
+.header-mesa-admin {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.numero-mesa-admin {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-family: var(--font-family-heading);
+}
+
+.capacidad-mesa-admin {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  background: var(--color-surface-muted);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-full);
+}
+
+/* Estado de Mesa */
+.estado-mesa-admin {
+  margin-bottom: var(--spacing-md);
+}
+
+.indicador-estado {
+  display: inline-block;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.indicador-estado.disponible {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.indicador-estado.ocupada {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.indicador-estado.reservada {
+  background: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+}
+
+.indicador-estado.limpieza {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+}
+
+.indicador-estado.tiempo-excedido {
+  background: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  animation: pulse 2s infinite;
+}
+
+/* Información de Mesa */
+.info-mesa-admin {
+  margin-bottom: var(--spacing-lg);
+}
+
+.info-mesa-admin p {
+  margin: 0 0 var(--spacing-xs) 0;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+}
+
+.cliente-actual,
+.cliente-reserva {
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.tiempo-ocupada,
+.tiempo-disponible,
+.hora-reserva,
+.tiempo-restante,
+.tiempo-limpieza {
+  color: var(--color-text-secondary);
+}
+
+.tiempo-ocupada.excedido {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.orden-estado {
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+/* Acciones de Mesa */
+.acciones-mesa-admin {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.boton-asignar,
+.boton-reservar,
+.boton-cuenta,
+.boton-liberar,
+.boton-ver-orden,
+.boton-ver-reserva,
+.boton-cancelar-reserva,
+.boton-consultar,
+.boton-finalizar-limpieza,
+.boton-preparar-evento {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  flex: 1;
+  min-width: 100px;
+}
+
+.boton-asignar {
+  background: #10b981;
+  color: white;
+}
+
+.boton-reservar {
+  background: #3b82f6;
+  color: white;
+}
+
+.boton-cuenta {
+  background: var(--color-primary);
+  color: white;
+}
+
+.boton-cuenta.urgente {
+  background: #ef4444;
+  animation: pulse 2s infinite;
+}
+
+.boton-liberar {
+  background: #6b7280;
+  color: white;
+}
+
+.boton-ver-orden,
+.boton-ver-reserva {
+  background: var(--color-surface-elevated);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-light);
+}
+
+.boton-cancelar-reserva {
+  background: #ef4444;
+  color: white;
+}
+
+.boton-consultar {
+  background: #f59e0b;
+  color: white;
+}
+
+.boton-finalizar-limpieza,
+.boton-preparar-evento {
+  background: var(--color-primary);
+  color: white;
+}
+
+.boton-asignar:hover,
+.boton-reservar:hover,
+.boton-cuenta:hover,
+.boton-liberar:hover,
+.boton-ver-orden:hover,
+.boton-ver-reserva:hover,
+.boton-cancelar-reserva:hover,
+.boton-consultar:hover,
+.boton-finalizar-limpieza:hover,
+.boton-preparar-evento:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+  filter: brightness(1.1);
+}
+
+.boton-cuenta:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Cola de Espera */
+.lista-cola-admin {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.cliente-cola-admin {
+  background: var(--color-background-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: var(--transition-smooth);
+  box-shadow: var(--shadow-sm);
+}
+
+.cliente-cola-admin:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary-alpha);
+}
+
+.info-cliente-cola {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  flex: 1;
+}
+
+.posicion-cliente {
+  background: var(--color-primary);
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--border-radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: var(--font-size-lg);
+}
+
+.nombre-cliente {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  min-width: 150px;
+}
+
+.telefono-cliente,
+.personas-cliente,
+.tiempo-espera-cliente {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  min-width: 120px;
+}
+
+.acciones-cliente-cola {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.boton-asignar-mesa,
+.boton-llamar-cliente,
+.boton-eliminar-cola {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  transition: var(--transition-normal);
+}
+
+.boton-asignar-mesa {
+  background: #10b981;
+  color: white;
+}
+
+.boton-llamar-cliente {
+  background: #3b82f6;
+  color: white;
+}
+
+.boton-eliminar-cola {
+  background: #ef4444;
+  color: white;
+}
+
+.boton-asignar-mesa:hover,
+.boton-llamar-cliente:hover,
+.boton-eliminar-cola:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header-gestion-mesas {
+    padding: var(--spacing-xl) var(--spacing-sm);
+  }
+  
+  .titulo-gestion-mesas {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .info-actualizacion {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+  
+  .grilla-resumen-mesas,
+  .grilla-mesas-admin {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+  
+  .seccion-resumen-mesas,
+  .seccion-estado-mesas,
+  .seccion-cola-espera-admin {
+    padding: var(--spacing-xl) var(--spacing-sm);
+  }
+  
+  .cliente-cola-admin {
+    flex-direction: column;
+    gap: var(--spacing-md);
+    text-align: center;
+  }
+  
+  .info-cliente-cola {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+  
+  .acciones-cliente-cola {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .titulo-gestion-mesas {
+    font-size: var(--font-size-xl);
+  }
+  
+  .tarjeta-mesa-admin {
+    padding: var(--spacing-md);
+  }
+  
+  .acciones-mesa-admin {
+    flex-direction: column;
+  }
+  
+  .header-mesa-admin {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    text-align: center;
+  }
+}

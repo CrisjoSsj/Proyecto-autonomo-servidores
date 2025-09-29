@@ -1,0 +1,730 @@
+/* ===================================
+   FILAVIRTUAL.CSS - PÁGINA DE FILA VIRTUAL GOLDIFOX
+   Diseño profesional con sistema de variables
+   =================================== */
+
+/* Banner de la Fila Virtual - Estilo Goldifox optimizado */
+.banner-fila-virtual {  
+  background: var(--color-surface-dark);
+  color: var(--color-text-light);
+  padding: var(--spacing-2xl) var(--spacing-md);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.banner-fila-virtual::before {
+  display: none; /* Eliminamos efectos complejos */
+}
+
+.banner-fila-virtual::after {
+  display: none;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><circle cx="10" cy="10" r="1" fill="%23DAA520" fill-opacity="0.2"/><circle cx="30" cy="10" r="1" fill="%23F4E4BC" fill-opacity="0.1"/><circle cx="50" cy="10" r="1" fill="%23DAA520" fill-opacity="0.2"/><circle cx="70" cy="10" r="1" fill="%23F4E4BC" fill-opacity="0.1"/><circle cx="90" cy="10" r="1" fill="%23DAA520" fill-opacity="0.2"/></svg>');
+}
+
+.contenedor-banner-fila {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.titulo-fila-virtual {
+  font-size: var(--font-size-3xl);
+  font-weight: 300;
+  margin-bottom: var(--spacing-lg);
+  font-family: var(--font-family-heading);
+  color: var(--color-primary);
+  text-shadow: none;
+  position: relative;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wider);
+}
+
+.titulo-fila-virtual::after {
+  display: none; /* Eliminamos decoraciones */
+}
+
+.subtitulo-fila-virtual {
+  font-size: var(--font-size-lg);
+  font-weight: 400;
+  color: var(--color-text-light);
+  opacity: var(--opacity-text-muted);
+  line-height: var(--line-height-relaxed);
+  margin-top: var(--spacing-md);
+  font-family: var(--font-family-primary);
+}
+
+/* Estado del Restaurante - Estilo Goldifox */
+.seccion-estado-restaurante {
+  padding: var(--spacing-2xl) var(--spacing-md);
+  background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-main) 50%, var(--color-background-main) 100%);
+}
+
+.contenedor-estado {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.tarjeta-estado-principal {
+  background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-card) 100%);
+  border-radius: 20px;
+  padding: 3rem;
+  text-align: center;
+  box-shadow: 0 15px 50px rgba(45, 27, 19, 0.1);
+  border: 3px solid var(--color-primary);
+}
+
+.indicador-abierto {
+  width: 5rem;
+  height: 5rem;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  border-radius: 50%;
+  margin: 0 auto 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(218, 165, 32, 0.3);
+}
+
+.indicador-abierto::after {
+  content: '';
+  width: 1.2rem;
+  height: 1.2rem;
+  background: var(--color-text-primary);
+  border-radius: 50%;
+  position: absolute;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(218, 165, 32, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 15px rgba(218, 165, 32, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(218, 165, 32, 0);
+  }
+}
+
+.titulo-estado {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--color-text-primary);
+  font-family: 'Playfair Display', 'Georgia', serif;
+}
+
+.horario-actual {
+  font-size: 1.25rem;
+  color: var(--color-primary);
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.actualizacion {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+/* Disponibilidad de Mesas - Premium */
+.seccion-disponibilidad-mesas {
+  padding: 5rem 1rem;
+  background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-card) 100%);
+}
+
+.contenedor-disponibilidad {
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+.titulo-disponibilidad {
+  font-size: 3rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: var(--color-text-primary);
+  font-family: 'Playfair Display', 'Georgia', serif;
+  position: relative;
+}
+
+.titulo-disponibilidad::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-dark));
+  border-radius: 2px;
+}
+
+.grilla-mesas {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3.5rem;
+  margin-top: 3rem;
+}
+
+.grupo-mesas {
+  background: linear-gradient(135deg, var(--color-background-main) 0%, var(--color-background-main) 100%);
+  border-radius: 20px;
+  padding: 3rem;
+  border: 1px solid rgba(218, 165, 32, 0.2);
+  box-shadow: 0 10px 40px rgba(45, 27, 19, 0.08);
+}
+
+.titulo-grupo-mesa {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: var(--color-text-primary);
+  text-align: center;
+  padding-bottom: 1rem;
+  border-bottom: 3px solid var(--color-primary);
+  font-family: 'Playfair Display', 'Georgia', serif;
+}
+
+.lista-mesas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+.tarjeta-mesa {
+  background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-card) 100%);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(45, 27, 19, 0.1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border-left: 5px solid transparent;
+}
+
+.tarjeta-mesa.disponible {
+  border-left-color: var(--color-primary);
+}
+
+.tarjeta-mesa.ocupada {
+  border-left-color: var(--color-text-secondary);
+}
+
+.tarjeta-mesa.reservada {
+  border-left-color: var(--color-primary-dark);
+}
+
+.tarjeta-mesa.limpieza {
+  border-left-color: var(--color-primary-light);
+}
+
+.tarjeta-mesa:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 50px rgba(45, 27, 19, 0.15);
+  border-left-color: var(--color-primary);
+}
+
+.numero-mesa {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  display: block;
+  margin-bottom: 0.75rem;
+  font-family: 'Playfair Display', 'Georgia', serif;
+}
+
+.estado-mesa {
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: var(--color-text-primary);
+}
+
+.tarjeta-mesa.disponible .estado-mesa {
+  background: linear-gradient(135deg, var(--color-text-light) 0%, var(--color-background-card) 100%);
+  border: 1px solid var(--color-primary);
+}
+
+.tarjeta-mesa.ocupada .estado-mesa {
+  background: linear-gradient(135deg, rgba(139, 90, 66, 0.1) 0%, rgba(107, 62, 42, 0.1) 100%);
+  border: 1px solid var(--color-text-secondary);
+}
+
+.tarjeta-mesa.reservada .estado-mesa {
+  background: linear-gradient(135deg, rgba(184, 134, 11, 0.1) 0%, rgba(218, 165, 32, 0.1) 100%);
+  border: 1px solid var(--color-primary-dark);
+}
+
+.tarjeta-mesa.limpieza .estado-mesa {
+  background: linear-gradient(135deg, rgba(160, 145, 122, 0.1) 0%, rgba(139, 115, 85, 0.1) 100%);
+  border: 1px solid var(--color-primary-light);
+}
+
+.tiempo-estimado {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  display: block;
+  margin-bottom: 1.5rem;
+  font-style: italic;
+}
+
+.boton-tomar-mesa {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: var(--color-text-primary);
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: 50px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+  font-size: 1rem;
+  border: 2px solid transparent;
+}
+
+.boton-tomar-mesa:hover {
+  background: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(218, 165, 32, 0.3);
+}
+
+/* Cola de Espera - Premium */
+.seccion-cola-espera {
+  padding: 5rem 1rem;
+  background: linear-gradient(135deg, var(--color-background-main) 0%, var(--color-background-main) 100%);
+}
+
+.contenedor-cola {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.titulo-cola {
+  font-size: 3rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: var(--color-text-primary);
+  font-family: 'Playfair Display', 'Georgia', serif;
+  position: relative;
+}
+
+.titulo-cola::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-dark));
+  border-radius: 2px;
+}
+
+.descripcion-cola {
+  text-align: center;
+  color: var(--color-text-secondary);
+  margin-bottom: 3.5rem;
+  font-size: 1.125rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 3.5rem;
+  line-height: 1.6;
+}
+
+/* Formulario de Cola - Premium */
+.formulario-cola {
+  background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-card) 100%);
+  border-radius: 20px;
+  padding: 3rem;
+  box-shadow: 0 15px 50px rgba(45, 27, 19, 0.1);
+  margin-bottom: 3.5rem;
+  border: 1px solid rgba(218, 165, 32, 0.2);
+}
+
+.titulo-formulario-cola {
+  font-size: 2.25rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 2.5rem;
+  color: var(--color-text-primary);
+  font-family: 'Playfair Display', 'Georgia', serif;
+}
+
+.form-cola {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.campo-cola {
+  display: flex;
+  flex-direction: column;
+}
+
+.etiqueta-cola {
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--color-text-secondary);
+  font-size: 1rem;
+}
+
+.input-cola,
+.select-cola {
+  padding: 1rem 1.25rem;
+  border: 2px solid rgba(218, 165, 32, 0.3);
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: var(--color-background-card);
+  color: var(--color-text-primary);
+}
+
+.input-cola:focus,
+.select-cola:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(218, 165, 32, 0.1);
+  background: var(--color-background-card);
+}
+
+.boton-unirse-cola {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: var(--color-text-primary);
+  padding: 1.25rem 2.5rem;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.125rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 1.5rem;
+  border: 2px solid transparent;
+}
+
+.boton-unirse-cola:hover {
+  background: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(218, 165, 32, 0.3);
+}
+
+/* Estado de la Cola - Premium */
+.estado-cola-actual {
+  background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-card) 100%);
+  border-radius: 20px;
+  padding: 3rem;
+  box-shadow: 0 15px 50px rgba(45, 27, 19, 0.1);
+  border: 1px solid rgba(218, 165, 32, 0.2);
+}
+
+.titulo-estado-cola {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: var(--color-text-primary);
+  text-align: center;
+  font-family: 'Playfair Display', 'Georgia', serif;
+}
+
+.persona-en-cola {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, var(--color-background-main) 0%, var(--color-background-main) 100%);
+  border-radius: 16px;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(218, 165, 32, 0.1);
+}
+
+.persona-en-cola:hover {
+  background: linear-gradient(135deg, var(--color-text-light) 0%, var(--color-background-main) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(45, 27, 19, 0.1);
+}
+
+.posicion-cola {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  color: var(--color-text-primary);
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+  font-size: 1.125rem;
+  box-shadow: 0 4px 15px rgba(218, 165, 32, 0.3);
+}
+
+.nombre-cola {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  flex: 1;
+  font-size: 1.1rem;
+}
+
+.personas-cola {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+.tiempo-cola {
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.total-espera {
+  text-align: center;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, var(--color-text-light) 0%, var(--color-background-card) 100%);
+  border-radius: 16px;
+  color: var(--color-text-primary);
+  font-size: 1.25rem;
+  font-weight: 700;
+  border: 2px solid var(--color-primary);
+}
+
+/* Notificaciones - Premium */
+.seccion-notificaciones {
+  padding: 5rem 1rem;
+  background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-card) 100%);
+}
+
+.contenedor-notificaciones {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.tarjeta-notificaciones {
+  background: linear-gradient(135deg, var(--color-text-light) 0%, var(--color-background-card) 100%);
+  border: 2px solid var(--color-primary);
+  border-radius: 20px;
+  padding: 3rem;
+  box-shadow: 0 15px 50px rgba(218, 165, 32, 0.2);
+}
+
+.titulo-notificaciones {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: var(--color-text-primary);
+  text-align: center;
+  font-family: 'Playfair Display', 'Georgia', serif;
+}
+
+.lista-notificaciones {
+  list-style: none;
+  padding: 0;
+}
+
+.item-notificacion {
+  padding: 1.5rem 0;
+  border-bottom: 1px solid rgba(218, 165, 32, 0.3);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.item-notificacion:last-child {
+  border-bottom: none;
+}
+
+/* Tiempos Estimados - Premium */
+.seccion-tiempos-estimados {
+  padding: 5rem 1rem;
+  background: linear-gradient(135deg, var(--color-background-main) 0%, var(--color-background-main) 100%);
+}
+
+.contenedor-tiempos {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.titulo-tiempos {
+  font-size: 3rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: var(--color-text-primary);
+  font-family: 'Playfair Display', 'Georgia', serif;
+  position: relative;
+}
+
+.titulo-tiempos::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-dark));
+  border-radius: 2px;
+}
+
+.grilla-tiempos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2.5rem;
+  margin-top: 3rem;
+}
+
+.tarjeta-tiempo {
+  background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-card) 100%);
+  border-radius: 20px;
+  padding: 3rem;
+  text-align: center;
+  box-shadow: 0 15px 50px rgba(45, 27, 19, 0.1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(218, 165, 32, 0.1);
+}
+
+.tarjeta-tiempo:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 50px rgba(45, 27, 19, 0.15);
+  border-color: var(--color-primary);
+}
+
+.tipo-mesa-tiempo {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  display: block;
+  margin-bottom: 1rem;
+  font-family: 'Playfair Display', 'Georgia', serif;
+}
+
+.tiempo-promedio {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  display: block;
+  margin-bottom: 1rem;
+  font-family: 'Playfair Display', 'Georgia', serif;
+}
+
+.estado-tiempo {
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.75rem 1.25rem;
+  border-radius: 25px;
+  color: var(--color-text-primary);
+}
+
+.estado-tiempo.disponible {
+  background: linear-gradient(135deg, var(--color-text-light) 0%, var(--color-background-card) 100%);
+  border: 1px solid var(--color-primary);
+}
+
+.estado-tiempo.espera {
+  background: linear-gradient(135deg, rgba(139, 90, 66, 0.1) 0%, rgba(184, 134, 11, 0.1) 100%);
+  border: 1px solid var(--color-primary-dark);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .titulo-fila-virtual {
+    font-size: 2.5rem;
+  }
+  
+  .subtitulo-fila-virtual {
+    font-size: 1.25rem;
+  }
+  
+  .lista-mesas {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .form-cola {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .persona-en-cola {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .grilla-tiempos {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .formulario-cola,
+  .tarjeta-estado-principal,
+  .tarjeta-notificaciones {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .banner-fila-virtual {
+    padding: 2rem 1rem;
+  }
+  
+  .titulo-fila-virtual {
+    font-size: 2rem;
+  }
+  
+  .subtitulo-fila-virtual {
+    font-size: 1.125rem;
+  }
+  
+  .tarjeta-tiempo {
+    padding: 1.5rem;
+  }
+}
+
+/* Animaciones */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tarjeta-mesa,
+.persona-en-cola,
+.tarjeta-tiempo {
+  animation: slideInUp 0.6s ease-out;
+}
+
+/* Auto-refresh indicator */
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.auto-refresh {
+  animation: rotate 2s linear infinite;
+}

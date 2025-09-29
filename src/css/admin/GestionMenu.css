@@ -1,0 +1,635 @@
+/* ===================================
+   GESTION-MENU.CSS - GESTIÓN DE MENÚ ADMIN GOLDIFOX
+   Sistema de gestión de menú con diseño profesional
+   =================================== */
+
+/* Página Principal Gestión Menú */
+.gestion-menu-admin {
+  background: var(--color-background-main);
+  min-height: 100vh;
+  font-family: var(--font-family-primary);
+}
+
+/* Header Gestión de Menú */
+.header-gestion-menu {
+  background: var(--color-surface-elevated);
+  padding: var(--spacing-2xl) var(--spacing-md) var(--spacing-xl);
+  border-bottom: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.contenedor-header-menu {
+  max-width: 1400px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.titulo-gestion-menu {
+  font-size: var(--font-size-3xl);
+  font-weight: 400;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-sm) 0;
+  font-family: var(--font-family-heading);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.subtitulo-gestion-menu {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-lg) 0;
+  opacity: var(--opacity-text-muted);
+}
+
+.acciones-header-menu {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+}
+
+.boton-agregar-plato,
+.boton-agregar-categoria {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.boton-agregar-plato:hover,
+.boton-agregar-categoria:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Secciones Generales */
+.seccion-categorias-menu,
+.seccion-platos-menu {
+  padding: var(--spacing-2xl) var(--spacing-md);
+}
+
+.contenedor-categorias-menu,
+.contenedor-platos-menu {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.titulo-seccion-menu {
+  font-size: var(--font-size-2xl);
+  font-weight: 400;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-xl) 0;
+  font-family: var(--font-family-heading);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  text-align: center;
+  position: relative;
+}
+
+.titulo-seccion-menu::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 2px;
+  background: var(--color-primary);
+  opacity: 0.8;
+}
+
+/* Categorías del Menú */
+.grilla-categorias-menu {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-xl);
+  margin-bottom: var(--spacing-3xl);
+}
+
+.tarjeta-categoria-menu {
+  background: var(--color-background-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  transition: var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.tarjeta-categoria-menu:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary-alpha);
+}
+
+.tarjeta-categoria-menu::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--color-primary);
+}
+
+.header-categoria-menu {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-md);
+}
+
+.nombre-categoria-menu {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+  font-family: var(--font-family-heading);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.contador-platos-categoria {
+  background: var(--color-primary-alpha);
+  color: var(--color-primary);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.descripcion-categoria-menu {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-lg);
+  line-height: var(--line-height-relaxed);
+}
+
+.acciones-categoria-menu {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.boton-editar-categoria,
+.boton-eliminar-categoria,
+.boton-ver-platos-categoria {
+  padding: var(--spacing-xs) var(--spacing-md);
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.boton-editar-categoria {
+  background: var(--color-primary);
+  color: white;
+}
+
+.boton-eliminar-categoria {
+  background: #ef4444;
+  color: white;
+}
+
+.boton-ver-platos-categoria {
+  background: var(--color-surface-elevated);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-light);
+}
+
+.boton-editar-categoria:hover,
+.boton-eliminar-categoria:hover,
+.boton-ver-platos-categoria:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+  filter: brightness(1.1);
+}
+
+/* Platos del Menú */
+.filtros-platos-menu {
+  display: flex;
+  gap: var(--spacing-lg);
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: var(--spacing-2xl);
+  background: var(--color-background-card);
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.filtro-categoria-menu {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-base);
+  background: var(--color-background-main);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: var(--transition-normal);
+}
+
+.filtro-categoria-menu:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+.grilla-platos-menu {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: var(--spacing-xl);
+}
+
+.tarjeta-plato-admin {
+  background: var(--color-background-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  transition: var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.tarjeta-plato-admin:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.tarjeta-plato-admin::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--color-primary);
+}
+
+.tarjeta-plato-admin.agotado::before { background: #ef4444; }
+.tarjeta-plato-admin.limitado::before { background: #f59e0b; }
+
+.header-plato-admin {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-md);
+}
+
+.info-principal-plato {
+  flex: 1;
+}
+
+.nombre-plato-admin {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-xs) 0;
+  font-family: var(--font-family-heading);
+}
+
+.categoria-plato-admin {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  background: var(--color-surface-muted);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-full);
+  display: inline-block;
+}
+
+.precio-disponibilidad-plato {
+  text-align: right;
+}
+
+.precio-plato-admin {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--color-primary);
+  margin: 0 0 var(--spacing-xs) 0;
+  font-family: var(--font-family-heading);
+}
+
+.estado-disponibilidad {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-full);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.estado-disponibilidad.disponible {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.estado-disponibilidad.agotado {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.estado-disponibilidad.limitado {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+}
+
+.descripcion-plato-admin {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-md);
+  line-height: var(--line-height-relaxed);
+}
+
+.ingredientes-plato-admin {
+  margin-bottom: var(--spacing-lg);
+}
+
+.titulo-ingredientes {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  margin-bottom: var(--spacing-xs);
+}
+
+.lista-ingredientes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.ingrediente-tag {
+  background: var(--color-surface-muted);
+  color: var(--color-text-secondary);
+  padding: 2px var(--spacing-xs);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+}
+
+.estadisticas-plato-admin {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background: var(--color-surface-muted);
+  border-radius: var(--border-radius-md);
+}
+
+.estadistica-item {
+  text-align: center;
+}
+
+.estadistica-valor {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-primary);
+  display: block;
+}
+
+.estadistica-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.acciones-plato-admin {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.boton-editar-plato,
+.boton-eliminar-plato,
+.boton-cambiar-estado,
+.boton-duplicar-plato {
+  padding: var(--spacing-xs) var(--spacing-md);
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  flex: 1;
+  min-width: 80px;
+}
+
+.boton-editar-plato {
+  background: var(--color-primary);
+  color: white;
+}
+
+.boton-eliminar-plato {
+  background: #ef4444;
+  color: white;
+}
+
+.boton-cambiar-estado {
+  background: #f59e0b;
+  color: white;
+}
+
+.boton-duplicar-plato {
+  background: var(--color-surface-elevated);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-light);
+}
+
+.boton-editar-plato:hover,
+.boton-eliminar-plato:hover,
+.boton-cambiar-estado:hover,
+.boton-duplicar-plato:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+  filter: brightness(1.1);
+}
+
+/* Modal/Formulario de Plato */
+.modal-plato-admin {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  backdrop-filter: blur(4px);
+}
+
+.contenido-modal-plato {
+  background: var(--color-background-card);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-2xl);
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-xl);
+}
+
+.formulario-plato-admin {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.grupo-campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.label-campo {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.input-campo,
+.textarea-campo,
+.select-campo {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-base);
+  background: var(--color-background-main);
+  color: var(--color-text-primary);
+  transition: var(--transition-normal);
+}
+
+.input-campo:focus,
+.textarea-campo:focus,
+.select-campo:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+.textarea-campo {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.acciones-modal-plato {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: flex-end;
+}
+
+.boton-guardar-plato,
+.boton-cancelar-modal {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.boton-guardar-plato {
+  background: var(--color-primary);
+  color: white;
+}
+
+.boton-cancelar-modal {
+  background: var(--color-surface-elevated);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-light);
+}
+
+.boton-guardar-plato:hover,
+.boton-cancelar-modal:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header-gestion-menu {
+    padding: var(--spacing-xl) var(--spacing-sm);
+  }
+  
+  .titulo-gestion-menu {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .acciones-header-menu {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+  
+  .grilla-categorias-menu,
+  .grilla-platos-menu {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+  
+  .seccion-categorias-menu,
+  .seccion-platos-menu {
+    padding: var(--spacing-xl) var(--spacing-sm);
+  }
+  
+  .filtros-platos-menu {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+  
+  .header-plato-admin {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
+  .precio-disponibilidad-plato {
+    text-align: left;
+  }
+  
+  .estadisticas-plato-admin {
+    grid-template-columns: 1fr;
+  }
+  
+  .acciones-plato-admin {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .titulo-gestion-menu {
+    font-size: var(--font-size-xl);
+  }
+  
+  .tarjeta-categoria-menu,
+  .tarjeta-plato-admin {
+    padding: var(--spacing-md);
+  }
+  
+  .contenido-modal-plato {
+    padding: var(--spacing-lg);
+    width: 95%;
+  }
+}

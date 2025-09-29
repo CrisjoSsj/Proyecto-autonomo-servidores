@@ -1,0 +1,360 @@
+/* ===================================
+   NAVBAR-ADMIN.CSS - NAVEGACIÓN ADMIN GOLDIFOX
+   Navbar de administración con diseño profesional
+   =================================== */
+
+/* Navbar Admin Principal */
+.barra-navegacion-admin {
+  background: var(--color-surface-dark);
+  border-bottom: 1px solid var(--color-border-dark);
+  box-shadow: var(--shadow-md);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.contenedor-navegacion-admin {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  min-height: 70px;
+}
+
+/* Logo y Título Admin */
+.logo-admin {
+  display: flex;
+  align-items: center;
+}
+
+.enlace-logo-admin {
+  text-decoration: none;
+  transition: var(--transition-normal);
+}
+
+.enlace-logo-admin:hover {
+  transform: scale(1.02);
+}
+
+.titulo-admin {
+  font-size: var(--font-size-xl);
+  font-weight: 400;
+  color: var(--color-primary);
+  margin: 0;
+  font-family: var(--font-family-heading);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  position: relative;
+}
+
+.titulo-admin::after {
+  content: 'ADMIN';
+  position: absolute;
+  top: -8px;
+  right: -20px;
+  font-size: var(--font-size-xs);
+  background: var(--color-primary);
+  color: var(--color-background);
+  padding: 2px 6px;
+  border-radius: var(--border-radius-sm);
+  font-weight: 600;
+}
+
+/* Menú de Navegación Admin */
+.menu-navegacion-admin {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.enlace-navegacion-admin {
+  color: var(--color-text-light);
+  text-decoration: none;
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  transition: var(--transition-normal);
+  position: relative;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-normal);
+  border: 1px solid transparent;
+}
+
+.enlace-navegacion-admin::before {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: var(--color-primary);
+  transition: width var(--transition-normal);
+}
+
+.enlace-navegacion-admin:hover {
+  color: var(--color-primary);
+  background: var(--color-primary-alpha);
+  border-color: var(--color-primary-alpha);
+  transform: translateY(-1px);
+}
+
+.enlace-navegacion-admin:hover::before {
+  width: 80%;
+}
+
+.enlace-navegacion-admin.activo {
+  background: var(--color-primary);
+  color: var(--color-background);
+  border-color: var(--color-primary);
+}
+
+/* Sección Info Admin */
+.seccion-admin-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.info-sesion {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.nombre-admin {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.rol-admin {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-light);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  opacity: var(--opacity-text-muted);
+}
+
+/* Botones Admin */
+.botones-admin {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.boton-notificaciones,
+.boton-ver-sitio,
+.boton-logout {
+  background: var(--color-surface-elevated);
+  color: var(--color-text-light);
+  border: 1px solid var(--color-border-light);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: var(--transition-normal);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  position: relative;
+}
+
+.boton-notificaciones:hover {
+  background: var(--color-primary);
+  color: var(--color-background);
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+.boton-ver-sitio:hover {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+  transform: translateY(-1px);
+}
+
+.boton-logout:hover {
+  background: #ef4444;
+  color: white;
+  border-color: #ef4444;
+  transform: translateY(-1px);
+}
+
+.contador-notificaciones {
+  background: #ef4444;
+  color: white;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: var(--border-radius-full);
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  min-width: 18px;
+  text-align: center;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+/* Estados de Navegación Activa */
+.enlace-navegacion-admin[aria-current="page"] {
+  background: var(--color-primary);
+  color: var(--color-background);
+  border-color: var(--color-primary);
+}
+
+.enlace-navegacion-admin[aria-current="page"]::before {
+  width: 100%;
+  background: var(--color-background);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .contenedor-navegacion-admin {
+    padding: var(--spacing-md);
+  }
+  
+  .menu-navegacion-admin {
+    gap: var(--spacing-sm);
+  }
+  
+  .enlace-navegacion-admin {
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+}
+
+@media (max-width: 768px) {
+  .contenedor-navegacion-admin {
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg) var(--spacing-md);
+    min-height: auto;
+  }
+  
+  .titulo-admin {
+    font-size: var(--font-size-lg);
+  }
+  
+  .menu-navegacion-admin {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-sm);
+  }
+  
+  .seccion-admin-info {
+    flex-direction: column;
+    gap: var(--spacing-md);
+    width: 100%;
+    align-items: center;
+  }
+  
+  .info-sesion {
+    align-items: center;
+  }
+  
+  .botones-admin {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .contenedor-navegacion-admin {
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-sm);
+  }
+  
+  .titulo-admin {
+    font-size: var(--font-size-base);
+  }
+  
+  .titulo-admin::after {
+    font-size: 10px;
+    padding: 1px 4px;
+    top: -6px;
+    right: -15px;
+  }
+  
+  .menu-navegacion-admin {
+    gap: var(--spacing-xs);
+  }
+  
+  .enlace-navegacion-admin {
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-xs);
+  }
+  
+  .boton-notificaciones,
+  .boton-ver-sitio,
+  .boton-logout {
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-xs);
+  }
+}
+
+/* Efectos de Loading y Estados */
+.navbar-admin-loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.navbar-admin-loading .enlace-navegacion-admin {
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* Estados de Accesibilidad */
+.enlace-navegacion-admin:focus,
+.boton-notificaciones:focus,
+.boton-ver-sitio:focus,
+.boton-logout:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Dropdown para versiones futuras */
+.dropdown-admin {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content-admin {
+  display: none;
+  position: absolute;
+  right: 0;
+  background: var(--color-surface-elevated);
+  min-width: 200px;
+  box-shadow: var(--shadow-lg);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--color-border-light);
+  z-index: 1001;
+  overflow: hidden;
+}
+
+.dropdown-admin:hover .dropdown-content-admin {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

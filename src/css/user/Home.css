@@ -1,0 +1,746 @@
+/* ===================================
+   HOME.CSS - PÁGINA DE INICIO ESTILO GOLDIFOX
+   Diseño inspirado en Pace Law con paleta dorada profesional
+   AHORA USANDO SISTEMA DE VARIABLES GLOBALES
+   =================================== */
+
+/* Estilos globales con variables Goldifox */
+body, html {
+  background: var(--color-background-main) !important;
+  font-family: var(--font-family-primary) !important;
+  color: var(--color-text-primary) !important;
+  line-height: var(--line-height-normal);
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  background: transparent;
+  min-height: 100vh;
+}
+
+/* Banner Principal - Estilo transparente profesional */
+.banner-principal {
+  background: transparent;
+  color: var(--color-text-primary);
+  padding: var(--spacing-3xl) var(--spacing-xl);
+  text-align: center;
+  position: relative;
+  margin-bottom: 0;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.banner-principal::before {
+  display: none;
+}
+
+.banner-contenido {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.titulo-restaurante {
+  font-size: var(--font-size-5xl);
+  font-weight: 300;
+  margin-bottom: var(--spacing-lg);
+  font-family: var(--font-family-heading);
+  color: var(--color-text-light);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  text-shadow: none;
+  background: none;
+  background-clip: unset;
+  animation: none;
+  line-height: var(--line-height-tight);
+}
+
+.descripcion-restaurante {
+  font-size: 1.125rem;
+  margin-bottom: 2rem;
+  font-weight: 400;
+  opacity: 0.9;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+
+.eslogan-restaurante {
+  display: none; /* Ocultamos para mantener minimalismo */
+}
+
+/* Botón CTA estilo Pace Law */
+.boton-cta-principal {
+  display: inline-block;
+  background: var(--color-primary);
+  color: white;
+  border: 2px solid var(--color-primary);
+  padding: 1rem 2.5rem;
+  margin-top: 2rem;
+  text-decoration: none;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+  border-radius: 0;
+}
+
+.boton-cta-principal:hover {
+  background: transparent;
+  color: var(--color-primary);
+  transform: none;
+}
+
+/* Sección de Información Importante - Estilo Goldifox Optimizado */
+.seccion-informacion-importante {
+  padding: var(--spacing-2xl) var(--spacing-lg);
+  background: var(--color-background-main);
+  border-top: 1px solid rgba(163, 146, 116, 0.2);
+}
+
+.contenedor-informacion {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.titulo-informacion {
+  font-size: var(--font-size-3xl);
+  font-weight: 300;
+  text-align: center;
+  margin-bottom: var(--spacing-2xl);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-heading);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+}
+
+.titulo-informacion::after {
+  display: none;
+}
+
+.grilla-informacion {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-xl);
+  margin-top: var(--spacing-lg);
+}
+
+.tarjeta-info {
+  background: var(--color-background-main);
+  border: 1px solid rgba(163, 146, 116, 0.3);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-xl);
+  text-align: left;
+  transition: all 0.3s ease;
+  box-shadow: none;
+}
+
+.tarjeta-info::before {
+  display: none;
+}
+
+.tarjeta-info:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(37, 37, 35, 0.1);
+  border-color: var(--color-primary);
+}
+
+.titulo-tarjeta {
+  font-size: 1.125rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  color: var(--color-text-primary);
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.detalle-info {
+  font-size: var(--font-size-xl);
+  font-weight: 300;
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-primary);
+  font-family: 'Inter', sans-serif;
+}
+
+.disponibilidad {
+  font-size: 0.8rem;
+  color: var(--color-text-primary);
+  font-weight: 400;
+  background: transparent;
+  padding: 0.5rem 0;
+  border-radius: 0;
+  display: block;
+  border: none;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.condicion-promo {
+  font-size: 0.8rem;
+  color: var(--color-primary);
+  font-weight: 400;
+  background: transparent;
+  padding: 0.5rem 0;
+  border-radius: 0;
+  display: block;
+  border: none;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.nota-tiempo {
+  font-size: 0.8rem;
+  color: var(--color-text-primary);
+  font-style: normal;
+  letter-spacing: 0.05em;
+  opacity: 0.7;
+}
+
+.horarios-libres {
+  font-size: 0.8rem;
+  color: var(--color-primary);
+  font-weight: 400;
+  background: transparent;
+  padding: 0.5rem 0;
+  border-radius: 0;
+  display: block;
+  border: none;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Iconos minimalistas Goldifox */
+.icono-estado,
+.icono-promocion,
+.icono-tiempo,
+.icono-reservas {
+  display: none; /* Eliminamos iconos para mayor minimalismo */
+}
+
+/* Líneas laterales minimalistas */
+.tarjeta-info.estado-restaurante {
+  border-left: 3px solid var(--color-primary);
+}
+
+.tarjeta-info.promocion-dia {
+  border-left: 3px solid var(--color-primary);
+}
+
+.tarjeta-info.tiempo-espera {
+  border-left: 3px solid var(--color-primary);
+}
+
+.tarjeta-info.reservas-hoy {
+  border-left: 3px solid var(--color-primary);
+}
+
+/* Sección de Acceso Rápido - Estilo Goldifox profesional */
+.seccion-acceso-rapido {
+  padding: 4rem 2rem;
+  background: white;
+}
+
+.contenedor-acceso {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.titulo-acceso {
+  font-size: 2.5rem;
+  font-weight: 300;
+  text-align: left;
+  margin-bottom: 1rem;
+  color: var(--color-text-primary);
+  font-family: 'Inter', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.titulo-acceso::after {
+  display: none; /* Removemos decoraciones */
+}
+
+.grilla-servicios {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.tarjeta-servicio {
+  background: var(--color-background-main);
+  border: 1px solid var(--color-border-light);
+  border-radius: 0;
+  padding: 2.5rem 2rem;
+  text-align: left;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: none;
+}
+
+.tarjeta-servicio::before {
+  display: none; /* Removemos efectos complejos */
+}
+
+.tarjeta-servicio:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(163, 146, 116, 0.15);
+  border-color: var(--color-primary);
+  text-decoration: none;
+}
+
+.icono-servicio {
+  display: none; /* Eliminamos iconos para mayor minimalismo */
+}
+
+.icono-servicio.menu {
+  background: transparent;
+}
+
+.icono-servicio.reservas {
+  background: transparent;
+}
+
+.icono-servicio.fila {
+  background: transparent;
+}
+
+.titulo-servicio {
+  font-size: 1.5rem;
+  font-weight: 400;
+  margin-bottom: 1rem;
+  color: var(--color-text-primary);
+  font-family: 'Inter', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.descripcion-servicio {
+  color: var(--color-text-primary);
+  opacity: 0.7;
+  line-height: 1.6;
+  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.02em;
+}
+
+/* Sección de Platos Populares - Estilo Goldifox profesional */
+.seccion-platos-populares {
+  padding: 4rem 2rem;
+  background: var(--color-background-main);
+}
+
+.contenedor-populares {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.titulo-populares {
+  font-size: 2.5rem;
+  font-weight: 300;
+  text-align: left;
+  margin-bottom: 1rem;
+  color: var(--color-text-primary);
+  font-family: 'Inter', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.titulo-populares::after {
+  display: none; /* Removemos decoraciones */
+}
+
+.grilla-populares {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.tarjeta-plato-popular {
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: none;
+}
+
+.tarjeta-plato-popular::before {
+  display: none; /* Removemos efectos complejos */
+}
+
+.tarjeta-plato-popular:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(163, 146, 116, 0.15);
+  border-color: var(--color-primary);
+}
+
+.imagen-plato {
+  width: 100%;
+  height: 12rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: var(--color-text-primary);
+  font-weight: 400;
+  text-shadow: none;
+  background: var(--color-background-main);
+}
+
+.imagen-plato.alitas-bbq {
+  background: var(--color-background-main);
+}
+
+.imagen-plato.alitas-bbq::after {
+  content: '🍖';
+}
+
+.imagen-plato.hamburguesa {
+  background: var(--color-background-main);
+}
+
+.imagen-plato.hamburguesa::after {
+  content: '🍔';
+}
+
+.imagen-plato.parrillada {
+  background: var(--color-background-main);
+}
+
+.imagen-plato.parrillada::after {
+  content: '🥩';
+}
+
+.nombre-plato-popular {
+  font-size: 1.25rem;
+  font-weight: 400;
+  padding: 1.5rem 1.5rem 0.5rem;
+  color: var(--color-text-primary);
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.descripcion-popular {
+  padding: 0 1.5rem;
+  color: var(--color-text-primary);
+  opacity: 0.7;
+  font-size: 0.9rem;
+  margin: 0 0 1rem 0;
+  line-height: 1.5;
+  font-family: 'Inter', sans-serif;
+}
+
+.precio-popular {
+  padding: 0 1.5rem 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: var(--color-primary);
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.05em;
+}
+
+/* Sección de Alertas - Estilo Goldifox profesional */
+.seccion-alertas {
+  padding: 4rem 2rem;
+  background: white;
+}
+
+.contenedor-alertas {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.contenedor-alertas > * + * {
+  margin-top: 1.5rem;
+}
+
+.alerta {
+  border-left: 3px solid var(--color-primary);
+  border-radius: 0;
+  padding: 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  box-shadow: none;
+  border: 1px solid var(--color-border-light);
+  background: var(--color-background-main);
+  transition: all 0.3s ease;
+}
+
+.alerta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(163, 146, 116, 0.15);
+}
+
+.alerta.importante {
+  border-color: var(--color-primary);
+  background: var(--color-background-main);
+}
+
+.alerta.informativa {
+  border-color: var(--color-primary);
+  background: var(--color-background-main);
+}
+
+.icono-alerta {
+  display: none; /* Eliminamos iconos para mayor minimalismo */
+}
+
+.alerta.importante .icono-alerta {
+  background: transparent;
+}
+
+.alerta.importante .icono-alerta::after {
+  content: '';
+}
+
+.alerta.informativa .icono-alerta {
+  background: transparent;
+}
+
+.alerta.informativa .icono-alerta::after {
+  content: '';
+}
+
+.contenido-alerta {
+  flex: 1;
+}
+
+.titulo-alerta {
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.alerta.importante .titulo-alerta {
+  color: var(--color-text-primary);
+}
+
+.alerta.informativa .titulo-alerta {
+  color: var(--color-text-primary);
+}
+
+.mensaje-alerta {
+  color: var(--color-text-primary);
+  opacity: 0.7;
+  line-height: 1.5;
+  font-size: 0.9rem;
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Responsive Design Minimalista */
+@media (max-width: 768px) {
+  .titulo-restaurante {
+    font-size: 2.5rem;
+  }
+  
+  .descripcion-restaurante {
+    font-size: 1.125rem;
+  }
+  
+  .banner-principal {
+    padding: 4rem 1rem;
+  }
+  
+  .seccion-informacion-importante,
+  .seccion-acceso-rapido,
+  .seccion-platos-populares,
+  .seccion-alertas {
+    padding: 3rem 1rem;
+  }
+  
+  .titulo-informacion,
+  .titulo-acceso,
+  .titulo-populares {
+    font-size: 2rem;
+  }
+  
+  .grilla-informacion,
+  .grilla-servicios,
+  .grilla-populares {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .tarjeta-info,
+  .tarjeta-servicio {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .banner-principal {
+    padding: 3rem 1rem;
+  }
+  
+  .titulo-restaurante {
+    font-size: 2rem;
+  }
+  
+  .descripcion-restaurante {
+    font-size: 1rem;
+  }
+  
+  .titulo-informacion,
+  .titulo-acceso,
+  .titulo-populares {
+    font-size: 1.75rem;
+  }
+  
+  .tarjeta-info,
+  .tarjeta-servicio {
+    padding: 1.25rem;
+  }
+  
+  .icono-servicio,
+  .icono-estado,
+  .icono-promocion,
+  .icono-tiempo,
+  .icono-reservas {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1rem;
+  }
+}
+
+/* Estilos de compatibilidad - Minimalista */
+.seccion-destacados {
+  padding: 4rem 2rem;
+  background: white;
+}
+
+.seccion-destacados h2 {
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin-bottom: 3rem;
+  color: var(--color-text-primary);
+  font-family: 'Inter', sans-serif;
+  text-align: center;
+  letter-spacing: -0.5px;
+}
+
+.grilla-platos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.tarjeta-plato {
+  border: 1px solid var(--color-border-light);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.tarjeta-plato:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+  border-color: var(--color-border-main);
+}
+
+.pie-pagina {
+  background: var(--color-surface-dark);
+  color: var(--color-text-light);
+  padding: var(--spacing-xl) var(--spacing-md);
+  text-align: center;
+  margin-top: 0;
+}
+
+/* Estados de hover minimalistas */
+.tarjeta-servicio:hover .titulo-servicio {
+  color: var(--color-primary);
+  transition: color 0.3s ease;
+}
+
+.tarjeta-servicio:hover .descripcion-servicio {
+  color: var(--color-text-secondary);
+  transition: color 0.3s ease;
+}
+
+/* Animaciones suaves */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tarjeta-info,
+.tarjeta-servicio,
+.tarjeta-plato-popular {
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+.tarjeta-info:nth-child(2) { animation-delay: 0.1s; }
+.tarjeta-info:nth-child(3) { animation-delay: 0.2s; }
+.tarjeta-info:nth-child(4) { animation-delay: 0.3s; }
+
+.tarjeta-servicio:nth-child(2) { animation-delay: 0.1s; }
+.tarjeta-servicio:nth-child(3) { animation-delay: 0.2s; }
+
+.tarjeta-plato-popular:nth-child(2) { animation-delay: 0.1s; }
+.tarjeta-plato-popular:nth-child(3) { animation-delay: 0.2s; }
+
+/* Media queries para hacer secciones más compactas */
+@media (max-width: 768px) {
+  .seccion-informacion-importante {
+    padding: var(--spacing-xl) var(--spacing-md);
+  }
+  
+  .titulo-informacion {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .grilla-informacion {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+  
+  .tarjeta-info {
+    padding: var(--spacing-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .seccion-informacion-importante {
+    padding: var(--spacing-lg) var(--spacing-sm);
+  }
+  
+  .titulo-informacion {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .tarjeta-info {
+    padding: var(--spacing-md);
+  }
+  
+  .detalle-info {
+    font-size: var(--font-size-lg);
+  }
+}
+
