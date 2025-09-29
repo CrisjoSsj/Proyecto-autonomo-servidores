@@ -1,5 +1,5 @@
 import type { ICliente } from './Cliente';
-import type { IMesa } from './Mesa';
+import { IMesa } from './Mesa';
 
 export interface IReserva {
   id_reserva: number;

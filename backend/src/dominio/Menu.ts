@@ -1,4 +1,4 @@
-import type {IPlato} from './Plato';
+import { IPlato } from "./Plato";
 export interface IMenu {
   id_menu: number;
   fecha: Date; 

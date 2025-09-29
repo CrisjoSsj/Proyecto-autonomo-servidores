@@ -1,4 +1,4 @@
-import type { ICliente } from './Cliente';
+import { ICliente } from "./Cliente";
 export interface IFilaVirtual {
   id_fila: number;
   id_cliente: number;

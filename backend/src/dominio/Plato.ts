@@ -1,4 +1,4 @@
-import type {ICategoriaMenu} from './CategoriaMenu';
+import { ICategoriaMenu } from "./CategoriaMenu";
 export interface IPlato {
   id_plato: number;
   nombre: string;

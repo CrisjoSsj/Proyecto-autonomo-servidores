@@ -1,7 +1,6 @@
-import type { IMesa } from './Mesa';
-import type { IReserva } from './Reserva';
-import type { IMenu } from './Menu';
-
+import { IMesa } from './Mesa';
+import { IReserva } from './Reserva';
+import { IMenu } from './Menu';
 export interface IRestaurante {
   id_restaurante: number;
   nombre: string;
