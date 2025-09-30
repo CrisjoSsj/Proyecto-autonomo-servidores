@@ -1,4 +1,4 @@
-import { IReserva } from "../dominio/Reserva";
+import { IReserva } from "../domain/Reserva";
 
 export class ReservaService {
     private reservas: IReserva[] = [];
