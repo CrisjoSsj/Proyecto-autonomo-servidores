@@ -1,4 +1,4 @@
-import { IRestaurante } from "../dominio/Restaurante";
+import { IRestaurante } from "../domain/Restaurante";
 
 export class RestauranteService {
     private restaurantes: IRestaurante[] = [];

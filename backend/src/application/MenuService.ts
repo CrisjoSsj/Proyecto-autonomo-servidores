@@ -1,4 +1,4 @@
-import { IMenu } from "../dominio/Menu";
+import { IMenu } from "../domain/Menu";
 
 export class MenuService {
     private menus: IMenu[] = [];
