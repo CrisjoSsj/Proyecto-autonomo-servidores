@@ -1,4 +1,4 @@
-import { ClienteService } from "./service/clineteService";
+import { ClienteService } from "../application/ClienteService";
 
 const clienteService = new ClienteService();
 

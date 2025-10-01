@@ -1,4 +1,4 @@
-import { IPlato } from "../dominio/Plato";
+import { IPlato } from "../domain/Plato";
 
 export class PlatoService {
     private platos: IPlato[] = [];
