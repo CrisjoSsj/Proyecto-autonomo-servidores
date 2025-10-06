@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel 
 
 router = APIRouter(tags=["user"])
@@ -15,10 +15,13 @@ users_list = [User(id_cliente=1, nombre="crisjo", correo= "correo1", telefono="1
               User(id_cliente=3, nombre="kilian", correo= "correo3", telefono="789")]
 
 
+@router.get("/user/")
+async def users ():
+    return {"api user activo"}
+
 @router.get("/users/")
 async def users ():
     return users_list
-
 
 #path
 @router.get ("/user/{id_cliente}")
@@ -35,9 +38,9 @@ async def user (id_cliente: int):
 @router.post ("/user/", response_model=User,)
 async def user (user: User):
     if type (Buscar_usuario(user.id_cliente)) ==User:
-        return {"Error usuario ya existe"}
+        raise HTTPException(status_code=400, detail="Error usuario ya existe")
     else:
-        users_list.routerend(user)
+        users_list.append(user)
         return user
  
 #PUT
@@ -50,7 +53,7 @@ async def user (user: User):
             found= True
             return {"actualizado exitosamente"}
     if not found:
-        return {"No se encontron el usuario"}
+        raise HTTPException(status_code=404, detail="No se encontró el usuario")
 
 #Delete
 @router.delete ("/user/{id}")
@@ -62,14 +65,18 @@ async def user (id: int):
             found= True
             return{"Eliminado exitosamente"}
     if not found:
-        return {"No se encontron el usuario"}
+        raise HTTPException(status_code=404, detail="No se encontró el usuario")
 
 #funciones
 def Buscar_usuario(id_cliente: int):
     users = filter(lambda user: user.id_cliente == id_cliente, users_list)
     try:
-        return list(users)
+        result = list(users)
+        if result:
+            return result[0]
+        else:
+            raise HTTPException(status_code=404, detail="Usuario no encontrado")
     except:
-        return "Error, no se a encontrado el usuario "
+        raise HTTPException(status_code=404, detail="Error, no se ha encontrado el usuario")
     
 

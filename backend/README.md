@@ -1,6 +1,6 @@
-# 🔧 Backend - Chuwue Grill
+# ⚡ Backend Services - Chuwue Grill
 
-Backend del sistema integral de restaurante **Chuwue Grill**, desarrollado con **TypeScript** y **Node.js**. Implementa la lógica de negocio y servicios para la gestión completa del restaurante.
+Servicios de dominio y lógica de negocio desarrollados en **TypeScript** utilizando principios de **Domain-Driven Design (DDD)**. Implementa toda la lógica de negocio del restaurante con arquitectura por capas y tipado estricto.
 
 ## 🚀 Tecnologías y Herramientas
 

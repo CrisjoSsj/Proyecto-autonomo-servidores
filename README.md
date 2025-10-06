@@ -1,5 +1,15 @@
 # 🍗 Chuwue Grill - Sistema Integral de Restaurante
 
+## 🏗️ Arquitectura de Microservicios
+
+Sistema completo de gestión para el restaurante **Chuwue Grill** implementado con arquitectura de microservicios y múltiples tecnologías modernas. Proyecto desarrollado como trabajo autónomo siguiendo los requisitos de distribución de lenguajes de programación.
+
+### 🎯 Distribución de Componentes por Lenguaje
+
+- **🐍 Python (API REST)** - Servicio principal con CRUD completo y autenticación JWT
+- **💎 Ruby (WebSocket Server)** - Servidor de tiempo real para notificaciones y updates  
+- **⚡ TypeScript (Backend + Frontend)** - Servicios de dominio y interfaz de usuario React
+
 Aplicación web completa para la gestión integral del restaurante **Chuwue Grill**. Incluye interfaz de cliente para consultas y reservas, más un completo panel de administración para la gestión operativa del restaurante.
 
 ## 🎯 Características Principales
@@ -18,9 +28,28 @@ Aplicación web completa para la gestión integral del restaurante **Chuwue Gril
 - **Gestión de Menú**: CRUD completo de categorías, platos, precios e inventario
 - **Sistema de Reportes**: Analytics, reportes financieros y recomendaciones de negocio
 
-## 🛠️ Tecnologías Utilizadas
+## 🛠️ Stack Tecnológico Completo
 
-- **React 19** - Framework principal para interfaces de usuario interactivas
+### 🐍 **API REST (Python)**
+- **FastAPI** - Framework web moderno y de alto rendimiento
+- **Pydantic** - Validación de datos y serialización
+- **JWT** - Autenticación y autorización segura
+- **Passlib + Bcrypt** - Hashing seguro de contraseñas
+- **Uvicorn** - Servidor ASGI de alto rendimiento
+
+### 💎 **WebSocket Server (Ruby)**
+- **Ruby** - Lenguaje de programación dinámico y expresivo
+- **WebSocket** - Comunicación bidireccional en tiempo real
+- **EventMachine** - Programación asíncrona y manejo de eventos
+- **JSON** - Intercambio de datos estructurados
+
+### ⚡ **Backend Services (TypeScript)**
+- **TypeScript** - Tipado estático para JavaScript
+- **Domain-Driven Design** - Arquitectura de dominio bien estructurada
+- **Interfaces** - Contratos claros entre componentes
+
+### 🎨 **Frontend (React + TypeScript)**
+- **React 19** - Framework principal para interfaces de usuario
 - **Vite** - Build tool moderno y servidor de desarrollo ultra-rápido
 - **TypeScript** - Tipado estático para JavaScript (archivos .tsx)
 - **React Router DOM** - Enrutamiento SPA para navegación fluida
@@ -31,9 +60,67 @@ Aplicación web completa para la gestión integral del restaurante **Chuwue Gril
 ## 📁 Estructura del Proyecto
 
 ```
-frontend/
-├── public/                 # Archivos estáticos
-│   └── vite.svg           # Logo de Vite
+Proyecto-autonomo-servidores/
+├── 🐍 apirest_python/         # API REST Principal (Python + FastAPI)
+│   ├── routers/               # Endpoints organizados por entidad
+│   │   ├── auth.py           # Autenticación JWT
+│   │   ├── user.py           # Gestión de usuarios
+│   │   ├── Restaurante.py    # CRUD de restaurantes
+│   │   ├── Cliente.py        # CRUD de clientes
+│   │   ├── Mesa.py           # Gestión de mesas
+│   │   ├── Reserva.py        # Sistema de reservas
+│   │   ├── Menu.py           # Gestión de menús
+│   │   ├── Plato.py          # CRUD de platos
+│   │   ├── CategoriaMenu.py  # Categorías de menú
+│   │   └── FilaVirtual.py    # Cola virtual de espera
+│   ├── main.py               # Aplicación principal FastAPI
+│   ├── requirements.txt      # Dependencias Python
+│   └── .venv/               # Entorno virtual Python
+│
+├── 💎 websocket_ruby/         # Servidor WebSocket (Ruby)
+│   ├── app/
+│   │   ├── channels/         # Canales de comunicación
+│   │   │   ├── fila_virtual_channel.rb    # Canal de fila virtual
+│   │   │   ├── mesas_channel.rb           # Canal de mesas
+│   │   │   └── reservas_channel.rb        # Canal de reservas
+│   │   ├── connections/      # Gestión de conexiones
+│   │   │   └── connection_manager.rb
+│   │   └── utils/           # Utilidades
+│   │       └── message_builder.rb
+│   ├── server.rb            # Servidor principal WebSocket
+│   ├── Gemfile              # Dependencias Ruby
+│   └── Gemfile.lock
+│
+├── ⚡ backend/               # Servicios de Dominio (TypeScript)
+│   ├── src/
+│   │   ├── domain/          # Entidades de dominio
+│   │   │   ├── Restaurante.ts    # Entidad Restaurante
+│   │   │   ├── Cliente.ts        # Entidad Cliente
+│   │   │   ├── Mesa.ts           # Entidad Mesa
+│   │   │   ├── Reserva.ts        # Entidad Reserva
+│   │   │   ├── Menu.ts           # Entidad Menu
+│   │   │   ├── Plato.ts          # Entidad Plato
+│   │   │   ├── CategoriaMenu.ts  # Entidad Categoria
+│   │   │   └── FilaVirtual.ts    # Entidad FilaVirtual
+│   │   ├── application/     # Servicios de aplicación
+│   │   │   ├── RestauranteService.ts     # Lógica de restaurante
+│   │   │   ├── ClienteService.ts         # Lógica de cliente
+│   │   │   ├── MesaService.ts            # Lógica de mesas
+│   │   │   ├── ReservaService.ts         # Lógica de reservas
+│   │   │   ├── MenuService.ts            # Lógica de menú
+│   │   │   ├── PlatoService.ts           # Lógica de platos
+│   │   │   ├── CategoriaService.ts       # Lógica de categorías
+│   │   │   └── FilaService.ts            # Lógica de fila virtual
+│   │   ├── infrastructure/  # Capa de infraestructura
+│   │   │   └── ClienteRepository.ts
+│   │   ├── utils/          # Utilidades
+│   │   └── main.ts         # Punto de entrada
+│   ├── package.json        # Dependencias Node.js
+│   └── tsconfig.json       # Configuración TypeScript
+│
+├── 🎨 frontend/              # Interfaz de Usuario (React + TypeScript)
+│   ├── public/             # Archivos estáticos
+│   │   └── vite.svg       # Logo de Vite
 ├── src/
 │   ├── assets/            # Recursos (imágenes, iconos)
 │   │   └── react.svg
@@ -190,35 +277,96 @@ Para hacer deploy de la aplicación React:
 
 3. **Despliega** los archivos en tu servidor web preferido (Netlify, Vercel, Apache, Nginx, etc.)
 
+## 🚀 Instalación y Configuración
+
+### **Prerrequisitos**
+- **Python 3.8+** para la API REST
+- **Ruby 2.7+** para el servidor WebSocket
+- **Node.js 16+** para TypeScript backend y React frontend
+
+### **🐍 Configuración API REST (Python)**
+```bash
+cd apirest_python
+python -m venv .venv
+.venv\Scripts\activate  # Windows
+# source .venv/bin/activate  # Linux/Mac
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
+```
+
+### **💎 Configuración WebSocket Server (Ruby)**
+```bash
+cd websocket_ruby
+bundle install
+ruby server.rb
+```
+
+### **⚡ Configuración Backend Services (TypeScript)**
+```bash
+cd backend
+npm install
+npm run build
+npm start
+```
+
+### **🎨 Configuración Frontend (React)**
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### **🌐 URLs de Acceso**
+- **API REST**: `http://localhost:8000` (Swagger: `/docs`)
+- **WebSocket Server**: `ws://localhost:3001`
+- **Backend Services**: `http://localhost:3000`
+- **Frontend**: `http://localhost:5173`
+
 ## 🎯 Estado del Proyecto
 
-### **✅ Funcionalidades Completadas**
+### **✅ Componentes Completados**
 
-#### **Frontend (React + TypeScript)**
-- [x] **Interfaz de Usuario Completa** - 4 páginas principales del cliente
-- [x] **Panel de Administración Integral** - 5 páginas de gestión operativa  
-- [x] **Sistema de Rutas** - React Router con navegación completa
+#### **🐍 API REST (Python + FastAPI)**
+- [x] **CRUD Completo** - 9 entidades con operaciones completas
+- [x] **Autenticación JWT** - Sistema seguro de login y tokens
+- [x] **Validación de Datos** - Pydantic models con validación automática
+- [x] **Manejo de Errores** - HTTPException en todos los endpoints
+- [x] **Documentación Automática** - Swagger UI y ReDoc
+- [x] **Estructura Modular** - Routers organizados por entidad
+
+#### **💎 WebSocket Server (Ruby)**
+- [x] **Servidor WebSocket** - Comunicación en tiempo real
+- [x] **Canales Especializados** - Fila virtual, mesas y reservas
+- [x] **Gestión de Conexiones** - Connection manager robusto
+- [x] **Message Builder** - Construcción de mensajes estructurados
+- [x] **Event Handling** - Manejo de eventos del restaurante
+
+#### **⚡ Backend Services (TypeScript)**
+- [x] **Arquitectura de Dominio** - Entidades bien definidas
+- [x] **Servicios de Aplicación** - 8 servicios con lógica de negocio
+- [x] **Tipado Estricto** - TypeScript con configuración robusta
+- [x] **Patrón Repository** - Separación de responsabilidades
+- [x] **Domain-Driven Design** - Arquitectura limpia y mantenible
+
+#### **🎨 Frontend (React + TypeScript)**
+- [x] **Interfaz de Usuario Completa** - 4 páginas de cliente
+- [x] **Panel de Administración** - 5 páginas de gestión
+- [x] **Sistema de Rutas** - React Router con navegación
 - [x] **Diseño Responsive** - Optimizado para todos los dispositivos
-- [x] **Nombres de Clases Descriptivos** - CSS en español para mejor comprensión
-- [x] **Estructura Modular** - Componentes reutilizables y organizados
+- [x] **Componentes Modulares** - Reutilizables y organizados
 
-#### **Backend (TypeScript + Node.js)**
-- [x] **Arquitectura de Dominio** - Interfaces bien definidas para entidades del restaurante
-- [x] **Servicios de Negocio** - 8 servicios implementados con lógica completa
-- [x] **Gestión de Clientes** - CRUD completo para clientes del restaurante
-- [x] **Sistema de Mesas** - Gestión de estados de mesas (libre, ocupada, reservada)
-- [x] **Sistema de Reservas** - Control de reservas con estados y fechas
-- [x] **Gestión de Menú** - Categorías y platos con disponibilidad
-- [x] **Fila Virtual Avanzada** - Sistema completo de cola con posiciones y notificaciones
-- [x] **Configuración TypeScript** - Configuración estricta para desarrollo robusto
+### **🏗️ Arquitectura de Integración**
+- [x] **Microservicios Distribuidos** - Cada componente independiente
+- [x] **Comunicación REST** - API endpoints para operaciones CRUD
+- [x] **Comunicación WebSocket** - Updates en tiempo real
+- [x] **Tipado Compartido** - Interfaces consistentes entre servicios
+- [x] **Separación de Responsabilidades** - Cada lenguaje en su dominio
 
-### **🔄 Próximas Mejoras (Futuras)**
-- [ ] **API REST**: Endpoints HTTP para conectar frontend con backend
-- [ ] **Base de Datos**: Persistencia con MongoDB/PostgreSQL
-- [ ] **Autenticación**: Sistema de login JWT para administradores
-- [ ] **Notificaciones Real-time**: WebSockets para actualizaciones live
-- [ ] **Sistema de Pagos**: Integración con pasarelas de pago
-- [ ] **PWA**: Aplicación web progresiva para móviles
-- [ ] **Dockerización**: Contenedores para deployment
-- [ ] **Testing**: Pruebas unitarias e integración
+### **🔄 Mejoras Futuras**
+- [ ] **Integración Completa** - Conectar todos los microservicios
+- [ ] **Base de Datos** - Persistencia con PostgreSQL/MongoDB
+- [ ] **Docker Compose** - Orquestación de contenedores
+- [ ] **Testing Integrado** - Pruebas end-to-end
+- [ ] **CI/CD Pipeline** - Deployment automatizado
+- [ ] **Monitoreo** - Logs y métricas centralizadas
 
