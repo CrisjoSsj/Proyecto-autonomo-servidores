@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>WebSocket Debug UI</title>
+    <style>
+      body { font-family: system-ui, Arial; margin: 18px; }
+      #log { width: 100%; height: 300px; border: 1px solid #ccc; padding: 8px; overflow: auto; background: #f8f8f8 }
+      .controls { margin-top: 10px; display:flex; gap:8px; flex-wrap:wrap }
+      input[type=text], textarea { width: 100%; }
+      button { padding: 8px 12px; }
+      .half { width: 48%; }
+    </style>
+  </head>
+  <body>
+    <h2>WebSocket Debug UI</h2>
+    <p>Conecta a <code>ws://localhost:8080</code> y envía/recibe mensajes. También puedes enviar un POST a <code>http://localhost:8081/broadcast</code>.</p>
+
+    <div>
+      <label>Estado: <strong id="status">desconectado</strong></label>
+    </div>
+
+    <div id="log"></div>
+
+    <div class="controls">
+      <button id="connect">Conectar</button>
+      <button id="disconnect" disabled>Desconectar</button>
+      <button id="clear">Limpiar</button>
+    </div>
+
+    <h3>Enviar mensaje por WebSocket</h3>
+    <div>
+      <input id="wsType" type="text" placeholder="type" value="test" class="half" />
+      <input id="wsPayload" type="text" placeholder='payload JSON (ej: {"msg":"hola"})' value='{"msg":"hola desde UI"}' class="half" />
+    </div>
+    <div class="controls">
+      <button id="sendWs">Enviar WS</button>
+    </div>
+
+    <h3>Enviar broadcast HTTP</h3>
+    <div>
+      <textarea id="httpPayload" rows="3">{"msg":"hola desde HTTP UI"}</textarea>
+    </div>
+    <div class="controls">
+      <button id="sendHttp">Enviar POST /broadcast</button>
+    </div>
+
+    <script>
+      const logEl = document.getElementById('log')
+      const statusEl = document.getElementById('status')
+      const connectBtn = document.getElementById('connect')
+      const disconnectBtn = document.getElementById('disconnect')
+      const clearBtn = document.getElementById('clear')
+      const sendWsBtn = document.getElementById('sendWs')
+      const sendHttpBtn = document.getElementById('sendHttp')
+
+      let ws = null
+
+      function appendLog(msg, kind='info'){
+        const div = document.createElement('div')
+        div.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`
+        if(kind==='err') div.style.color='crimson'
+        logEl.appendChild(div)
+        logEl.scrollTop = logEl.scrollHeight
+      }
+
+      connectBtn.addEventListener('click', ()=>{
+        if(ws) return
+        appendLog('Intentando conectar...')
+        try{
+          ws = new WebSocket('ws://localhost:8080')
+        }catch(e){ appendLog('Error creando WebSocket: '+e.message,'err'); return }
+
+        ws.addEventListener('open', ()=>{
+          statusEl.textContent = 'conectado'
+          connectBtn.disabled = true
+          disconnectBtn.disabled = false
+          appendLog('Conectado a ws://localhost:8080')
+        })
+
+        ws.addEventListener('message', (ev)=>{
+          appendLog('Mensaje entrante: '+ev.data)
+        })
+
+        ws.addEventListener('close', ()=>{
+          appendLog('Conexión cerrada')
+          statusEl.textContent = 'desconectado'
+          connectBtn.disabled = false
+          disconnectBtn.disabled = true
+          ws = null
+        })
+
+        ws.addEventListener('error', (e)=>{
+          appendLog('Error WebSocket','err')
+        })
+      })
+
+      disconnectBtn.addEventListener('click', ()=>{
+        if(!ws) return
+        ws.close()
+      })
+
+      clearBtn.addEventListener('click', ()=>{ logEl.innerHTML = '' })
+
+      sendWsBtn.addEventListener('click', ()=>{
+        if(!ws){ appendLog('No conectado','err'); return }
+        const type = document.getElementById('wsType').value || 'test'
+        let payload = {}
+        try{ payload = JSON.parse(document.getElementById('wsPayload').value) }
+        catch(e){ appendLog('Payload JSON inválido','err'); return }
+        const msg = { type, payload }
+        ws.send(JSON.stringify(msg))
+        appendLog('Enviado WS: '+JSON.stringify(msg))
+      })
+
+      sendHttpBtn.addEventListener('click', async ()=>{
+        let body = '{}'
+        try{ body = document.getElementById('httpPayload').value }catch(e){}
+        appendLog('Enviando POST /broadcast...')
+        try{
+          const res = await fetch('http://127.0.0.1:8081/broadcast', { method: 'POST', headers: {'Content-Type':'application/json'}, body })
+          const text = await res.text()
+          appendLog('Respuesta HTTP: '+res.status+' '+text)
+        }catch(e){ appendLog('Error POST: '+e.message,'err') }
+      })
+
+      // auto-connect on load (optional)
+      // connectBtn.click()
+    </script>
+  </body>
+</html>
