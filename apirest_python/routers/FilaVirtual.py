@@ -1,5 +1,8 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+import sys
+sys.path.append('..')
+from websocket_broadcast import broadcast_fila_virtual
 
 router= APIRouter (tags=["FilaVirtual"])
 
@@ -39,6 +42,13 @@ async def fila(fila: FilaVirtual):
         raise HTTPException(status_code=400, detail="La fila ya existe")
     else:
         filas_list.append(fila)
+        # Enviar notificación al WebSocket
+        await broadcast_fila_virtual("join", {
+            "cliente_id": fila.id_cliente,
+            "posicion": fila.posicion,
+            "tiempo_espera": fila.tiempo_espera,
+            "estado": fila.estado
+        })
         return fila
 
 #PUT
@@ -59,6 +69,11 @@ async def fila(id: int):
     found = False
     for index, guardar_fila in enumerate(filas_list):
         if guardar_fila.id_fila == id:
+            # Enviar notificación al WebSocket antes de eliminar
+            await broadcast_fila_virtual("leave", {
+                "cliente_id": guardar_fila.id_cliente,
+                "id_fila": id
+            })
             del filas_list[index]
             found = True
             return {"Eliminado exitosamente"}

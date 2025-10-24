@@ -1,5 +1,8 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+import sys
+sys.path.append('..')
+from websocket_broadcast import broadcast_reservas
 
 router= APIRouter (tags=["Reserva"])
 
@@ -43,6 +46,15 @@ async def reserva(reserva: Reserva):
         raise HTTPException(status_code=400, detail="La reserva ya existe")
     else:
         reservas_list.append(reserva)
+        # Enviar notificación al WebSocket
+        await broadcast_reservas("new_reservation", {
+            "reserva_id": reserva.id_reserva,
+            "cliente_id": reserva.id_cliente,
+            "mesa_id": reserva.id_mesa,
+            "fecha": reserva.fecha,
+            "hora_inicio": reserva.hora_inicio,
+            "estado": reserva.estado
+        })
         return reserva
 
 #PUT
@@ -53,6 +65,13 @@ async def reserva(reserva: Reserva):
         if guardar_reserva.id_reserva == reserva.id_reserva:
             reservas_list[index] = reserva
             found = True
+            # Enviar notificación al WebSocket
+            await broadcast_reservas("update_reservation", {
+                "reserva_id": reserva.id_reserva,
+                "estado": reserva.estado,
+                "fecha": reserva.fecha,
+                "hora_inicio": reserva.hora_inicio
+            })
             return {"actualizado exitosamente"}
     if not found:
         raise HTTPException(status_code=404, detail="No se encontró la reserva")

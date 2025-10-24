@@ -1,10 +1,7 @@
 from fastapi import FastAPI
-<<<<<<< HEAD
 from fastapi.middleware.cors import CORSMiddleware
-from routers import user, Restaurante, Reserva, Menu, Plato, Mesa, FilaVirtual, Cliente, CategoriaMenu, Dashboard, auth
-=======
 from routers import user, Restaurante, Reserva, Menu, Plato, Mesa, FilaVirtual, Cliente, CategoriaMenu, auth, ws_test
->>>>>>> e30905e6207bec91ff2251048f49360290e4adf6
+
 
 app = FastAPI()
 
@@ -27,12 +24,12 @@ app.include_router(Mesa.router)
 app.include_router(FilaVirtual.router)
 app.include_router(Cliente.router)
 app.include_router(CategoriaMenu.router)
-<<<<<<< HEAD
-app.include_router(Dashboard.router)
-=======
 app.include_router(ws_test.router)
->>>>>>> e30905e6207bec91ff2251048f49360290e4adf6
 
 @app.get("/")
 def root():
     return {"api-rest activo"}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
