@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+const ws = new WebSocket("ws://localhost:8080");
+
+ws.onopen = () => {
+  ws.send(JSON.stringify({
+    channel: "fila_virtual",
+    action: "join",
+    id_cliente: 1,
+    nombre: "Joustin"
+  }));
+};
+
+ws.onmessage = (e) => console.log("Mensaje recibido:", e.data);
+</script>
+</body>
+</html>

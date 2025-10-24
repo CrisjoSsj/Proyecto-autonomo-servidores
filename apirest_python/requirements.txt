@@ -2,6 +2,7 @@ fastapi==0.104.1
 uvicorn[standard]==0.24.0
 python-jose[cryptography]==3.5.0
 passlib[bcrypt]==1.7.4
+<<<<<<< HEAD
 python-multipart==0.0.20
 pydantic==2.11.9
 PyJWT==2.10.1
@@ -13,3 +14,8 @@ pyasn1==0.6.1
 cffi==2.0.0
 pycparser==2.23
 six==1.17.0
+=======
+python-multipart==0.0.6
+pydantic==2.5.0
+websockets>=11.0.0,<12.0.0
+>>>>>>> e30905e6207bec91ff2251048f49360290e4adf6

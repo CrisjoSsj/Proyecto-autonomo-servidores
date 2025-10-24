@@ -1,9 +1,11 @@
+# app/models/utils/message_builder.rb
 class MessageBuilder
-  def self.build(type, data)
+  def self.build(channel, message, data = {})
     {
-      type: type,
-      timestamp: Time.now,
-      payload: data
-    }.to_json
+      channel: channel,
+      message: message,
+      data: data,
+      timestamp: Time.now
+    }
   end
 end
