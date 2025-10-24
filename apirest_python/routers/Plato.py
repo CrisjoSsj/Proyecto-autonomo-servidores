@@ -9,11 +9,20 @@ class Plato(BaseModel):
     descripcion: str
     precio: float
     estado: str
+    id_categoria: int  # Agregar referencia a categoría
+    disponible: bool = True  # Campo adicional para frontend
 '''    Categoria: CategoriaMenu'''
 
-platos_list = [Plato(id_plato=1, nombre="Ceviche", descripcion="Pescado fresco marinado", precio=25.50, estado="disponible"),
-               Plato(id_plato=2, nombre="Lomo Saltado", descripcion="Carne salteada con papas", precio=32.00, estado="disponible"),
-               Plato(id_plato=3, nombre="Suspiro Limeño", descripcion="Postre tradicional peruano", precio=15.00, estado="disponible")]
+platos_list = [
+    Plato(id_plato=1, nombre="Ceviche", descripcion="Pescado fresco marinado", precio=25.50, estado="disponible", id_categoria=1, disponible=True),
+    Plato(id_plato=2, nombre="Tequeños", descripcion="Palitos de queso envueltos en masa", precio=18.00, estado="disponible", id_categoria=1, disponible=True),
+    Plato(id_plato=3, nombre="Lomo Saltado", descripcion="Carne salteada con papas y verduras", precio=32.00, estado="disponible", id_categoria=2, disponible=True),
+    Plato(id_plato=4, nombre="Parrilla Mixta", descripcion="Selección de carnes a la parrilla", precio=45.00, estado="disponible", id_categoria=2, disponible=True),
+    Plato(id_plato=5, nombre="Pollo a la Brasa", descripcion="Pollo entero con papas y ensalada", precio=28.00, estado="disponible", id_categoria=2, disponible=True),  
+    Plato(id_plato=6, nombre="Suspiro Limeño", descripcion="Postre tradicional peruano", precio=15.00, estado="disponible", id_categoria=3, disponible=True),
+    Plato(id_plato=7, nombre="Tres Leches", descripcion="Torta húmeda con tres tipos de leche", precio=12.50, estado="disponible", id_categoria=3, disponible=True),
+    Plato(id_plato=8, nombre="Anticuchos", descripcion="Brochetas de corazón marinado", precio=22.00, estado="disponible", id_categoria=1, disponible=True),
+]
 
 @router.get("/plato/")
 async def plato():

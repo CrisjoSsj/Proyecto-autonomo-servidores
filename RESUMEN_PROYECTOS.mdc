@@ -1,0 +1,136 @@
+# Resumen de proyectos
+
+Este documento resume dos proyectos presentes en este repositorio:
+
+- `Proyecto-autonomo-servidores` (principal)
+- `Sistema-de-nutricion-escolar` (resumen excluyendo la carpeta `ia`)
+
+El objetivo es dar una visión rápida de la estructura, dependencias y pasos básicos para levantar cada proyecto localmente.
+
+## 1) Proyecto-autonomo-servidores
+
+Descripción breve:
+Este repositorio contiene varios subproyectos relacionados con una plataforma de gestión de restaurante (API REST en Python, backend TypeScript, frontend con Vite/React, y un servidor WebSocket en Ruby).
+
+Estructura (resumen relevante):
+- `apirest_python/` - API REST escrita en Python. Contiene `main.py`, `requirements.txt` y un paquete `routers/` con módulos para `auth`, `Cliente`, `Menu`, `Mesa`, `Plato`, `Reserva`, `Restaurante`, `user`, `FilaVirtual`, `Dashboard`, etc.
+- `backend/` - Backend en TypeScript (Node). Contiene `package.json`, `tsconfig.json`, y código en `src/` con servicios y dominio.
+- `frontend/` - Frontend (Vite + React + TypeScript). Contiene `package.json`, `vite.config.ts`, `src/` con componentes y páginas.
+- `websocket_ruby/` - Canal WebSocket en Ruby (ActionCable-like). Contiene `server.rb` y `app/` con canales y utilidades.
+
+Archivos clave:
+- `apirest_python/requirements.txt` — dependencias Python.
+- `apirest_python/main.py` — punto de entrada de la API Python.
+- `backend/package.json` — scripts y dependencias del backend TypeScript.
+- `frontend/package.json` — scripts y dependencias del frontend (Vite/React).
+- `websocket_ruby/Gemfile` — dependencias Ruby.
+
+Cómo ejecutar (guía rápida):
+
+1) API Python (`apirest_python`)
+- Crear y activar un entorno virtual Python.
+
+PowerShell (ejemplo):
+```powershell
+python -m venv .venv; .\.venv\Scripts\Activate.ps1
+pip install -r apirest_python\requirements.txt
+# Ejecutar la API (verifica el contenido de main.py para el comando exacto, p.ej. uvicorn o flask)
+python apirest_python\main.py
+```
+
+Nota: `main.py` puede usar `uvicorn` o `flask` — revisa el archivo para el comando exacto. Si usa FastAPI normalmente se ejecuta con `uvicorn apirest_python.main:app --reload`.
+
+2) Backend TypeScript (`backend`)
+
+PowerShell (ejemplo):
+```powershell
+cd backend
+npm install
+# Revisar package.json para scripts (p.ej. "dev" o "start")
+npm run dev
+```
+
+3) Frontend (`frontend`)
+
+PowerShell (ejemplo):
+```powershell
+cd frontend
+npm install
+npm run dev
+# o npm start según lo definido en package.json
+```
+
+4) WebSocket Ruby (`websocket_ruby`)
+
+PowerShell (ejemplo, requiere Ruby instalado):
+```powershell
+cd websocket_ruby
+bundle install
+ruby server.rb
+```
+
+Notas y supuestos:
+- Las instrucciones de ejecución anterior son genéricas; revisa los `package.json` y `main.py` para confirmar scripts y puntos de entrada exactos.
+- Usa las versiones de Node/Python/Ruby adecuadas según los archivos `package.json`/`requirements.txt`/`Gemfile`.
+
+---
+
+## 2) Sistema-de-nutricion-escolar (resumen; carpeta `ia` IGNORADA)
+
+Descripción breve:
+Proyecto para gestión del sistema de nutrición escolar. Incluye backend en Python con endpoints y un frontend con Vite/React.
+
+Estructura (resumen relevante):
+- `backend/` — API en Python con archivos principales: `main.py`, `auth.py`, `database.py`, `models.py`, `requirements.txt` y carpeta `api/` con rutas/servicios (Autenticacion, Comida, Escuela, Feedback, Menu, MenuComida, Reporte, Usuario).
+- `frontend/` — Aplicación frontend con Vite/React (JSX). Contiene `package.json`, `vite.config.js`, `src/` con componentes, contexts, pages y servicios.
+- Otros: `CONEXION_GUIDE.md`, `SETUP_GUIDE.md`, `API_DOCUMENTATION.md` (dentro de `backend/`).
+
+Archivos clave:
+- `backend/requirements.txt` — dependencias Python.
+- `backend/main.py` — punto de entrada de la API.
+- `backend/API_DOCUMENTATION.md` — documentación de la API (revisar para detalles de endpoints).
+- `frontend/package.json` y `frontend/vite.config.js` — configuración del frontend.
+
+Cómo ejecutar (guía rápida):
+
+1) Backend Python (`Sistema-de-nutricion-escolar/backend`)
+
+PowerShell (ejemplo):
+```powershell
+python -m venv .venv; .\.venv\Scripts\Activate.ps1
+pip install -r Sistema-de-nutricion-escolar\backend\requirements.txt
+python Sistema-de-nutricion-escolar\backend\main.py
+```
+
+Como antes, si `main.py` usa `uvicorn` o similar, usa el comando correspondiente (p.ej. `uvicorn backend.main:app --reload`).
+
+2) Frontend (`Sistema-de-nutricion-escolar/frontend`)
+
+PowerShell (ejemplo):
+```powershell
+cd Sistema-de-nutricion-escolar\frontend
+npm install
+npm run dev
+```
+
+Notas específicas:
+- He ignorado intencionalmente la carpeta `ia/` dentro de `Sistema-de-nutricion-escolar` como solicitaste.
+- Revisa `backend/API_DOCUMENTATION.md` para detalles de endpoints, cuerpos de petición y autenticación.
+
+---
+
+## Recomendaciones y siguientes pasos
+
+- Abrir los `package.json` y `requirements.txt` para confirmar versiones y scripts exactos antes de ejecutar.
+- Añadir pequeños README locales en cada subcarpeta con el comando exacto para levantar el servicio (ej.: `apirest_python/README.md`, `backend/README.md`, `frontend/README.md`).
+- Si quieres, puedo:
+  - Generar READMEs específicos por subproyecto con comandos exactos leyendo `package.json` y `main.py`.
+  - Crear scripts PowerShell para levantar todo en un solo comando.
+
+---
+
+## Resumen de cambios
+
+- Archivo creado: `RESUMEN_PROYECTOS.mdc` (en la raíz del repositorio) — contiene la documentación solicitada para ambos proyectos y las instrucciones iniciales de ejecución.
+
+
