@@ -1,5 +1,5 @@
 require 'json'
-require_relative '../models/utils/message_builder'
+require_relative '../utils/message_builder'
 require_relative '../connections/connection_manager'
 
 class FilaVirtualChannel
