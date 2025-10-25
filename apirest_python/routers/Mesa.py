@@ -1,5 +1,8 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+import sys
+sys.path.append('..')
+from websocket_broadcast import broadcast_mesas
 
 router= APIRouter (tags=["Mesa"])
 
@@ -48,6 +51,13 @@ async def mesa(mesa: Mesa):
         if guardar_mesa.id_mesa == mesa.id_mesa:
             mesas_list[index] = mesa
             found = True
+            # Enviar notificación al WebSocket
+            await broadcast_mesas("update_status", {
+                "mesa_id": mesa.id_mesa,
+                "numero": mesa.numero,
+                "capacidad": mesa.capacidad,
+                "estado": mesa.estado
+            })
             return {"actualizado exitosamente"}
     if not found:
         raise HTTPException(status_code=404, detail="No se encontró la mesa")

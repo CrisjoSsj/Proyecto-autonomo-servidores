@@ -1,6 +1,4 @@
-import type {MenuCardProps} from '../../interface/MenuCardProps';
-
-export default function MenuCard({ nombre, descripcion, precio}: MenuCardProps) {
+export default function MenuCard({ nombre, descripcion, precio}: any) {
   return (
     <div className="tarjeta-plato-menu">
       <h3 className="nombre-plato">{nombre}</h3>

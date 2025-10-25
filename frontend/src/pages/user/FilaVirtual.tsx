@@ -1,8 +1,140 @@
+import { useState, useEffect } from "react";
 import Navbar from "../../components/user/Navbar";
 import PiePagina from "../../components/user/PiePagina";
+import { wsService } from "../../services/WebSocketService";
 import "../../css/user/FilaVirtual.css";
 
+interface Mesa {
+    id: number;
+    numero: number;
+    capacidad: number;
+    estado: string;
+    ubicacion: string;
+}
+
+interface PersonaEnCola {
+    id: number;
+    nombre: string;
+    telefono: string;
+    numeroPersonas: number;
+    posicion: number;
+    tiempoEstimado: number;
+}
+
 export default function FilaVirtual() {
+    const [mesas, setMesas] = useState<Mesa[]>([]);
+    const [cola, setCola] = useState<PersonaEnCola[]>([]);
+    const [formData, setFormData] = useState({
+        nombre: '',
+        telefono: '',
+        numeroPersonas: 2
+    });
+
+    useEffect(() => {
+        // Conectar al WebSocket
+        wsService.connect();
+
+        // Cargar mesas iniciales
+        cargarMesas();
+        cargarCola();
+
+        // Suscribirse a actualizaciones de mesas
+        const unsubscribeMesas = wsService.subscribe('mesas', (message: any) => {
+            console.log('Actualización de mesas:', message);
+            cargarMesas(); // Recargar mesas cuando hay cambios
+        });
+
+        // Suscribirse a actualizaciones de fila virtual
+        const unsubscribeFila = wsService.subscribe('fila_virtual', (message: any) => {
+            console.log('Actualización de fila virtual:', message);
+            cargarCola(); // Recargar cola cuando hay cambios
+        });
+
+        return () => {
+            unsubscribeMesas();
+            unsubscribeFila();
+            // No desconectamos el WebSocket aquí para que otras páginas puedan usarlo
+        };
+    }, []);
+
+    const cargarMesas = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/mesas/');
+            const data = await response.json();
+            setMesas(data);
+        } catch (error) {
+            console.error('Error al cargar mesas:', error);
+        }
+    };
+
+    const cargarCola = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/fila-virtual/');
+            const data = await response.json();
+            setCola(data);
+        } catch (error) {
+            console.error('Error al cargar cola:', error);
+        }
+    };
+
+    const handleInputChange = (e: any) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: name === 'numeroPersonas' ? parseInt(value) : value
+        }));
+    };
+
+    const handleSubmit = async (e: any) => {
+        e.preventDefault();
+        
+        try {
+            // Crear entrada en la fila virtual via API REST
+            const response = await fetch('http://localhost:8000/fila-virtual/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    cliente_id: Math.floor(Math.random() * 1000), // Generar ID temporal
+                    ...formData,
+                    hora_llegada: new Date().toISOString(),
+                    estado: 'esperando'
+                }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                // Notificar via WebSocket
+                wsService.joinFilaVirtual(data.id, formData.nombre);
+                alert('¡Te has unido a la cola virtual! Te notificaremos cuando sea tu turno.');
+                setFormData({ nombre: '', telefono: '', numeroPersonas: 2 });
+                cargarCola();
+            }
+        } catch (error) {
+            console.error('Error al unirse a la cola:', error);
+            alert('Error al unirse a la cola. Por favor intenta de nuevo.');
+        }
+    };
+
+    const mesasPor2 = mesas.filter(m => m.capacidad === 2);
+    const mesasPor4 = mesas.filter(m => m.capacidad === 4);
+    const mesasPor6Plus = mesas.filter(m => m.capacidad >= 6);
+
+    const getEstadoClase = (estado: string) => {
+        return estado.toLowerCase().replace(' ', '-');
+    };
+
+    const getEstadoTexto = (estado: string) => {
+        const estados: any = {
+            'libre': 'Disponible',
+            'ocupada': 'Ocupada',
+            'reservada': 'Reservada',
+            'limpieza': 'En limpieza'
+        };
+        return estados[estado] || estado;
+    };
+
     return (
         <div>
             <Navbar />
@@ -22,7 +154,9 @@ export default function FilaVirtual() {
                         <div className="indicador-abierto"></div>
                         <h2 className="titulo-estado">Restaurante Abierto</h2>
                         <p className="horario-actual">Horario hoy: 11:00 AM - 10:00 PM</p>
-                        <p className="actualizacion">Última actualización: hace 2 minutos</p>
+                        <p className="actualizacion">
+                            🔴 Actualizaciones en tiempo real • Conectado
+                        </p>
                     </div>
                 </div>
             </section>
@@ -37,21 +171,15 @@ export default function FilaVirtual() {
                         <div className="grupo-mesas">
                             <h3 className="titulo-grupo-mesa">Mesas para 2 personas</h3>
                             <div className="lista-mesas">
-                                <div className="tarjeta-mesa disponible">
-                                    <span className="numero-mesa">Mesa 1</span>
-                                    <span className="estado-mesa">Disponible</span>
-                                    <button className="boton-tomar-mesa">Tomar Mesa</button>
-                                </div>
-                                <div className="tarjeta-mesa ocupada">
-                                    <span className="numero-mesa">Mesa 2</span>
-                                    <span className="estado-mesa">Ocupada</span>
-                                    <span className="tiempo-estimado">~30 min</span>
-                                </div>
-                                <div className="tarjeta-mesa disponible">
-                                    <span className="numero-mesa">Mesa 3</span>
-                                    <span className="estado-mesa">Disponible</span>
-                                    <button className="boton-tomar-mesa">Tomar Mesa</button>
-                                </div>
+                                {mesasPor2.length > 0 ? mesasPor2.map(mesa => (
+                                    <div key={mesa.id} className={`tarjeta-mesa ${getEstadoClase(mesa.estado)}`}>
+                                        <span className="numero-mesa">Mesa {mesa.numero}</span>
+                                        <span className="estado-mesa">{getEstadoTexto(mesa.estado)}</span>
+                                        {mesa.estado === 'libre' && (
+                                            <button className="boton-tomar-mesa">Tomar Mesa</button>
+                                        )}
+                                    </div>
+                                )) : <p>No hay mesas de 2 personas</p>}
                             </div>
                         </div>
 
@@ -59,26 +187,15 @@ export default function FilaVirtual() {
                         <div className="grupo-mesas">
                             <h3 className="titulo-grupo-mesa">Mesas para 4 personas</h3>
                             <div className="lista-mesas">
-                                <div className="tarjeta-mesa ocupada">
-                                    <span className="numero-mesa">Mesa 4</span>
-                                    <span className="estado-mesa">Ocupada</span>
-                                    <span className="tiempo-estimado">~45 min</span>
-                                </div>
-                                <div className="tarjeta-mesa reservada">
-                                    <span className="numero-mesa">Mesa 5</span>
-                                    <span className="estado-mesa">Reservada</span>
-                                    <span className="tiempo-estimado">7:30 PM</span>
-                                </div>
-                                <div className="tarjeta-mesa ocupada">
-                                    <span className="numero-mesa">Mesa 6</span>
-                                    <span className="estado-mesa">Ocupada</span>
-                                    <span className="tiempo-estimado">~25 min</span>
-                                </div>
-                                <div className="tarjeta-mesa limpieza">
-                                    <span className="numero-mesa">Mesa 7</span>
-                                    <span className="estado-mesa">En limpieza</span>
-                                    <span className="tiempo-estimado">~5 min</span>
-                                </div>
+                                {mesasPor4.length > 0 ? mesasPor4.map(mesa => (
+                                    <div key={mesa.id} className={`tarjeta-mesa ${getEstadoClase(mesa.estado)}`}>
+                                        <span className="numero-mesa">Mesa {mesa.numero}</span>
+                                        <span className="estado-mesa">{getEstadoTexto(mesa.estado)}</span>
+                                        {mesa.estado === 'libre' && (
+                                            <button className="boton-tomar-mesa">Tomar Mesa</button>
+                                        )}
+                                    </div>
+                                )) : <p>No hay mesas de 4 personas</p>}
                             </div>
                         </div>
 
@@ -86,16 +203,15 @@ export default function FilaVirtual() {
                         <div className="grupo-mesas">
                             <h3 className="titulo-grupo-mesa">Mesas para 6+ personas</h3>
                             <div className="lista-mesas">
-                                <div className="tarjeta-mesa ocupada">
-                                    <span className="numero-mesa">Mesa 8</span>
-                                    <span className="estado-mesa">Ocupada</span>
-                                    <span className="tiempo-estimado">~60 min</span>
-                                </div>
-                                <div className="tarjeta-mesa reservada">
-                                    <span className="numero-mesa">Mesa 9</span>
-                                    <span className="estado-mesa">Reservada</span>
-                                    <span className="tiempo-estimado">8:00 PM</span>
-                                </div>
+                                {mesasPor6Plus.length > 0 ? mesasPor6Plus.map(mesa => (
+                                    <div key={mesa.id} className={`tarjeta-mesa ${getEstadoClase(mesa.estado)}`}>
+                                        <span className="numero-mesa">Mesa {mesa.numero}</span>
+                                        <span className="estado-mesa">{getEstadoTexto(mesa.estado)}</span>
+                                        {mesa.estado === 'libre' && (
+                                            <button className="boton-tomar-mesa">Tomar Mesa</button>
+                                        )}
+                                    </div>
+                                )) : <p>No hay mesas de 6+ personas</p>}
                             </div>
                         </div>
                     </div>
@@ -113,18 +229,39 @@ export default function FilaVirtual() {
                     {/* Formulario para unirse a la cola */}
                     <div className="formulario-cola">
                         <h3 className="titulo-formulario-cola">Únete a la Cola Virtual</h3>
-                        <form className="form-cola">
+                        <form className="form-cola" onSubmit={handleSubmit}>
                             <div className="campo-cola">
                                 <label className="etiqueta-cola">Nombre</label>
-                                <input type="text" className="input-cola" placeholder="Tu nombre completo" />
+                                <input 
+                                    type="text" 
+                                    name="nombre"
+                                    className="input-cola" 
+                                    placeholder="Tu nombre completo" 
+                                    value={formData.nombre}
+                                    onChange={handleInputChange}
+                                    required
+                                />
                             </div>
                             <div className="campo-cola">
                                 <label className="etiqueta-cola">Teléfono</label>
-                                <input type="tel" className="input-cola" placeholder="099-123-4567" />
+                                <input 
+                                    type="tel" 
+                                    name="telefono"
+                                    className="input-cola" 
+                                    placeholder="099-123-4567"
+                                    value={formData.telefono}
+                                    onChange={handleInputChange}
+                                    required
+                                />
                             </div>
                             <div className="campo-cola">
                                 <label className="etiqueta-cola">Número de personas</label>
-                                <select className="select-cola">
+                                <select 
+                                    name="numeroPersonas"
+                                    className="select-cola"
+                                    value={formData.numeroPersonas}
+                                    onChange={handleInputChange}
+                                >
                                     <option value="2">2 personas</option>
                                     <option value="3">3 personas</option>
                                     <option value="4">4 personas</option>
@@ -143,34 +280,22 @@ export default function FilaVirtual() {
                     <div className="estado-cola-actual">
                         <h3 className="titulo-estado-cola">Cola Actual</h3>
                         <div className="lista-cola">
-                            <div className="persona-en-cola">
-                                <span className="posicion-cola">1°</span>
-                                <span className="nombre-cola">María S.</span>
-                                <span className="personas-cola">4 personas</span>
-                                <span className="tiempo-cola">Tiempo estimado: 15 min</span>
-                            </div>
-                            <div className="persona-en-cola">
-                                <span className="posicion-cola">2°</span>
-                                <span className="nombre-cola">Carlos M.</span>
-                                <span className="personas-cola">2 personas</span>
-                                <span className="tiempo-cola">Tiempo estimado: 30 min</span>
-                            </div>
-                            <div className="persona-en-cola">
-                                <span className="posicion-cola">3°</span>
-                                <span className="nombre-cola">Ana L.</span>
-                                <span className="personas-cola">6 personas</span>
-                                <span className="tiempo-cola">Tiempo estimado: 45 min</span>
-                            </div>
-                            <div className="persona-en-cola">
-                                <span className="posicion-cola">4°</span>
-                                <span className="nombre-cola">Roberto P.</span>
-                                <span className="personas-cola">3 personas</span>
-                                <span className="tiempo-cola">Tiempo estimado: 50 min</span>
-                            </div>
+                            {cola.length > 0 ? cola.map((persona, index) => (
+                                <div key={persona.id} className="persona-en-cola">
+                                    <span className="posicion-cola">{index + 1}°</span>
+                                    <span className="nombre-cola">{persona.nombre}</span>
+                                    <span className="personas-cola">{persona.numeroPersonas} personas</span>
+                                    <span className="tiempo-cola">Tiempo estimado: {(index + 1) * 15} min</span>
+                                </div>
+                            )) : (
+                                <p>No hay personas en cola actualmente</p>
+                            )}
                         </div>
-                        <p className="total-espera">
-                            Si te unes ahora, serías el <strong>5°</strong> en la cola con un tiempo estimado de <strong>55 minutos</strong>
-                        </p>
+                        {cola.length > 0 && (
+                            <p className="total-espera">
+                                Si te unes ahora, serías el <strong>{cola.length + 1}°</strong> en la cola con un tiempo estimado de <strong>{(cola.length + 1) * 15} minutos</strong>
+                            </p>
+                        )}
                     </div>
                 </div>
             </section>
