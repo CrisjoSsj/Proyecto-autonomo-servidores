@@ -1,4 +1,3 @@
-# app/connections/connection_manager.rb
 class ConnectionManager
   @connections = []
 
@@ -12,7 +11,11 @@ class ConnectionManager
     end
 
     def broadcast(message)
-      @connections.each { |c| c.send(message.to_json) }
+      puts "📢 Enviando broadcast: #{message}"
+      @connections.each do |conn|
+        conn.send(message.to_json)
+      end
     end
   end
 end
+
