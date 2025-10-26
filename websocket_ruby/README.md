@@ -1,3 +1,88 @@
+# websocket_ruby
+
+Este directorio contiene un servidor WebSocket simple en Ruby (EventMachine + Faye::WebSocket), un manejador HTTP mínimo para "broadcast" (POST /broadcast) y páginas públicas de ejemplo para depuración.
+
+Contenido relevante
+- `server.rb` - servidor WebSocket principal y handler HTTP para `POST /broadcast` (puerto 8081). Usa `EventMachine` y `Faye::WebSocket`.
+- `Gemfile` - dependencias Ruby (si usas bundler).
+- `app/connections/connection_manager.rb` - gestión de conexiones WebSocket y broadcast.
+- `app/utils/message_builder.rb` - formatea los mensajes enviados a clientes.
+- `public/` - páginas HTML para depuración/cliente (por ejemplo `index.html`, `filaV.html`, `mesas.html`, `reservas.html`).
+- `ws_client.py` - ejemplo de cliente Python para conectarse por WebSocket (opcional).
+
+Resumen de diseño
+- El servidor escucha WebSocket en el puerto 8080 (ws://localhost:8080).
+- Además expone un endpoint HTTP minimalista `POST /broadcast` en el puerto 8081 que acepta un JSON y reenvía (broadcast) ese mensaje a todos los clientes WebSocket conectados.
+- Los mensajes WebSocket se esperan en formato JSON; cuando el servidor recibe un mensaje desde un cliente, lo procesa y ejecuta broadcast con `MessageBuilder.build('info', data)`. Cuando se usa `POST /broadcast`, se usa `MessageBuilder.build('broadcast', payload)`.
+
+Requisitos
+- Ruby 2.7+ (o la versión que tengas instalada). Recomendado usar RubyGems / Bundler.
+- Gems: `eventmachine`, `faye-websocket` (y `json` incluido en la stdlib). Si usas Bundler:
+
+  bundle install
+
+Instalación y ejecución
+1. Desde la carpeta `websocket_ruby`, instala gems (si usas bundler):
+
+  bundle install
+
+2. Inicia el servidor:
+
+  ruby server.rb
+
+Deberías ver en consola una línea similar a:
+
+  Servidor WebSocket corriendo en ws://localhost:8080
+
+Comprobaciones / pruebas
+
+1) Conectar un cliente WebSocket
+- Usa el cliente HTML incluido en `public/` (ej. abrir `public/index.html` en un navegador). Para servirlo desde `http.server`:
+
+  cd websocket_ruby
+  python -m http.server 9000
+  # abrir http://127.0.0.1:9000/public/index.html
+
+- También puedes usar el script Python `ws_client.py` (requiere la librería `websockets`) o herramientas como `websocat`.
+
+2) Enviar broadcast vía HTTP
+- Enviar un POST con JSON a `http://127.0.0.1:8081/broadcast`:
+
+  # PowerShell
+  Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8081/broadcast -ContentType 'application/json' -Body '{"msg":"hola desde HTTP"}'
+
+  # curl
+  curl -X POST http://127.0.0.1:8081/broadcast -H "Content-Type: application/json" -d '{"msg":"hola desde HTTP"}'
+
+Esperado: la petición devuelve `{"status":"ok"}` y todos los clientes WebSocket conectados reciben el mensaje formateado por `MessageBuilder`.
+
+Formato de mensajes
+- Mensajes entrantes desde clientes WebSocket: JSON con al menos `type` y `payload`. Ejemplo:
+
+  {"type":"test","payload":{"msg":"hola"}}
+
+- Mensajes enviados por broadcast (interno): el servidor usa `MessageBuilder.build(type, data)`, que produce un JSON con `type`, `timestamp` y `payload`.
+
+Notas y consideraciones
+- El endpoint HTTP `/broadcast` implementado en este proyecto es minimalista y sirve para pruebas y desarrollo. No está pensado para producción.
+- No hay autenticación por defecto. Si el servidor estará en una red pública, añade alguna forma de autenticación (por ejemplo `X-API-KEY` en el header) en `server.rb` antes de procesar la petición.
+- Si prefieres un servidor HTTP completo (WEBrick / Puma / Sinatra), puedo adaptar `server.rb` para usarlo. En este repo se implementó un handler pequeño basado en EventMachine para evitar dependencias extra.
+- Si EventMachine falla con errores del tipo `Interrupt` o el proceso se detiene aquí en el runner, ejecútalo localmente en tu máquina donde tengas Ruby correctamente instalado; el runner puede interrumpir procesos long-running.
+
+Problemas comunes
+- `cannot load such file -- webrick` : no es necesario si se usa el handler EM; si quieres usar WEBrick instala la gema correspondiente o usa la stdlib de Ruby que la incluya.
+- Puerto en uso: si 8080/8081 está en uso, cambia los puertos en `server.rb`.
+
+Mejoras sugeridas
+- Añadir autenticación para `/broadcast`.
+- Añadir métricas (número de clientes conectados).
+- Tests automáticos para `ConnectionManager` y `MessageBuilder`.
+
+Contacto / ayuda
+- Si quieres que adapte el servidor a WEBrick/Sinatra, o que agregue autenticación y un pequeño README con ejemplos de integración con la API REST (FastAPI), dímelo y lo implemente.
+
+---
+Archivo creado automáticamente por la herramienta de desarrollo del proyecto.
 # 💎 WebSocket Server - Chuwue Grill
 
 Servidor WebSocket desarrollado en **Ruby** para proporcionar comunicación en tiempo real entre el backend y el frontend del sistema de restaurante. Maneja notificaciones, actualizaciones de estado y eventos del restaurante en tiempo real.
