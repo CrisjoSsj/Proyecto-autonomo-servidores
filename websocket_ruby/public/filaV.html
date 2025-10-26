@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Fila Virtual - WebSocket Ruby</title>
+</head>
+<body>
+  <h1>Fila Virtual</h1>
+
+  <input id="cliente" placeholder="Tu nombre" />
+  <button id="join">Unirse a la fila</button>
+  <button id="leave">Salir de la fila</button>
+  <button id="next">Atender siguiente</button>
+  <button id="reset">Reiniciar fila</button>
+
+  <pre id="log"></pre>
+
+  <script>
+    const ws = new WebSocket("ws://localhost:8080");
+    const log = document.getElementById("log");
+
+    ws.onopen = () => log.textContent += "✅ Conectado al servidor\n";
+    ws.onmessage = (event) => log.textContent += "📩 " + event.data + "\n";
+    ws.onclose = () => log.textContent += "❌ Desconectado\n";
+
+    const getCliente = () => document.getElementById("cliente").value.trim() || "Cliente anónimo";
+
+    document.getElementById("join").onclick = () =>
+      ws.send(JSON.stringify({ channel: "fila_virtual", action: "join", cliente: getCliente() }));
+
+    document.getElementById("leave").onclick = () =>
+      ws.send(JSON.stringify({ channel: "fila_virtual", action: "leave", cliente: getCliente() }));
+
+    document.getElementById("next").onclick = () =>
+      ws.send(JSON.stringify({ channel: "fila_virtual", action: "next" }));
+
+    document.getElementById("reset").onclick = () =>
+      ws.send(JSON.stringify({ channel: "fila_virtual", action: "reset" }));
+  </script>
+</body>
+</html>

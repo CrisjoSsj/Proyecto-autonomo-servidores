@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestión de Reservas - WebSocket</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f6fa;
+      margin: 0;
+      padding: 2rem;
+    }
+    h1 {
+      text-align: center;
+      color: #2f3640;
+    }
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .card h2 {
+      margin-top: 0;
+      color: #273c75;
+    }
+    label {
+      display: block;
+      margin-top: 0.5rem;
+      font-weight: bold;
+    }
+    input, button {
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.3rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #44bd32;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    button:hover {
+      background-color: #4cd137;
+    }
+    #mensajes {
+      background: #f0f0f0;
+      padding: 1rem;
+      border-radius: 10px;
+      height: 200px;
+      overflow-y: auto;
+      font-size: 0.9rem;
+    }
+    .reserva-item {
+      background: #dcdde1;
+      padding: 0.5rem;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+    }
+    .cancelar {
+      background: #e84118;
+      color: white;
+      border: none;
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+      cursor: pointer;
+      float: right;
+    }
+  </style>
+</head>
+<body>
+  <h1>🪑 Sistema de Reservas en Tiempo Real</h1>
+
+  <div class="container">
+    <div class="card">
+      <h2>Crear Reserva</h2>
+      <label>ID Reserva</label>
+      <input type="number" id="id_reserva" value="1">
+
+      <label>ID Cliente</label>
+      <input type="number" id="id_cliente" value="10">
+
+      <label>ID Mesa</label>
+      <input type="number" id="id_mesa" value="3">
+
+      <label>Fecha</label>
+      <input type="date" id="fecha">
+
+      <label>Hora Inicio</label>
+      <input type="time" id="hora_inicio">
+
+      <label>Hora Fin</label>
+      <input type="time" id="hora_fin">
+
+      <button onclick="crearReserva()">Crear Reserva</button>
+      <button onclick="listarReservas()" style="background-color:#273c75;">Listar Reservas</button>
+    </div>
+
+    <div class="card">
+      <h2>Reservas Actuales</h2>
+      <div id="lista_reservas"></div>
+    </div>
+  </div>
+
+  <div class="card" style="max-width:900px; margin:2rem auto;">
+    <h2>Mensajes del Servidor</h2>
+    <div id="mensajes"></div>
+  </div>
+
+  <script>
+    const ws = new WebSocket("ws://localhost:8080");
+    const mensajes = document.getElementById("mensajes");
+    const lista = document.getElementById("lista_reservas");
+
+    // Cuando se conecta
+    ws.onopen = () => {
+      agregarMensaje("✅ Conectado al servidor WebSocket");
+      listarReservas(); // listar automáticamente al conectar
+    };
+
+    // Cuando llega un mensaje
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        agregarMensaje("📩 Canal: " + data.channel + " → " + data.message);
+
+        if (data.channel === "reservas") {
+          switch (data.message) {
+            case "lista_reservas":
+              renderReservas(data.data);
+              break;
+            case "nueva_reserva":
+            case "reserva_cancelada":
+              listarReservas();
+              break;
+          }
+        }
+      } catch (e) {
+        agregarMensaje("⚠️ Error al parsear mensaje: " + event.data);
+      }
+    };
+
+    ws.onclose = () => agregarMensaje("❌ Conexión cerrada");
+
+    // Muestra los mensajes del servidor
+    function agregarMensaje(msg) {
+      const p = document.createElement("div");
+      p.textContent = msg;
+      mensajes.appendChild(p);
+      mensajes.scrollTop = mensajes.scrollHeight;
+    }
+
+    // Envía nueva reserva
+    function crearReserva() {
+      const payload = {
+        id_reserva: parseInt(document.getElementById("id_reserva").value),
+        id_cliente: parseInt(document.getElementById("id_cliente").value),
+        id_mesa: parseInt(document.getElementById("id_mesa").value),
+        fecha: document.getElementById("fecha").value,
+        hora_inicio: document.getElementById("hora_inicio").value,
+        hora_fin: document.getElementById("hora_fin").value,
+        estado: "pendiente",
+        cliente: { nombre: "Cliente " + document.getElementById("id_cliente").value },
+        mesa: { numero: document.getElementById("id_mesa").value, capacidad: 4 }
+      };
+      ws.send(JSON.stringify({ channel: "reservas", action: "crear", payload }));
+    }
+
+    // Solicita la lista actual
+    function listarReservas() {
+      ws.send(JSON.stringify({ channel: "reservas", action: "listar" }));
+    }
+
+    // Cancela una reserva específica
+    function cancelarReserva(id) {
+      ws.send(JSON.stringify({ channel: "reservas", action: "cancelar", payload: { id_reserva: id } }));
+    }
+
+    // Renderiza reservas en la interfaz
+    function renderReservas(data) {
+      lista.innerHTML = "";
+      if (!data || data.length === 0) {
+        lista.innerHTML = "<p>No hay reservas registradas</p>";
+        return;
+      }
+      data.forEach(r => {
+        const div = document.createElement("div");
+        div.className = "reserva-item";
+        div.innerHTML = `
+          <strong>Reserva #${r.id_reserva}</strong> - Mesa ${r.id_mesa} - Cliente ${r.id_cliente} (${r.estado})
+          <button class="cancelar" onclick="cancelarReserva(${r.id_reserva})">Cancelar</button>
+        `;
+        lista.appendChild(div);
+      });
+    }
+  </script>
+</body>
+</html>

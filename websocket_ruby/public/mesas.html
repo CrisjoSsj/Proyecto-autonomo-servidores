@@ -1,0 +1,97 @@
+<h1>Estado de Mesas en Tiempo Real</h1>
+<div>
+  <button onclick="agregarMesa()">Agregar Mesa</button>
+</div>
+<div id="mesas"></div>
+
+<script>
+  const socket = new WebSocket("ws://localhost:8080");
+  const mesasDiv = document.getElementById("mesas");
+
+  socket.onopen = () => {
+    console.log("✅ Conectado al WebSocket");
+    // Avisar al servidor que este cliente se suscribe al canal "mesas"
+    socket.send(JSON.stringify({
+      channel: "mesas",
+      action: "subscribed"
+    }));
+  };
+
+  socket.onmessage = (event) => {
+    const msg = JSON.parse(event.data);
+    console.log("📩 Mensaje recibido:", msg);
+
+    if (msg.channel === "mesas") {
+      switch (msg.message) {
+        case "estado_inicial":
+          renderMesas(msg.data.mesas);
+          break;
+        case "mesa_agregada":
+          agregarMesaVista(msg.data);
+          break;
+        case "mesa_eliminada":
+          eliminarMesaVista(msg.data.id_mesa);
+          break;
+        case "mesa_actualizada":
+          updateMesa(msg.data);
+          break;
+      }
+    }
+  };
+
+  function agregarMesa() {
+    const numero = prompt("Número de mesa:");
+    const capacidad = prompt("Capacidad:");
+    if (!numero || !capacidad) return;
+
+    const payload = {
+      channel: "mesas",
+      action: "agregar_mesa",
+      data: {
+        numero: Number(numero),
+        capacidad: Number(capacidad),
+        estado: "libre"
+      }
+    };
+    socket.send(JSON.stringify(payload));
+  }
+
+  function renderMesas(mesas) {
+    mesasDiv.innerHTML = "";
+    mesas.forEach(agregarMesaVista);
+  }
+
+  function agregarMesaVista(mesa) {
+    const div = document.createElement("div");
+    div.className = `mesa ${mesa.estado}`;
+    div.id = `mesa-${mesa.id_mesa}`;
+    div.innerHTML = `
+      <h3>Mesa ${mesa.numero}</h3>
+      <p>Capacidad: ${mesa.capacidad}</p>
+      <p>Estado: ${mesa.estado}</p>
+      <button onclick="eliminarMesa(${mesa.id_mesa})">Eliminar</button>
+    `;
+    mesasDiv.appendChild(div);
+  }
+
+  function eliminarMesa(id_mesa) {
+    socket.send(JSON.stringify({
+      channel: "mesas",
+      action: "eliminar_mesa",
+      data: { id_mesa }
+    }));
+  }
+
+  function eliminarMesaVista(id_mesa) {
+    const div = document.getElementById(`mesa-${id_mesa}`);
+    if (div) div.remove();
+  }
+
+  function updateMesa(mesa) {
+    const div = document.getElementById(`mesa-${mesa.id_mesa}`);
+    if (div) {
+      div.className = `mesa ${mesa.estado}`;
+      div.querySelector("p:last-child").textContent = `Estado: ${mesa.estado}`;
+    }
+  }
+</script>
