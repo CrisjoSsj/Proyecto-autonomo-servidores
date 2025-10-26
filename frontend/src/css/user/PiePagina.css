@@ -195,6 +195,12 @@
   box-shadow: var(--shadow-sm);
 }
 
+.icono-red-social {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.3s ease;
+}
+
 .enlace-red-social::before {
   content: '';
   position: absolute;
@@ -216,6 +222,10 @@
   text-decoration: none;
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
+}
+
+.enlace-red-social:hover .icono-red-social {
+  transform: scale(1.2);
 }
 
 /* Copyright - Optimizado */
