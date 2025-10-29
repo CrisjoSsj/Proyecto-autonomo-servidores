@@ -1,41 +1,16 @@
 # 🍗 Chuwue Grill - Sistema Integral de Restaurante
 
-## 🏗️ Arquitectura Multi-Tecnología
+## 🏗️ Arquitectura de Microservicios
 
-Sistema completo de gestión para el restaurante **Chuwue Grill** con **3 tecnologías backend diferentes** integradas en un único frontend. Implementa arquitectura de microservicios con comunicación REST, GraphQL y WebSocket en tiempo real.
+Sistema completo de gestión para el restaurante **Chuwue Grill** implementado con arquitectura de microservicios y múltiples tecnologías modernas. Proyecto desarrollado como trabajo autónomo siguiendo los requisitos de distribución de lenguajes de programación.
 
-### 🎯 Tecnologías Backend Implementadas
+### 🎯 Distribución de Componentes por Lenguaje
 
-| Tecnología | Puerto | Uso en Frontend | Funcionalidad |
-|-----------|---------|----------------|---------------|
-| **🐍 API REST (FastAPI)** | 8000 | FilaVirtual.tsx | CRUD de mesas, cola de espera, reservas |
-| **� GraphQL (Next.js)** | 3000 | Dashboard.tsx | Estadísticas, analytics, reportes en tiempo real |
-| **🔌 WebSocket (Ruby)** | 8080 | FilaVirtual.tsx + GestionMesas.tsx | Actualizaciones en tiempo real de mesas y cola |
+- **🐍 Python (API REST)** - Servicio principal con CRUD completo y autenticación JWT
+- **💎 Ruby (WebSocket Server)** - Servidor de tiempo real para notificaciones y updates  
+- **⚡ TypeScript (Backend + Frontend)** - Servicios de dominio y interfaz de usuario React
 
-### ✨ Integración Frontend
-
-El frontend **React + Vite** consume las 3 tecnologías simultáneamente:
-- **API REST**: Operaciones CRUD tradicionales
-- **GraphQL**: Queries complejas para dashboard
-- **WebSocket**: Notificaciones push en tiempo real
-
----
-
-## 🔧 Últimas Actualizaciones (27 Oct 2024)
-
-### ✅ Correcciones Implementadas
-- **API REST**: Agregado endpoint `/fila-virtual/` como alias para compatibilidad frontend
-- **CSS Reportes**: Rediseño completo con 600+ líneas de CSS moderno, gradientes y efectos hover
-- **GraphQL**: Schema y resolvers completamente reescritos para sistema de restaurante
-- **WebSocket**: Integración verificada para actualizaciones en tiempo real
-
-### 📚 Documentación Adicional Creada
-- [`IMPLEMENTACION_TECNOLOGIAS.md`](./IMPLEMENTACION_TECNOLOGIAS.md) - Cómo está implementada cada tecnología
-- [`GUIA_VISUAL.md`](./GUIA_VISUAL.md) - Guía visual de qué página usa qué tecnología
-- [`CORRECCIONES_27_OCT.md`](./CORRECCIONES_27_OCT.md) - Detalles técnicos de las correcciones
-- [`ANTES_DESPUES_REPORTES.md`](./ANTES_DESPUES_REPORTES.md) - Cambios visuales en Reportes
-
----
+Aplicación web completa para la gestión integral del restaurante **Chuwue Grill**. Incluye interfaz de cliente para consultas y reservas, más un completo panel de administración para la gestión operativa del restaurante.
 
 ## 🎯 Características Principales
 
@@ -55,84 +30,58 @@ El frontend **React + Vite** consume las 3 tecnologías simultáneamente:
 
 ## 🛠️ Stack Tecnológico Completo
 
-### 🐍 **API REST (Python)** - Puerto 8000
+### 🐍 **API REST (Python)**
 - **FastAPI** - Framework web moderno y de alto rendimiento
 - **Pydantic** - Validación de datos y serialización
 - **JWT** - Autenticación y autorización segura
 - **Passlib + Bcrypt** - Hashing seguro de contraseñas
 - **Uvicorn** - Servidor ASGI de alto rendimiento
-- **psycopg2** - Adaptador PostgreSQL para Python
-- **Frontend Integration**: `ApiService.ts` en FilaVirtual.tsx, GestionMesas.tsx
 
-### 📊 **GraphQL Server (Next.js)** - Puerto 3000
-- **Next.js 14** - Framework React para producción
-- **Apollo Server** - Servidor GraphQL robusto
-- **GraphQL** - Query language para APIs
-- **TypeScript** - Tipado estático completo
-- **Frontend Integration**: `GraphQLService.ts` (Apollo Client) en Dashboard.tsx
-
-### 💎 **WebSocket Server (Ruby)** - Puerto 8080
-- **Ruby 3.x** - Lenguaje de programación dinámico y expresivo
+### 💎 **WebSocket Server (Ruby)**
+- **Ruby** - Lenguaje de programación dinámico y expresivo
+- **WebSocket** - Comunicación bidireccional en tiempo real
 - **EventMachine** - Programación asíncrona y manejo de eventos
-- **em-websocket** - Implementación WebSocket para EventMachine
 - **JSON** - Intercambio de datos estructurados
-- **pg gem** - Adaptador PostgreSQL para Ruby
-- **Frontend Integration**: `WebSocketService.ts` en FilaVirtual.tsx, GestionMesas.tsx
 
-### ⚡ **Backend Services (TypeScript)** - Legacy
+### ⚡ **Backend Services (TypeScript)**
 - **TypeScript** - Tipado estático para JavaScript
 - **Domain-Driven Design** - Arquitectura de dominio bien estructurada
 - **Interfaces** - Contratos claros entre componentes
 
-### 🎨 **Frontend (React + TypeScript)** - Puerto 5173
+### 🎨 **Frontend (React + TypeScript)**
 - **React 19** - Framework principal para interfaces de usuario
 - **Vite** - Build tool moderno y servidor de desarrollo ultra-rápido
 - **TypeScript** - Tipado estático para JavaScript (archivos .tsx)
 - **React Router DOM** - Enrutamiento SPA para navegación fluida
 - **Tailwind CSS** - Framework de CSS utilitario para diseño responsive
 - **ESLint** - Linter para mantener calidad del código
-- **Servicios de Integración**:
-  - `ApiService.ts` - Cliente HTTP para API REST
-  - `GraphQLService.ts` - Apollo Client para GraphQL
-  - `WebSocketService.ts` - Cliente WebSocket nativo
 
 
 ## 📁 Estructura del Proyecto
 
 ```
 Proyecto-autonomo-servidores/
-├── 🐍 apirest_python/         # API REST Principal (Python + FastAPI) - Puerto 8000
+├── 🐍 apirest_python/         # API REST Principal (Python + FastAPI)
 │   ├── routers/               # Endpoints organizados por entidad
 │   │   ├── auth.py           # Autenticación JWT
 │   │   ├── user.py           # Gestión de usuarios
 │   │   ├── Restaurante.py    # CRUD de restaurantes
 │   │   ├── Cliente.py        # CRUD de clientes
-│   │   ├── Mesa.py           # Gestión de mesas ✅ (usado por FilaVirtual.tsx)
+│   │   ├── Mesa.py           # Gestión de mesas
 │   │   ├── Reserva.py        # Sistema de reservas
 │   │   ├── Menu.py           # Gestión de menús
 │   │   ├── Plato.py          # CRUD de platos
 │   │   ├── CategoriaMenu.py  # Categorías de menú
-│   │   └── FilaVirtual.py    # Cola virtual ✅ (endpoints /filas/ y /fila-virtual/)
+│   │   └── FilaVirtual.py    # Cola virtual de espera
 │   ├── main.py               # Aplicación principal FastAPI
 │   ├── requirements.txt      # Dependencias Python
 │   └── .venv/               # Entorno virtual Python
 │
-├── 📊 Graphql_tp/            # Servidor GraphQL (Next.js + Apollo) - Puerto 3000
-│   ├── app/
-│   │   ├── api/graphql/route.ts    # API route de GraphQL
-│   │   └── graphql-playground/     # Interfaz GraphQL Playground
-│   ├── lib/graphql/
-│   │   ├── schema.ts         # Schema GraphQL ✅ (usado por Dashboard.tsx)
-│   │   └── resolvers.ts      # Resolvers con datos de restaurante
-│   ├── components/           # Componentes UI de Next.js
-│   ├── next.config.mjs       # Configuración Next.js
-│   └── package.json          # Dependencias
-│
-├── 💎 websocket_ruby/         # Servidor WebSocket (Ruby) - Puerto 8080
+├── 💎 websocket_ruby/         # Servidor WebSocket (Ruby)
 │   ├── app/
 │   │   ├── channels/         # Canales de comunicación
-│   │   │   ├── fila_virtual_channel.rb    # Canal de fila ✅ (FilaVirtual.tsx)
-│   │   │   ├── mesas_channel.rb           # Canal de mesas ✅ (GestionMesas.tsx)
+│   │   │   ├── fila_virtual_channel.rb    # Canal de fila virtual
+│   │   │   ├── mesas_channel.rb           # Canal de mesas
 │   │   │   └── reservas_channel.rb        # Canal de reservas
 │   │   ├── connections/      # Gestión de conexiones
 │   │   │   └── connection_manager.rb
@@ -142,7 +91,7 @@ Proyecto-autonomo-servidores/
 │   ├── Gemfile              # Dependencias Ruby
 │   └── Gemfile.lock
 │
-├── ⚡ backend/               # Servicios de Dominio (TypeScript) - Legacy
+├── ⚡ backend/               # Servicios de Dominio (TypeScript)
 │   ├── src/
 │   │   ├── domain/          # Entidades de dominio
 │   │   │   ├── Restaurante.ts    # Entidad Restaurante
@@ -333,10 +282,9 @@ Para hacer deploy de la aplicación React:
 ### **Prerrequisitos**
 - **Python 3.8+** para la API REST
 - **Ruby 2.7+** para el servidor WebSocket
-- **Node.js 16+** para GraphQL server y React frontend
-- **PostgreSQL 14+** para la base de datos compartida
+- **Node.js 16+** para TypeScript backend y React frontend
 
-### **1️⃣ Configuración API REST (Python)** - Puerto 8000
+### **🐍 Configuración API REST (Python)**
 ```bash
 cd apirest_python
 python -m venv .venv
@@ -346,24 +294,22 @@ pip install -r requirements.txt
 uvicorn main:app --reload --port 8000
 ```
 
-### **2️⃣ Configuración GraphQL Server (Next.js)** - Puerto 3000
-```bash
-cd Graphql_tp
-npm install
-# o con pnpm:
-pnpm install
-npm run dev
-# Acceder a GraphQL Playground: http://localhost:3000/graphql-playground
-```
-
-### **3️⃣ Configuración WebSocket Server (Ruby)** - Puerto 8080
+### **💎 Configuración WebSocket Server (Ruby)**
 ```bash
 cd websocket_ruby
 bundle install
 ruby server.rb
 ```
 
-### **4️⃣ Configuración Frontend (React)** - Puerto 5173
+### **⚡ Configuración Backend Services (TypeScript)**
+```bash
+cd backend
+npm install
+npm run build
+npm start
+```
+
+### **🎨 Configuración Frontend (React)**
 ```bash
 cd frontend
 npm install
@@ -371,241 +317,56 @@ npm run dev
 ```
 
 ### **🌐 URLs de Acceso**
-| Servicio | URL | Documentación |
-|----------|-----|---------------|
-| **API REST** | `http://localhost:8000` | Swagger: `http://localhost:8000/docs` |
-| **GraphQL** | `http://localhost:3000/api/graphql` | Playground: `http://localhost:3000/graphql-playground` |
-| **WebSocket** | `ws://localhost:8080` | - |
-| **Frontend** | `http://localhost:5173` | - |
-
-### **🔍 Verificación de Servicios**
-
-#### **Verificar API REST:**
-```bash
-curl http://localhost:8000/fila-virtual/
-# Debe retornar JSON con lista de filas
-```
-
-#### **Verificar GraphQL:**
-```bash
-curl -X POST http://localhost:3000/api/graphql \
-  -H "Content-Type: application/json" \
-  -d '{"query": "{ totalReservas }"}'
-# Debe retornar: {"data":{"totalReservas":42}}
-```
-
-#### **Verificar WebSocket:**
-- Abrir `websocket_ruby/public/filaV.html` en navegador
-- Conectar al WebSocket
-- Debe mostrar: "Conectado al servidor WebSocket"
+- **API REST**: `http://localhost:8000` (Swagger: `/docs`)
+- **WebSocket Server**: `ws://localhost:3001`
+- **Backend Services**: `http://localhost:3000`
+- **Frontend**: `http://localhost:5173`
 
 ## 🎯 Estado del Proyecto
 
-### **✅ Tecnologías Backend - IMPLEMENTADAS Y FUNCIONANDO**
+### **✅ Componentes Completados**
 
-#### **🐍 API REST (Python + FastAPI)** - ✅ OPERATIVO
+#### **🐍 API REST (Python + FastAPI)**
 - [x] **CRUD Completo** - 9 entidades con operaciones completas
 - [x] **Autenticación JWT** - Sistema seguro de login y tokens
 - [x] **Validación de Datos** - Pydantic models con validación automática
 - [x] **Manejo de Errores** - HTTPException en todos los endpoints
 - [x] **Documentación Automática** - Swagger UI y ReDoc
 - [x] **Estructura Modular** - Routers organizados por entidad
-- [x] **Integración Frontend** - FilaVirtual.tsx consume endpoints `/fila-virtual/` y `/mesas/`
 
-#### **� GraphQL Server (Next.js + Apollo)** - ✅ OPERATIVO
-- [x] **Schema Completo** - Tipos para Reserva, Mesa, Plato, EstadisticasVentas
-- [x] **Resolvers Implementados** - totalReservas, reservasPorMes, mesasPopulares, platosPopulares
-- [x] **Datos de Prueba** - Sample data para testing y demo
-- [x] **GraphQL Playground** - Interfaz interactiva en `/graphql-playground`
-- [x] **Integración Frontend** - Dashboard.tsx consume queries con Apollo Client
-- [x] **Banner Visible** - Identificación clara "Datos desde GraphQL" en Dashboard
-
-#### **�💎 WebSocket Server (Ruby + EventMachine)** - ✅ OPERATIVO
+#### **💎 WebSocket Server (Ruby)**
 - [x] **Servidor WebSocket** - Comunicación en tiempo real
 - [x] **Canales Especializados** - Fila virtual, mesas y reservas
 - [x] **Gestión de Conexiones** - Connection manager robusto
 - [x] **Message Builder** - Construcción de mensajes estructurados
 - [x] **Event Handling** - Manejo de eventos del restaurante
-- [x] **Integración Frontend** - FilaVirtual.tsx y GestionMesas.tsx reciben updates en tiempo real
 
-#### **🎨 Frontend (React + TypeScript)** - ✅ OPERATIVO
+#### **⚡ Backend Services (TypeScript)**
+- [x] **Arquitectura de Dominio** - Entidades bien definidas
+- [x] **Servicios de Aplicación** - 8 servicios con lógica de negocio
+- [x] **Tipado Estricto** - TypeScript con configuración robusta
+- [x] **Patrón Repository** - Separación de responsabilidades
+- [x] **Domain-Driven Design** - Arquitectura limpia y mantenible
+
+#### **🎨 Frontend (React + TypeScript)**
 - [x] **Interfaz de Usuario Completa** - 4 páginas de cliente
 - [x] **Panel de Administración** - 5 páginas de gestión
 - [x] **Sistema de Rutas** - React Router con navegación
 - [x] **Diseño Responsive** - Optimizado para todos los dispositivos
 - [x] **Componentes Modulares** - Reutilizables y organizados
-- [x] **Integración Multi-Tecnología**:
-  - `ApiService.ts` - Cliente HTTP para API REST
-  - `GraphQLService.ts` - Apollo Client para GraphQL
-  - `WebSocketService.ts` - Cliente WebSocket nativo
-- [x] **CSS Moderno** - Reportes.css con 600+ líneas, gradientes y efectos hover
 
 ### **🏗️ Arquitectura de Integración**
 - [x] **Microservicios Distribuidos** - Cada componente independiente
 - [x] **Comunicación REST** - API endpoints para operaciones CRUD
-- [x] **GraphQL Queries** - Dashboard analytics con Apollo Client
-- [x] **WebSocket Real-Time** - Updates bidireccionales para mesas y fila virtual
-- [x] **Frontend Unificado** - React consume las 3 tecnologías simultáneamente
+- [x] **Comunicación WebSocket** - Updates en tiempo real
 - [x] **Tipado Compartido** - Interfaces consistentes entre servicios
-- [x] **Separación de Responsabilidades** - Cada tecnología en su dominio específico
+- [x] **Separación de Responsabilidades** - Cada lenguaje en su dominio
 
 ### **🔄 Mejoras Futuras**
-- [ ] **Base de Datos Compartida** - PostgreSQL con conexiones desde Python/Ruby/GraphQL
-- [ ] **Docker Compose** - Orquestación de los 4 servicios (API REST, GraphQL, WebSocket, Frontend)
-- [ ] **Testing Integrado** - Pruebas end-to-end que validen integración
-- [ ] **CI/CD Pipeline** - Deployment automatizado multi-servicio
-- [ ] **Monitoreo** - Logs y métricas centralizadas con Prometheus/Grafana
-- [ ] **Autenticación Compartida** - JWT validado en las 3 tecnologías backend
-
----
-
-## 🔧 Troubleshooting
-
-### **Error: 404 en `/fila-virtual/`**
-**Solución**: Reiniciar el servidor API REST después de agregar nuevos endpoints
-```bash
-cd apirest_python
-# Detener servidor (Ctrl+C)
-uvicorn main:app --reload --port 8000
-```
-
-### **Error: GraphQL no responde en puerto 3000**
-**Solución**: Verificar que Next.js está en modo desarrollo
-```bash
-cd Graphql_tp
-npm run dev
-# Acceder a: http://localhost:3000/api/graphql
-```
-
-### **Error: WebSocket desconectado**
-**Solución**: Verificar que el servidor Ruby está corriendo
-```bash
-cd websocket_ruby
-ruby server.rb
-# Debe mostrar: "WebSocket server running on ws://localhost:8080"
-```
-
-### **Error: Frontend no encuentra servicios**
-**Solución**: Verificar que los 3 backends están corriendo simultáneamente
-- API REST: `http://localhost:8000/docs` debe abrir Swagger
-- GraphQL: `http://localhost:3000/graphql-playground` debe abrir playground
-- WebSocket: Consola del navegador debe mostrar "Connected to WebSocket"
-
----
-
-## 📚 Documentación Técnica Detallada
-
-### **Guías de Implementación**
-- [`IMPLEMENTACION_TECNOLOGIAS.md`](./IMPLEMENTACION_TECNOLOGIAS.md) - Cómo está implementada cada tecnología backend
-- [`GUIA_VISUAL.md`](./GUIA_VISUAL.md) - Qué página usa qué tecnología (con screenshots)
-- [`CORRECCIONES_27_OCT.md`](./CORRECCIONES_27_OCT.md) - Últimas correcciones técnicas implementadas
-- [`ANTES_DESPUES_REPORTES.md`](./ANTES_DESPUES_REPORTES.md) - Cambios visuales en CSS de Reportes
-
-### **Arquitectura de Integración**
-```
-┌─────────────────────────────────────────────────────────┐
-│                  FRONTEND (React + Vite)                │
-│                    Puerto 5173                          │
-├─────────────────────────────────────────────────────────┤
-│                                                         │
-│  ApiService.ts  │  GraphQLService.ts  │  WebSocketSvc.ts│
-│       ▼         │         ▼           │        ▼        │
-│   HTTP REST     │    Apollo Client    │  WebSocket API  │
-└──────┬──────────┴──────────┬──────────┴────────┬────────┘
-       │                     │                    │
-       ▼                     ▼                    ▼
-┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-│  API REST    │    │   GraphQL    │    │  WebSocket   │
-│   (Python)   │    │  (Next.js)   │    │    (Ruby)    │
-│  Puerto 8000 │    │ Puerto 3000  │    │ Puerto 8080  │
-└──────────────┘    └──────────────┘    └──────────────┘
-```
-
-### **Mapeo de Páginas → Tecnologías**
-
-| Página Frontend | API REST | GraphQL | WebSocket |
-|----------------|----------|---------|-----------|
-| **Dashboard.tsx** | ❌ | ✅ Stats | ❌ |
-| **FilaVirtual.tsx** | ✅ CRUD | ❌ | ✅ Real-time |
-| **GestionMesas.tsx** | ✅ CRUD | ❌ | ✅ Real-time |
-| **Reportes.tsx** | ✅ Data | ❌ | ❌ |
-
----
-
-## 👨‍💻 Desarrollo
-
-### **Estructura de Servicios Frontend**
-
-**`frontend/src/services/ApiService.ts`**
-```typescript
-// Cliente HTTP para API REST (Python FastAPI)
-const API_BASE_URL = 'http://localhost:8000';
-export const ApiService = {
-  getFilaVirtual: () => fetch(`${API_BASE_URL}/fila-virtual/`),
-  getMesas: () => fetch(`${API_BASE_URL}/mesas/`)
-}
-```
-
-**`frontend/src/services/GraphQLService.ts`**
-```typescript
-// Cliente Apollo para GraphQL (Next.js)
-import { ApolloClient, InMemoryCache } from '@apollo/client';
-const client = new ApolloClient({
-  uri: 'http://localhost:3000/api/graphql',
-  cache: new InMemoryCache()
-});
-```
-
-**`frontend/src/services/WebSocketService.ts`**
-```typescript
-// Cliente WebSocket nativo (Ruby EventMachine)
-const ws = new WebSocket('ws://localhost:8080');
-ws.onmessage = (event) => {
-  const data = JSON.parse(event.data);
-  // Actualizar UI en tiempo real
-}
-```
-
----
-
-## 🎓 Aprendizajes del Proyecto
-
-### **Integración Multi-Tecnología**
-- ✅ Un frontend puede consumir múltiples backends simultáneamente
-- ✅ Cada tecnología tiene sus fortalezas: REST (CRUD), GraphQL (queries), WebSocket (real-time)
-- ✅ Importancia de CORS y configuración de puertos
-
-### **Arquitectura de Microservicios**
-- ✅ Separación de responsabilidades por tecnología
-- ✅ Cada servicio puede escalar independientemente
-- ✅ Comunicación asíncrona reduce acoplamiento
-
-### **TypeScript en Frontend**
-- ✅ Tipado estático previene errores en tiempo de desarrollo
-- ✅ Interfaces compartidas entre servicios mejoran mantenibilidad
-- ✅ Apollo Client simplifica integración con GraphQL
-
----
-
-## 📄 Licencia
-
-Este proyecto es parte de un trabajo académico para la materia de Servidores.
-
-**Desarrollado por**: [Tu Nombre]  
-**Institución**: [Universidad/Institución]  
-**Fecha**: Octubre 2024
-
----
-
-## 🤝 Contribuciones
-
-Este es un proyecto educativo. Para sugerencias o mejoras:
-
-1. Revisa la documentación en [`IMPLEMENTACION_TECNOLOGIAS.md`](./IMPLEMENTACION_TECNOLOGIAS.md)
-2. Verifica que los 3 backends estén operativos
-3. Abre un issue describiendo el problema o mejora propuesta
-
----
-
-**⭐ Si este proyecto te fue útil para aprender integración multi-tecnología, dale una estrella ⭐**
+- [ ] **Integración Completa** - Conectar todos los microservicios
+- [ ] **Base de Datos** - Persistencia con PostgreSQL/MongoDB
+- [ ] **Docker Compose** - Orquestación de contenedores
+- [ ] **Testing Integrado** - Pruebas end-to-end
+- [ ] **CI/CD Pipeline** - Deployment automatizado
+- [ ] **Monitoreo** - Logs y métricas centralizadas
 

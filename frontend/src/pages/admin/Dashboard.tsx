@@ -1,48 +1,8 @@
-import { useEffect, useState } from "react";
 import NavbarAdmin from "../../components/admin/NavbarAdmin";
-import { fetchDashboardData } from "../../services/GraphQLService";
 import "../../css/admin/Dashboard.css";
 
+
 export default function Dashboard() {
-  const [dashboardData, setDashboardData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const loadDashboardData = async () => {
-      try {
-        const data = await fetchDashboardData();
-        setDashboardData(data);
-        setError(null);
-      } catch (err) {
-        console.error('Error al cargar datos del dashboard:', err);
-        setError('Error al cargar los datos del dashboard');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadDashboardData();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="dashboard-admin">
-        <NavbarAdmin />
-        <div className="loading-dashboard">Cargando datos...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="dashboard-admin">
-        <NavbarAdmin />
-        <div className="error-dashboard">{error}</div>
-      </div>
-    );
-  }
-
   return (
     <div className="dashboard-admin">
       <NavbarAdmin />
@@ -59,127 +19,94 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* Estadísticas principales - Datos de GraphQL */}
+      {/* Estadísticas principales */}
       <section className="seccion-estadisticas">
         <div className="contenedor-estadisticas">
           <h2 className="titulo-seccion-admin">Estadísticas de Hoy</h2>
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '10px',
-            marginBottom: '20px',
-            padding: '15px',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            borderRadius: '8px',
-            color: 'white',
-            fontWeight: 'bold'
-          }}>
-            <span style={{ fontSize: '24px' }}>📊</span>
-            <span>DATOS EN TIEMPO REAL VIA GRAPHQL</span>
-            <span style={{ 
-              marginLeft: 'auto',
-              padding: '5px 15px',
-              background: 'rgba(255,255,255,0.2)',
-              borderRadius: '20px',
-              fontSize: '12px'
-            }}>
-              � Conectado a http://localhost:3000/api/graphql
-            </span>
-          </div>
           <div className="grilla-estadisticas">
             
             <div className="tarjeta-estadistica ventas">
               <div className="icono-estadistica ventas-icon"></div>
               <div className="contenido-estadistica">
-                <h3 className="titulo-estadistica">Total de Reservas</h3>
-                <p className="valor-estadistica">{dashboardData?.totalReservas || 0}</p>
-                <span className="comparacion positiva">Datos en tiempo real</span>
+                <h3 className="titulo-estadistica">Ventas del Día</h3>
+                <p className="valor-estadistica">$2,847.50</p>
+                <span className="comparacion positiva">+15% vs ayer</span>
               </div>
             </div>
 
             <div className="tarjeta-estadistica ordenes">
               <div className="icono-estadistica ordenes-icon"></div>
               <div className="contenido-estadistica">
-                <h3 className="titulo-estadistica">Mesas Populares</h3>
-                <p className="valor-estadistica">{dashboardData?.mesasPopulares?.length || 0}</p>
-                <span className="comparacion positiva">En análisis</span>
+                <h3 className="titulo-estadistica">Órdenes Completadas</h3>
+                <p className="valor-estadistica">47</p>
+                <span className="comparacion positiva">+8 vs ayer</span>
               </div>
             </div>
 
             <div className="tarjeta-estadistica clientes">
               <div className="icono-estadistica clientes-icon"></div>
               <div className="contenido-estadistica">
-                <h3 className="titulo-estadistica">Platos Más Pedidos</h3>
-                <p className="valor-estadistica">{dashboardData?.platosPopulares?.length || 0}</p>
-                <span className="comparacion neutra">Top platos</span>
+                <h3 className="titulo-estadistica">Clientes Atendidos</h3>
+                <p className="valor-estadistica">134</p>
+                <span className="comparacion neutra">Similar a ayer</span>
               </div>
             </div>
 
             <div className="tarjeta-estadistica tiempo-promedio">
               <div className="icono-estadistica tiempo-icon"></div>
               <div className="contenido-estadistica">
-                <h3 className="titulo-estadistica">Reservas este Mes</h3>
-                <p className="valor-estadistica">
-                  {dashboardData?.reservasPorMes?.reduce((acc: number, item: any) => acc + item.total, 0) || 0}
-                </p>
-                <span className="comparacion positiva">Tendencia mensual</span>
+                <h3 className="titulo-estadistica">Tiempo Promedio</h3>
+                <p className="valor-estadistica">28 min</p>
+                <span className="comparacion negativa">+3 min vs ayer</span>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Gráfico de Reservas por Mes */}
-      <section className="seccion-estadisticas">
-        <div className="contenedor-estadisticas">
-          <h2 className="titulo-seccion-admin">Reservas por Mes</h2>
-          <div className="chart-container">
-            {dashboardData?.reservasPorMes?.map((item: any) => (
-              <div key={item.mes} className="bar-chart-item">
-                <div 
-                  className="bar" 
-                  style={{ 
-                    height: `${(item.total / Math.max(...(dashboardData.reservasPorMes?.map((x: any) => x.total) || [1]))) * 200}px`,
-                    background: '#4299e1'
-                  }}
-                />
-                <span className="mes-label">{item.mes}</span>
-                <span className="valor-label">{item.total}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Mesas más Populares */}
+      {/* Estado actual del restaurante */}
       <section className="seccion-estado-actual">
         <div className="contenedor-estado-actual">
-          <h2 className="titulo-seccion-admin">Mesas más Utilizadas</h2>
+          <h2 className="titulo-seccion-admin">Estado Actual del Restaurante</h2>
           <div className="grilla-estado-actual">
-            {dashboardData?.mesasPopulares?.map((mesa: any) => (
-              <div key={mesa.mesaId} className="tarjeta-estado">
-                <h3 className="titulo-estado">Mesa #{mesa.mesaId}</h3>
-                <div className="indicador-mesas">
-                  <span className="numero-mesas">{mesa.usos}</span>
-                  <span className="total-mesas">usos</span>
+            
+            <div className="tarjeta-estado">
+              <h3 className="titulo-estado">Mesas Ocupadas</h3>
+              <div className="indicador-mesas">
+                <span className="numero-mesas">6</span>
+                <span className="total-mesas">/ 9 mesas</span>
+              </div>
+              <div className="progreso-ocupacion">
+                <div className="barra-progreso">
+                  <div className="progreso-actual" style={{width: '67%'}}></div>
                 </div>
+                <span className="porcentaje-ocupacion">67% ocupación</span>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
+            </div>
 
-      {/* Platos más Pedidos */}
-      <section className="seccion-estado-actual">
-        <div className="contenedor-estado-actual">
-          <h2 className="titulo-seccion-admin">Platos más Pedidos</h2>
-          <div className="lista-platos-populares">
-            {dashboardData?.platosPopulares?.map((plato: any) => (
-              <div key={plato.platoId} className="item-plato-popular">
-                <span className="nombre-plato">{plato.nombre}</span>
-                <span className="pedidos-plato">{plato.pedidos} pedidos</span>
+            <div className="tarjeta-estado">
+              <h3 className="titulo-estado">Cola de Espera</h3>
+              <div className="info-cola">
+                <span className="numero-espera">4 clientes</span>
+                <span className="tiempo-espera-promedio">~25 min promedio</span>
               </div>
-            ))}
+            </div>
+
+            <div className="tarjeta-estado">
+              <h3 className="titulo-estado">Reservas Hoy</h3>
+              <div className="info-reservas">
+                <span className="numero-reservas">12 reservas</span>
+                <span className="proxima-reserva">Próxima: 3:30 PM</span>
+              </div>
+            </div>
+
+            <div className="tarjeta-estado">
+              <h3 className="titulo-estado">Personal en Turno</h3>
+              <div className="info-personal">
+                <span className="numero-personal">8 empleados</span>
+                <span className="distribucion-personal">3 meseros, 3 cocina, 2 admin</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
