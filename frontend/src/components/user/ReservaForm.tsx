@@ -2,7 +2,7 @@ import { useState } from "react";
 import { apiService } from "../../services/ApiService";
 import "../../css/user/Reservas.css";
 
-export default function ReservaFormConAPI() {
+export default function ReservaForm() {
   const [formData, setFormData] = useState({
     id_cliente: 1, // Por ahora hardcodeado, después lo obtienes del usuario logueado
     id_mesa: 1,    // Lo seleccionará el usuario de una lista
@@ -71,7 +71,8 @@ export default function ReservaFormConAPI() {
 
   return (
     <div className="contenedor-formulario">
-      <h2 className="titulo-formulario">Hacer Reserva - Conectado a API REST</h2>
+      <h2 className="titulo-formulario">Hacer Reserva</h2>
+      <p className="tech-badge">🔌 API REST (FastAPI)</p>
       
       {mensaje && (
         <div className={`mensaje ${mensaje.includes('Error') ? 'error' : 'exito'}`}>

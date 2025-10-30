@@ -11,11 +11,7 @@ import GestionMesas from "./pages/admin/GestionMesas";
 import GestionReservas from "./pages/admin/GestionReservas";
 import GestionMenu from "./pages/admin/GestionMenu";
 import Reportes from "./pages/admin/Reportes";
-/// Páginas con API REST
-import HomeSimpleAPI from "./pages/api/HomeSimpleAPI";
-import MenuConAPI from "./pages/api/MenuConAPI";
-import ReservasConAPI from "./pages/api/ReservasConAPI";
-import FilaVirtualConAPI from "./pages/api/FilaVirtualConAPI";
+
 
 function App() {
   return (
@@ -26,11 +22,6 @@ function App() {
         <Route path="/menu" element={<Menu />} />
         <Route path="/reservas" element={<Reservas />} />
         <Route path="/filavirtual" element={<FilaVirtual />} />
-        {/* Rutas con API REST */}
-        <Route path="/homeapi" element={<HomeSimpleAPI />} />
-        <Route path="/menuapi" element={<MenuConAPI />} />
-        <Route path="/reservasapi" element={<ReservasConAPI />} />
-        <Route path="/filaapi" element={<FilaVirtualConAPI />} />
         
         {/* Rutas de administración */}
         <Route path="/admin" element={<Dashboard />} />

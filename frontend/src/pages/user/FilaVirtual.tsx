@@ -61,7 +61,15 @@ export default function FilaVirtual() {
         try {
             const response = await fetch('http://localhost:8000/mesas/');
             const data = await response.json();
-            setMesas(data);
+            // Mapear los datos de la API al formato del frontend
+            const mesasFormateadas = data.map((mesa: any) => ({
+                id: mesa.id_mesa,
+                numero: mesa.numero,
+                capacidad: mesa.capacidad,
+                estado: mesa.estado,
+                ubicacion: 'Interior' // La API no devuelve ubicación, usar valor por defecto
+            }));
+            setMesas(mesasFormateadas);
         } catch (error) {
             console.error('Error al cargar mesas:', error);
         }
@@ -71,7 +79,16 @@ export default function FilaVirtual() {
         try {
             const response = await fetch('http://localhost:8000/fila-virtual/');
             const data = await response.json();
-            setCola(data);
+            // Mapear los datos de la API al formato del frontend
+            const colaFormateada = data.map((fila: any) => ({
+                id: fila.id_fila,
+                nombre: `Cliente ${fila.id_cliente}`,
+                telefono: '099-XXX-XXXX',
+                numeroPersonas: 2,
+                posicion: fila.posicion,
+                tiempoEstimado: parseInt(fila.tiempo_espera) || 15
+            }));
+            setCola(colaFormateada);
         } catch (error) {
             console.error('Error al cargar cola:', error);
         }
@@ -89,16 +106,20 @@ export default function FilaVirtual() {
         e.preventDefault();
         
         try {
+            // Generar ID único para la nueva fila
+            const nuevoId = cola.length > 0 ? Math.max(...cola.map(c => c.id)) + 1 : 4;
+            
             // Crear entrada en la fila virtual via API REST
-            const response = await fetch('http://localhost:8000/fila-virtual/', {
+            const response = await fetch('http://localhost:8000/fila/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    cliente_id: Math.floor(Math.random() * 1000), // Generar ID temporal
-                    ...formData,
-                    hora_llegada: new Date().toISOString(),
+                    id_fila: nuevoId,
+                    id_cliente: Math.floor(Math.random() * 1000),
+                    posicion: cola.length + 1,
+                    tiempo_espera: `${(cola.length + 1) * 15} min`,
                     estado: 'esperando'
                 }),
             });
@@ -106,10 +127,13 @@ export default function FilaVirtual() {
             if (response.ok) {
                 const data = await response.json();
                 // Notificar via WebSocket
-                wsService.joinFilaVirtual(data.id, formData.nombre);
+                wsService.joinFilaVirtual(data.id_fila, formData.nombre);
                 alert('¡Te has unido a la cola virtual! Te notificaremos cuando sea tu turno.');
                 setFormData({ nombre: '', telefono: '', numeroPersonas: 2 });
                 cargarCola();
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.detail || 'No se pudo unir a la cola'}`);
             }
         } catch (error) {
             console.error('Error al unirse a la cola:', error);
@@ -122,17 +146,21 @@ export default function FilaVirtual() {
     const mesasPor6Plus = mesas.filter(m => m.capacidad >= 6);
 
     const getEstadoClase = (estado: string) => {
-        return estado.toLowerCase().replace(' ', '-');
+        // Normalizar estado de la API al formato del frontend
+        const estadoNormalizado = estado.toLowerCase();
+        if (estadoNormalizado === 'disponible') return 'libre';
+        return estadoNormalizado.replace(' ', '-');
     };
 
     const getEstadoTexto = (estado: string) => {
         const estados: any = {
             'libre': 'Disponible',
+            'disponible': 'Disponible',
             'ocupada': 'Ocupada',
             'reservada': 'Reservada',
             'limpieza': 'En limpieza'
         };
-        return estados[estado] || estado;
+        return estados[estado.toLowerCase()] || estado;
     };
 
     return (
@@ -144,6 +172,7 @@ export default function FilaVirtual() {
                 <div className="contenedor-banner-fila">
                     <h1 className="titulo-fila-virtual">Fila Virtual</h1>
                     <p className="subtitulo-fila-virtual">Consulta disponibilidad y únete a la cola de espera</p>
+                    <p className="tech-badge">🔌 WebSocket - Tiempo Real</p>
                 </div>
             </section>
 
@@ -175,7 +204,7 @@ export default function FilaVirtual() {
                                     <div key={mesa.id} className={`tarjeta-mesa ${getEstadoClase(mesa.estado)}`}>
                                         <span className="numero-mesa">Mesa {mesa.numero}</span>
                                         <span className="estado-mesa">{getEstadoTexto(mesa.estado)}</span>
-                                        {mesa.estado === 'libre' && (
+                                        {(mesa.estado.toLowerCase() === 'libre' || mesa.estado.toLowerCase() === 'disponible') && (
                                             <button className="boton-tomar-mesa">Tomar Mesa</button>
                                         )}
                                     </div>
@@ -191,7 +220,7 @@ export default function FilaVirtual() {
                                     <div key={mesa.id} className={`tarjeta-mesa ${getEstadoClase(mesa.estado)}`}>
                                         <span className="numero-mesa">Mesa {mesa.numero}</span>
                                         <span className="estado-mesa">{getEstadoTexto(mesa.estado)}</span>
-                                        {mesa.estado === 'libre' && (
+                                        {(mesa.estado.toLowerCase() === 'libre' || mesa.estado.toLowerCase() === 'disponible') && (
                                             <button className="boton-tomar-mesa">Tomar Mesa</button>
                                         )}
                                     </div>
@@ -207,7 +236,7 @@ export default function FilaVirtual() {
                                     <div key={mesa.id} className={`tarjeta-mesa ${getEstadoClase(mesa.estado)}`}>
                                         <span className="numero-mesa">Mesa {mesa.numero}</span>
                                         <span className="estado-mesa">{getEstadoTexto(mesa.estado)}</span>
-                                        {mesa.estado === 'libre' && (
+                                        {(mesa.estado.toLowerCase() === 'libre' || mesa.estado.toLowerCase() === 'disponible') && (
                                             <button className="boton-tomar-mesa">Tomar Mesa</button>
                                         )}
                                     </div>

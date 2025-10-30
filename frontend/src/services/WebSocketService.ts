@@ -254,5 +254,37 @@ class WebSocketService {
 // Exportar instancia singleton
 export const wsService = new WebSocketService();
 
+// Hook para usar WebSocket en componentes
+import { useEffect, useRef, useCallback } from 'react';
+
+export function useWebSocketService(channelName: string) {
+  const wsRef = useRef(wsService);
+
+  useEffect(() => {
+    wsRef.current.connect();
+    return () => {
+      wsRef.current.disconnect();
+    };
+  }, []);
+
+  const on = useCallback((event: string, callback: MessageCallback) => {
+    return wsRef.current.subscribe(event, callback);
+  }, []);
+
+  const emit = useCallback((action: string, data: any) => {
+    wsRef.current.send({
+      channel: channelName as 'fila_virtual' | 'mesas' | 'reservas',
+      action,
+      data,
+    });
+  }, [channelName]);
+
+  return {
+    on,
+    emit,
+    isConnected: () => wsRef.current.isConnected(),
+  };
+}
+
 // Exportar tipos
 export type { WebSocketMessage, MessageCallback };

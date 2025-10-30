@@ -1,7 +1,733 @@
 /* ===================================
-   REPORTES.CSS - REPORTES ADMIN GOLDIFOX
+   REPORTES.CSS - REPORTES ADMIN
    Sistema de reportes y análisis con diseño profesional
    =================================== */
+
+/* Variables CSS - Puedes ajustar estos valores según tu diseño */
+:root {
+  --color-primary: #d4af37;
+  --color-primary-dark: #b8941f;
+  --color-primary-alpha: rgba(212, 175, 55, 0.1);
+  --color-background-main: #f5f5f5;
+  --color-background-card: #ffffff;
+  --color-surface-elevated: #fafafa;
+  --color-surface-muted: #f0f0f0;
+  --color-border-light: #e5e5e5;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #666666;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-full: 9999px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+  --transition-normal: all 0.2s ease;
+  --transition-smooth: all 0.3s ease;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-family-primary: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-family-heading: 'Inter', sans-serif;
+  --letter-spacing-wide: 0.05em;
+  --opacity-text-muted: 0.7;
+}
+
+/* Página Principal Reportes */
+.reportes-admin {
+  background: var(--color-background-main);
+  min-height: 100vh;
+  font-family: var(--font-family-primary);
+}
+
+/* Header Reportes */
+.header-reportes {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  padding: var(--spacing-2xl) var(--spacing-md) var(--spacing-xl);
+  box-shadow: var(--shadow-lg);
+}
+
+.contenedor-header-reportes {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.titulo-reportes {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 var(--spacing-sm) 0;
+  font-family: var(--font-family-heading);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.subtitulo-reportes {
+  font-size: var(--font-size-lg);
+  color: rgba(255,255,255,0.8);
+  margin: 0 0 var(--spacing-xl) 0;
+}
+
+.filtros-reportes {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.selector-periodo,
+.boton-exportar-reporte,
+.boton-imprimir {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  transition: var(--transition-normal);
+  font-weight: 500;
+  border: none;
+}
+
+.selector-periodo {
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.selector-periodo:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+.boton-exportar-reporte,
+.boton-imprimir {
+  background: var(--color-primary);
+  color: #1a1a1a;
+}
+
+.boton-exportar-reporte:hover,
+.boton-imprimir:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Secciones Reportes */
+.seccion-resumen-ejecutivo,
+.seccion-ventas-hora,
+.seccion-platos-top,
+.seccion-ocupacion-mesas,
+.seccion-analisis-reservas,
+.seccion-analisis-financiero,
+.seccion-recomendaciones {
+  padding: var(--spacing-2xl) var(--spacing-md);
+}
+
+.contenedor-resumen-ejecutivo,
+.contenedor-ventas-hora,
+.contenedor-platos-top,
+.contenedor-ocupacion,
+.contenedor-analisis-reservas,
+.contenedor-financiero,
+.contenedor-recomendaciones {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.titulo-seccion-reportes {
+  font-size: var(--font-size-2xl);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-xl) 0;
+  font-family: var(--font-family-heading);
+  text-align: center;
+  position: relative;
+  padding-bottom: var(--spacing-md);
+}
+
+.titulo-seccion-reportes::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: var(--color-primary);
+}
+
+/* Resumen Ejecutivo */
+.grilla-metricas-principales {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.tarjeta-metrica {
+  background: white;
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+}
+
+.tarjeta-metrica:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.tarjeta-metrica::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+}
+
+.tarjeta-metrica.ventas-totales::before { background: #10b981; }
+.tarjeta-metrica.ordenes-completadas::before { background: #3b82f6; }
+.tarjeta-metrica.ticket-promedio::before { background: #f59e0b; }
+.tarjeta-metrica.clientes-atendidos::before { background: #8b5cf6; }
+
+.icono-metrica {
+  width: 50px;
+  height: 50px;
+  border-radius: var(--border-radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: var(--spacing-md);
+}
+
+.icono-metrica.ventas { background: #10b981; }
+.icono-metrica.ordenes { background: #3b82f6; }
+.icono-metrica.ticket { background: #f59e0b; }
+.icono-metrica.clientes { background: #8b5cf6; }
+
+.icono-metrica.ventas::before { content: '💰'; }
+.icono-metrica.ordenes::before { content: '📋'; }
+.icono-metrica.ticket::before { content: '🎯'; }
+.icono-metrica.clientes::before { content: '👥'; }
+
+.contenido-metrica {
+  flex: 1;
+}
+
+.titulo-metrica {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-xs) 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.valor-metrica {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-sm) 0;
+  font-family: var(--font-family-heading);
+  line-height: 1;
+}
+
+.comparacion-metrica {
+  display: flex;
+  gap: var(--spacing-xs);
+  align-items: center;
+  font-size: var(--font-size-sm);
+}
+
+.cambio {
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--border-radius-sm);
+}
+
+.cambio.positivo {
+  color: var(--color-success);
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.cambio.negativo {
+  color: var(--color-danger);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.cambio.neutro {
+  color: var(--color-text-secondary);
+  background: var(--color-surface-muted);
+}
+
+.referencia {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+}
+
+/* Gráfico Ventas por Hora */
+.grafico-ventas-hora {
+  background: white;
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  gap: var(--spacing-lg);
+}
+
+.eje-y {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--spacing-lg) 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+.barras-ventas {
+  flex: 1;
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: flex-end;
+  padding: var(--spacing-lg) 0;
+}
+
+.barra-hora {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.barra {
+  width: 100%;
+  background: linear-gradient(to top, var(--color-primary), var(--color-primary-dark));
+  border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
+  transition: var(--transition-smooth);
+  min-height: 20px;
+}
+
+.barra-hora.pico .barra {
+  background: linear-gradient(to top, #10b981, #059669);
+}
+
+.barra-hora:hover .barra {
+  opacity: 0.8;
+  transform: scaleY(1.05);
+}
+
+.hora-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.valor-hora {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+/* Top Platos */
+.lista-platos-top {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.item-plato-top {
+  background: white;
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  transition: var(--transition-smooth);
+  border-left: 4px solid transparent;
+}
+
+.item-plato-top:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-md);
+}
+
+.item-plato-top.position-1 { border-left-color: #FFD700; }
+.item-plato-top.position-2 { border-left-color: #C0C0C0; }
+.item-plato-top.position-3 { border-left-color: #CD7F32; }
+
+.posicion-plato {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--border-radius-full);
+  background: var(--color-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: var(--font-size-lg);
+  flex-shrink: 0;
+}
+
+.item-plato-top.position-1 .posicion-plato { background: #FFD700; color: #1a1a1a; }
+.item-plato-top.position-2 .posicion-plato { background: #C0C0C0; color: #1a1a1a; }
+.item-plato-top.position-3 .posicion-plato { background: #CD7F32; color: white; }
+
+.info-plato-top {
+  flex: 1;
+}
+
+.nombre-plato-top {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-xs) 0;
+}
+
+.categoria-plato-top {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.metricas-plato-top {
+  display: flex;
+  gap: var(--spacing-lg);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.cantidad-vendida,
+.ingresos-plato,
+.porcentaje-ventas {
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+}
+
+.cantidad-vendida {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+.ingresos-plato {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  font-weight: 600;
+}
+
+.porcentaje-ventas {
+  background: var(--color-surface-muted);
+  color: var(--color-text-secondary);
+}
+
+/* Ocupación de Mesas */
+.grilla-ocupacion {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.tarjeta-ocupacion {
+  background: white;
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+}
+
+.titulo-ocupacion {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-lg) 0;
+}
+
+.grafico-circular {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto var(--spacing-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius-full);
+  background: conic-gradient(var(--color-primary) 0deg 259.2deg, var(--color-surface-muted) 259.2deg 360deg);
+  position: relative;
+}
+
+.porcentaje-ocupacion {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.detalle-ocupacion {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.info-hora-pico,
+.info-rotacion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+}
+
+.horario-pico,
+.numero-rotacion {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.ocupacion-pico,
+.unidad-rotacion {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* Análisis de Reservas */
+.grilla-reservas-metricas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.tarjeta-reserva-metrica {
+  background: white;
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+  transition: var(--transition-smooth);
+}
+
+.tarjeta-reserva-metrica:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.titulo-reserva-metrica {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-md) 0;
+  text-transform: uppercase;
+}
+
+.valor-reserva-metrica {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 0 0 var(--spacing-sm) 0;
+  line-height: 1;
+}
+
+.detalle-reserva-metrica {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* Tabla Comparativa */
+.tabla-comparativa {
+  background: white;
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+}
+
+.tabla-reportes {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-reportes th,
+.tabla-reportes td {
+  padding: var(--spacing-md);
+  text-align: left;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.tabla-reportes th {
+  background: var(--color-surface-muted);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tabla-reportes .fila-actual {
+  background: rgba(212, 175, 55, 0.05);
+  font-weight: 600;
+}
+
+.tabla-reportes tr:hover {
+  background: var(--color-surface-muted);
+}
+
+.tabla-reportes .cambio {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  font-weight: 600;
+}
+
+/* Recomendaciones */
+.lista-recomendaciones {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.recomendacion {
+  background: white;
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  gap: var(--spacing-lg);
+  border-left: 4px solid;
+}
+
+.recomendacion.alta-prioridad { border-left-color: var(--color-danger); }
+.recomendacion.media-prioridad { border-left-color: var(--color-warning); }
+.recomendacion.baja-prioridad { border-left-color: var(--color-success); }
+
+.icono-recomendacion {
+  width: 50px;
+  height: 50px;
+  border-radius: var(--border-radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.icono-recomendacion.alerta { background: rgba(239, 68, 68, 0.1); }
+.icono-recomendacion.alerta::before { content: '⚠️'; }
+
+.icono-recomendacion.sugerencia { background: rgba(245, 158, 11, 0.1); }
+.icono-recomendacion.sugerencia::before { content: '💡'; }
+
+.icono-recomendacion.info { background: rgba(16, 185, 129, 0.1); }
+.icono-recomendacion.info::before { content: 'ℹ️'; }
+
+.contenido-recomendacion {
+  flex: 1;
+}
+
+.titulo-recomendacion {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+.descripcion-recomendacion {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-sm) 0;
+  line-height: 1.6;
+}
+
+.prioridad {
+  display: inline-block;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.prioridad.alta {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-danger);
+}
+
+.prioridad.media {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--color-warning);
+}
+
+.prioridad.baja {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--color-success);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header-reportes {
+    padding: var(--spacing-xl) var(--spacing-sm);
+  }
+  
+  .titulo-reportes {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .filtros-reportes {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .selector-periodo,
+  .boton-exportar-reporte,
+  .boton-imprimir {
+    width: 100%;
+  }
+  
+  .grilla-metricas-principales,
+  .grilla-ocupacion,
+  .grilla-reservas-metricas {
+    grid-template-columns: 1fr;
+  }
+  
+  .grafico-ventas-hora {
+    flex-direction: column;
+  }
+  
+  .eje-y {
+    flex-direction: row;
+    padding: 0 var(--spacing-md);
+  }
+  
+  .barras-ventas {
+    justify-content: space-around;
+  }
+  
+  .metricas-plato-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .tabla-comparativa {
+    overflow-x: scroll;
+  }
+}
 
 /* Página Principal Reportes */
 .reportes-admin {

@@ -25,6 +25,11 @@ async def fila():
 async def filas():
     return filas_list
 
+# Alias para compatibilidad con frontend
+@router.get("/fila-virtual/")
+async def fila_virtual():
+    return filas_list
+
 #path
 @router.get("/fila/{id_fila}")
 async def fila(id_fila: int):
