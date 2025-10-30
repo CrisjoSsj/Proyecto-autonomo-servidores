@@ -1,27 +1,102 @@
 /* ===================================
-   GESTION-MENU.CSS - GESTIÓN DE MENÚ ADMIN GOLDIFOX
-   Sistema de gestión de menú con diseño profesional
+   GESTION-MENU.CSS - GESTIÓN DE MENÚ ADMIN
+   Sistema de gestión de menú con diseño moderno y profesional
    =================================== */
 
-/* Página Principal Gestión Menú */
+/* Variables CSS */
+:root {
+  /* Colores principales */
+  --color-primary: #d97706;
+  --color-primary-dark: #b45309;
+  --color-primary-light: #fbbf24;
+  --color-primary-alpha: rgba(217, 119, 6, 0.1);
+  
+  /* Colores de estado */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+  --color-purple: #8b5cf6;
+  
+  /* Colores de fondo */
+  --color-background-main: #f8fafc;
+  --color-background-card: #ffffff;
+  --color-surface-elevated: #ffffff;
+  --color-surface-muted: #f1f5f9;
+  
+  /* Colores de texto */
+  --color-text-primary: #1e293b;
+  --color-text-secondary: #64748b;
+  --color-text-muted: #94a3b8;
+  
+  /* Colores de borde */
+  --color-border-light: #e2e8f0;
+  --color-border-medium: #cbd5e1;
+  
+  /* Espaciado */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  
+  /* Tipografía */
+  --font-family-primary: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  --font-family-heading: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  
+  /* Efectos */
+  --border-radius-sm: 0.375rem;
+  --border-radius-md: 0.5rem;
+  --border-radius-lg: 0.75rem;
+  --border-radius-full: 9999px;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --transition-normal: all 0.2s ease-in-out;
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Página Principal */
 .gestion-menu-admin {
   background: var(--color-background-main);
   min-height: 100vh;
   font-family: var(--font-family-primary);
 }
 
-/* Header Gestión de Menú */
+/* Header de Gestión del Menú */
 .header-gestion-menu {
   background: var(--color-surface-elevated);
   padding: var(--spacing-2xl) var(--spacing-md) var(--spacing-xl);
   border-bottom: 1px solid var(--color-border-light);
   box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.header-gestion-menu::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23ffffff" fill-opacity="0.05"><circle cx="30" cy="30" r="25"/></g></g></svg>') repeat;
+  opacity: 0.1;
 }
 
 .contenedor-header-menu {
   max-width: 1400px;
   margin: 0 auto;
-  text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
 .titulo-gestion-menu {
@@ -29,6 +104,7 @@
   font-weight: 400;
   color: var(--color-text-primary);
   margin: 0 0 var(--spacing-sm) 0;
+  text-align: center;
   font-family: var(--font-family-heading);
   text-transform: uppercase;
   letter-spacing: var(--letter-spacing-wide);
@@ -37,8 +113,673 @@
 .subtitulo-gestion-menu {
   font-size: var(--font-size-lg);
   color: var(--color-text-secondary);
-  margin: 0 0 var(--spacing-lg) 0;
+  margin: 0 0 var(--spacing-xl) 0;
+  text-align: center;
   opacity: var(--opacity-text-muted);
+  font-weight: 400;
+}
+
+.acciones-menu-header {
+  display: flex;
+  gap: var(--spacing-lg);
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.boton-agregar-plato,
+.boton-categorias,
+.boton-exportar-menu {
+  padding: var(--spacing-sm) var(--spacing-xl);
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--border-radius-lg);
+  color: white;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.boton-agregar-plato:hover,
+.boton-categorias:hover,
+.boton-exportar-menu:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Estadísticas del Menú */
+.seccion-estadisticas-menu {
+  padding: var(--spacing-2xl) var(--spacing-md);
+  background: var(--color-background-main);
+}
+
+.contenedor-estadisticas-menu {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.grilla-estadisticas-menu {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.tarjeta-estadistica-menu {
+  background: var(--color-background-card);
+  padding: var(--spacing-xl);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border-light);
+  transition: var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+.tarjeta-estadistica-menu::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
+}
+
+.tarjeta-estadistica-menu:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.titulo-estadistica-menu {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-sm) 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.numero-estadistica-menu {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-xs) 0;
+  line-height: 1;
+}
+
+.detalle-estadistica-menu {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+/* Filtros del Menú */
+.seccion-filtros-menu {
+  padding: var(--spacing-xl) var(--spacing-md);
+  background: var(--color-background-main);
+}
+
+.contenedor-filtros-menu {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.barra-filtros {
+  display: flex;
+  gap: var(--spacing-lg);
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  background: var(--color-background-card);
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.filtro-categoria,
+.filtro-estado,
+.buscar-plato {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border: 2px solid var(--color-border-light);
+  border-radius: var(--border-radius-lg);
+  font-size: var(--font-size-base);
+  background: var(--color-background-main);
+  color: var(--color-text-primary);
+  transition: var(--transition-normal);
+  min-width: 160px;
+}
+
+.filtro-categoria:focus,
+.filtro-estado:focus,
+.buscar-plato:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+.boton-filtrar {
+  padding: var(--spacing-sm) var(--spacing-xl);
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--border-radius-lg);
+  color: white;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-normal);
+}
+
+.boton-filtrar:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Contenedor de Categorías */
+.contenedor-categorias-menu {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-md) var(--spacing-2xl);
+}
+
+/* Categorías del Menú */
+.categoria-menu-admin {
+  margin-bottom: var(--spacing-2xl);
+  background: var(--color-background-card);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border-light);
+}
+
+.categoria-menu-admin.alitas {
+  border-top: 4px solid #f59e0b;
+}
+
+.categoria-menu-admin.hamburguesas {
+  border-top: 4px solid #ef4444;
+}
+
+.categoria-menu-admin.parrilladas {
+  border-top: 4px solid #8b5cf6;
+}
+
+.categoria-menu-admin.bebidas {
+  border-top: 4px solid #06b6d4;
+}
+
+.header-categoria-admin {
+  background: linear-gradient(135deg, var(--color-surface-muted), var(--color-background-card));
+  padding: var(--spacing-xl);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.titulo-categoria-admin {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.acciones-categoria {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.boton-agregar-categoria,
+.boton-reordenar {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-normal);
+}
+
+.boton-agregar-categoria {
+  background: var(--color-primary);
+  color: white;
+}
+
+.boton-reordenar {
+  background: var(--color-surface-elevated);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-medium);
+}
+
+.boton-agregar-categoria:hover,
+.boton-reordenar:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Lista de Platos */
+.lista-platos-admin {
+  padding: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+/* Tarjetas de Plato */
+.tarjeta-plato-admin {
+  background: var(--color-background-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  transition: var(--transition-smooth);
+  display: flex;
+  gap: var(--spacing-lg);
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.tarjeta-plato-admin::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+}
+
+.tarjeta-plato-admin.disponible::before {
+  background: linear-gradient(180deg, var(--color-success), #34d399);
+}
+
+.tarjeta-plato-admin.bajo-inventario::before {
+  background: linear-gradient(180deg, var(--color-warning), #fbbf24);
+}
+
+.tarjeta-plato-admin.agotado::before {
+  background: linear-gradient(180deg, var(--color-error), #f87171);
+}
+
+.tarjeta-plato-admin.inactivo::before {
+  background: linear-gradient(180deg, var(--color-text-muted), #cbd5e1);
+}
+
+.tarjeta-plato-admin:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.tarjeta-plato-admin.popular {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.05), rgba(251, 191, 36, 0.02));
+  border-color: rgba(251, 191, 36, 0.2);
+}
+
+/* Imagen del Plato */
+.imagen-plato-admin {
+  width: 120px;
+  height: 120px;
+  border-radius: var(--border-radius-lg);
+  background: var(--color-surface-muted);
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.imagen-plato-admin::before {
+  content: '🍽️';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 3rem;
+  opacity: 0.3;
+}
+
+.imagen-plato-admin.alitas-bbq {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+}
+
+.imagen-plato-admin.alitas-buffalo {
+  background: linear-gradient(135deg, #ef4444, #f87171);
+}
+
+.imagen-plato-admin.alitas-honey {
+  background: linear-gradient(135deg, #f59e0b, #fde047);
+}
+
+.imagen-plato-admin.hamburguesa-clasica {
+  background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+}
+
+.imagen-plato-admin.hamburguesa-bbq {
+  background: linear-gradient(135deg, #d97706, #f59e0b);
+}
+
+.imagen-plato-admin.hamburguesa-jalapeno {
+  background: linear-gradient(135deg, #10b981, #34d399);
+}
+
+.imagen-plato-admin.parrillada-individual {
+  background: linear-gradient(135deg, #7c2d12, #b45309);
+}
+
+.imagen-plato-admin.costillas {
+  background: linear-gradient(135deg, #7c2d12, #dc2626);
+}
+
+.imagen-plato-admin.cerveza-artesanal {
+  background: linear-gradient(135deg, #0891b2, #06b6d4);
+}
+
+.imagen-plato-admin.vino-tinto {
+  background: linear-gradient(135deg, #7c2d12, #dc2626);
+}
+
+/* Información del Plato */
+.info-plato-admin {
+  flex: 1;
+  min-width: 0;
+}
+
+.nombre-plato-admin {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-xs) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.descripcion-plato-admin {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-md) 0;
+  line-height: 1.5;
+}
+
+.detalles-plato {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.precio-plato-admin {
+  font-size: var(--font-size-xl);
+  font-weight: 800;
+  color: var(--color-primary);
+  background: var(--color-primary-alpha);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-full);
+}
+
+.badge-popular {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: white;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.inventario-plato {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  background: var(--color-surface-muted);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-full);
+  font-weight: 500;
+}
+
+.inventario-plato.alerta {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-error);
+  font-weight: 600;
+}
+
+.inventario-plato.agotado {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-error);
+  font-weight: 600;
+}
+
+/* Estado del Plato */
+.estado-plato-admin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.indicador-disponible,
+.indicador-bajo-inventario,
+.indicador-agotado,
+.indicador-inactivo {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: center;
+  min-width: 100px;
+}
+
+.indicador-disponible {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--color-success);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.indicador-bajo-inventario {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--color-warning);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.indicador-agotado {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--color-error);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.indicador-inactivo {
+  background: rgba(148, 163, 184, 0.15);
+  color: var(--color-text-muted);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+/* Acciones del Plato */
+.acciones-plato-admin {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  min-width: 140px;
+}
+
+.acciones-plato-admin button {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  text-align: center;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+}
+
+.boton-editar-plato {
+  background: var(--color-info);
+  color: white;
+}
+
+.boton-inventario {
+  background: var(--color-primary);
+  color: white;
+}
+
+.boton-estadisticas {
+  background: var(--color-purple);
+  color: white;
+}
+
+.boton-desactivar {
+  background: var(--color-error);
+  color: white;
+}
+
+.boton-reabastecer {
+  background: var(--color-success);
+  color: white;
+}
+
+.boton-reabastecer.urgente {
+  background: linear-gradient(135deg, var(--color-warning), #fbbf24);
+  animation: pulse 2s infinite;
+}
+
+.boton-activar {
+  background: var(--color-success);
+  color: white;
+}
+
+.acciones-plato-admin button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+  filter: brightness(1.05);
+}
+
+/* Animación para botones urgentes */
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(245, 158, 11, 0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .tarjeta-plato-admin {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .imagen-plato-admin {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto;
+  }
+  
+  .acciones-plato-admin {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-gestion-menu {
+    padding: var(--spacing-xl) var(--spacing-sm);
+  }
+  
+  .titulo-gestion-menu {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .acciones-menu-header {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
+  .boton-agregar-plato,
+  .boton-categorias,
+  .boton-exportar-menu {
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .grilla-estadisticas-menu {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+  }
+  
+  .barra-filtros {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
+  .filtro-categoria,
+  .filtro-estado,
+  .buscar-plato,
+  .boton-filtrar {
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .header-categoria-admin {
+    flex-direction: column;
+    gap: var(--spacing-md);
+    text-align: center;
+  }
+  
+  .acciones-categoria {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .contenedor-categorias-menu {
+    padding: var(--spacing-xl) var(--spacing-sm) var(--spacing-2xl);
+  }
+}
+
+@media (max-width: 480px) {
+  .tarjeta-plato-admin {
+    padding: var(--spacing-md);
+  }
+  
+  .imagen-plato-admin {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .nombre-plato-admin {
+    font-size: var(--font-size-base);
+  }
+  
+  .detalles-plato {
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
+  }
+  
+  .acciones-plato-admin button {
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
 }
 
 .acciones-header-menu {

@@ -42,7 +42,13 @@
   /* Bordes y Líneas */
   --color-border-main: #a39274;       /* Borde principal dorado */
   --color-border-light: #e2e2e2;      /* Borde sutil */
-  --color-border-dark: rgba(163, 146, 116, 0.2); /* Borde dorado translúcido */
+  --color-border-dark: #3a3a3a;       /* Borde oscuro para navbar */
+  
+  /* Colores con Transparencia */
+  --color-primary-alpha: rgba(163, 146, 116, 0.1); /* Dorado transparente */
+  
+  /* Superficies Elevadas */
+  --color-surface-elevated: #2a2a28;  /* Superficie elevada más clara que surface-dark */
   
   /* Sombras */
   --shadow-sm: 0 2px 4px rgba(37, 37, 35, 0.1);

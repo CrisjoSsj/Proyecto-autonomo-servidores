@@ -52,7 +52,6 @@
 }
 
 .titulo-admin::after {
-  content: 'ADMIN';
   position: absolute;
   top: -8px;
   right: -20px;
