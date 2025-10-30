@@ -574,3 +574,262 @@
     height: 200px;
   }
 }
+
+/* ===================================
+   NUEVOS ESTILOS PARA API INTEGRATION
+   =================================== */
+
+/* Loading y Error States */
+.loading-reportes, .error-reportes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: var(--spacing-2xl);
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+/* Badge destacado en platos */
+.badge-destacado {
+  background: linear-gradient(45deg, #ffd700, #ffed4e);
+  color: #1a202c;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: 8px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  margin-left: var(--spacing-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
+
+.badge-destacado-margen {
+  color: #ffd700;
+  font-size: var(--font-size-sm);
+  margin-left: var(--spacing-xs);
+}
+
+/* Sin datos */
+.sin-datos-platos {
+  text-align: center;
+  padding: var(--spacing-2xl);
+  color: var(--color-text-secondary);
+}
+
+.sin-datos-platos button {
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: var(--spacing-md);
+  transition: background-color 0.2s ease;
+}
+
+.sin-datos-platos button:hover {
+  background-color: var(--color-primary-dark);
+}
+
+/* Estados de mesas */
+.info-estado-mesas {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.estado-mesa {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm);
+  border-radius: 8px;
+}
+
+.estado-mesa.disponible {
+  background-color: rgba(34, 197, 94, 0.1);
+  border-left: 4px solid #22c55e;
+}
+
+.estado-mesa.ocupada {
+  background-color: rgba(239, 68, 68, 0.1);
+  border-left: 4px solid #ef4444;
+}
+
+.estado-mesa.reservada {
+  background-color: rgba(245, 158, 11, 0.1);
+  border-left: 4px solid #f59e0b;
+}
+
+.numero-estado {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.label-estado {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Información de tiempo */
+.info-tiempo {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-sm);
+  justify-content: center;
+}
+
+.numero-tiempo {
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.unidad-tiempo {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+}
+
+/* Grilla financiero */
+.grilla-financiero {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: var(--spacing-xl);
+}
+
+.tarjeta-financiero {
+  background: var(--color-surface-elevated);
+  padding: var(--spacing-xl);
+  border-radius: 12px;
+  border: 1px solid var(--color-border-light);
+}
+
+.titulo-financiero {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Lista categorías ingresos */
+.lista-categorias-ingresos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.categoria-ingreso {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  background: var(--color-background-main);
+  border-radius: 8px;
+  border: 1px solid var(--color-border-light);
+}
+
+.nombre-categoria {
+  font-weight: 500;
+  color: var(--color-text-primary);
+  flex: 1;
+}
+
+.ingreso-categoria {
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-right: var(--spacing-md);
+}
+
+.platos-categoria {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  background: var(--color-primary-alpha);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: 12px;
+}
+
+/* Lista platos margen */
+.lista-platos-margen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.plato-margen {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  background: var(--color-background-main);
+  border-radius: 8px;
+  border: 1px solid var(--color-border-light);
+}
+
+.nombre-plato-margen {
+  font-weight: 500;
+  color: var(--color-text-primary);
+  flex: 1;
+}
+
+.precio-plato-margen {
+  font-weight: 600;
+  color: var(--color-primary);
+  font-size: var(--font-size-lg);
+}
+
+/* Responsive mejoras */
+@media (max-width: 768px) {
+  .grilla-financiero {
+    grid-template-columns: 1fr;
+  }
+  
+  .info-estado-mesas {
+    grid-template-columns: 1fr;
+  }
+  
+  .estado-mesa {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--spacing-sm);
+  }
+  
+  .categoria-ingreso,
+  .plato-margen {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    text-align: center;
+  }
+}
+
+/* Animaciones para elementos dinámicos */
+.tarjeta-metrica,
+.tarjeta-financiero,
+.item-plato-top {
+  transition: all 0.3s ease;
+}
+
+.tarjeta-metrica:hover,
+.tarjeta-financiero:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(217, 119, 6, 0.15);
+}
+
+/* Mejoras para modo oscuro */
+@media (prefers-color-scheme: dark) {
+  .estado-mesa.disponible {
+    background-color: rgba(34, 197, 94, 0.2);
+  }
+  
+  .estado-mesa.ocupada {
+    background-color: rgba(239, 68, 68, 0.2);
+  }
+  
+  .estado-mesa.reservada {
+    background-color: rgba(245, 158, 11, 0.2);
+  }
+}

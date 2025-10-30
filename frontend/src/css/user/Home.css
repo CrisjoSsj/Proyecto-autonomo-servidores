@@ -744,3 +744,208 @@ body, html {
   }
 }
 
+/* ===================================
+   NUEVOS ESTILOS PARA API INTEGRATION
+   =================================== */
+
+/* Loading y Error States */
+.loading-home, .error-home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: var(--spacing-2xl);
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--color-border-light);
+  border-top: 4px solid var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: var(--spacing-lg);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.boton-reintentar {
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+  margin-top: var(--spacing-lg);
+}
+
+.boton-reintentar:hover {
+  background-color: var(--color-primary-dark);
+}
+
+/* Stats en Banner */
+.stats-banner {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-2xl);
+  margin-top: var(--spacing-2xl);
+  padding: var(--spacing-xl);
+  background: rgba(217, 119, 6, 0.1);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-number {
+  display: block;
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.stat-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+/* Estados dinámicos de tarjetas */
+.estado-restaurante.cerrado {
+  background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+  color: white;
+}
+
+.estado-restaurante.cerrado .icono-estado {
+  background-color: #fca5a5;
+}
+
+.icono-estado.cerrado::before {
+  content: "🔒";
+}
+
+.icono-estado.abierto::before {
+  content: "🟢";
+}
+
+/* Resumen de menú */
+.resumen-menu {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-xl);
+  margin-top: var(--spacing-2xl);
+  padding: var(--spacing-xl);
+  background: linear-gradient(135deg, var(--color-primary-alpha) 0%, rgba(217, 119, 6, 0.05) 100%);
+  border-radius: 12px;
+}
+
+.stat-menu {
+  text-align: center;
+}
+
+.numero-stat {
+  display: block;
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.label-stat {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Badge destacado */
+.badge-destacado {
+  background: linear-gradient(45deg, #ffd700, #ffed4e);
+  color: #1a202c;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: 12px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  margin-top: var(--spacing-sm);
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+}
+
+/* Alertas dinámicas mejoradas */
+.alerta.importante {
+  background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+  border-left: 5px solid #fca5a5;
+  color: white;
+}
+
+.alerta.importante .icono-alerta::before {
+  content: "⚠️";
+  font-size: var(--font-size-lg);
+}
+
+.alerta.informativa .icono-alerta::before {
+  content: "ℹ️";
+  font-size: var(--font-size-lg);
+}
+
+/* Responsive para nuevos elementos */
+@media (max-width: 768px) {
+  .stats-banner {
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-lg);
+  }
+  
+  .resumen-menu {
+    flex-direction: column;
+    gap: var(--spacing-lg);
+  }
+  
+  .stat-number {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .numero-stat {
+    font-size: var(--font-size-xl);
+  }
+}
+
+/* Animaciones para carga */
+.tarjeta-plato-popular {
+  transition: all 0.3s ease;
+}
+
+.tarjeta-plato-popular:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(217, 119, 6, 0.2);
+}
+
+/* Mejoras para alertas responsivas */
+@media (max-width: 480px) {
+  .contenido-alerta {
+    padding: var(--spacing-sm);
+  }
+  
+  .titulo-alerta {
+    font-size: var(--font-size-base);
+  }
+  
+  .mensaje-alerta {
+    font-size: var(--font-size-sm);
+  }
+}
+
