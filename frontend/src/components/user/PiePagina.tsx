@@ -1,5 +1,4 @@
 import "../../css/user/PiePagina.css";
-import { FaFacebookF, FaInstagram, FaTwitter } from 'react-icons/fa';
 
 export default function PiePagina() {
     return( 
@@ -31,15 +30,9 @@ export default function PiePagina() {
                 <div className="seccion-redes-footer">
                     <h4 className="titulo-seccion-footer">Síguenos</h4>
                     <div className="enlaces-redes">
-                        <a href="#" className="enlace-red-social" aria-label="Facebook">
-                            <FaFacebookF className="icono-red-social" />
-                        </a>
-                        <a href="#" className="enlace-red-social" aria-label="Instagram">
-                            <FaInstagram className="icono-red-social" />
-                        </a>
-                        <a href="#" className="enlace-red-social" aria-label="Twitter">
-                            <FaTwitter className="icono-red-social" />
-                        </a>
+                        <a href="#" className="enlace-red-social">FB</a>
+                        <a href="#" className="enlace-red-social">IG</a>
+                        <a href="#" className="enlace-red-social">TW</a>
                     </div>
                 </div>
             </div>

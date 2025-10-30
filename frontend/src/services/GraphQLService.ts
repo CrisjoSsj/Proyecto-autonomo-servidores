@@ -25,28 +25,6 @@ const client = new ApolloClient({
 // ========== QUERIES ==========
 
 /**
- * Obtener datos del dashboard
- */
-export const GET_DASHBOARD_DATA = gql`
-  query GetDashboardData {
-    totalReservas
-    reservasPorMes {
-      mes
-      total
-    }
-    mesasPopulares {
-      mesaId
-      usos
-    }
-    platosPopulares {
-      platoId
-      nombre
-      pedidos
-    }
-  }
-`;
-
-/**
  * Obtener todos los restaurantes
  */
 export const GET_RESTAURANTES = gql`
@@ -263,46 +241,6 @@ export const CANCEL_RESERVA = gql`
 `;
 
 // ========== FUNCIONES DE SERVICIO ==========
-
-/**
- * Obtener datos del dashboard
- */
-export interface DashboardData {
-  totalReservas: number;
-  reservasPorMes: { mes: string; total: number; }[];
-  mesasPopulares: { mesaId: string; usos: number; }[];
-  platosPopulares: { platoId: string; nombre: string; pedidos: number; }[];
-}
-
-export async function fetchDashboardData(): Promise<DashboardData> {
-  try {
-    const result = await client.query({
-      query: GET_DASHBOARD_DATA,
-    });
-    return result.data as DashboardData;
-  } catch (error) {
-    console.error('Error al obtener datos del dashboard:', error);
-    // Retornar datos de ejemplo si hay error
-    return {
-      totalReservas: 45,
-      reservasPorMes: [
-        { mes: 'Enero', total: 12 },
-        { mes: 'Febrero', total: 18 },
-        { mes: 'Marzo', total: 15 },
-      ],
-      mesasPopulares: [
-        { mesaId: '1', usos: 23 },
-        { mesaId: '2', usos: 19 },
-        { mesaId: '3', usos: 15 },
-      ],
-      platosPopulares: [
-        { platoId: '1', nombre: 'Alitas BBQ', pedidos: 45 },
-        { platoId: '2', nombre: 'Hamburguesa', pedidos: 38 },
-        { platoId: '3', nombre: 'Pizza', pedidos: 32 },
-      ],
-    };
-  }
-}
 
 /**
  * Obtener todos los restaurantes

@@ -1,69 +1,83 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "../../components/user/Navbar";
 import MenuCard from "../../components/user/MenuCard";
 import PiePagina from "../../components/user/PiePagina";
 import "../../css/user/Menu.css";
 
-// Categoría: Alitas (Nuestro plato estrella)
-const alitas = [
-  { nombre: "Alitas BBQ Clásicas", descripcion: "Nuestras famosas alitas con salsa BBQ casera, cocidas a la parrilla", precio: "$8.99"},
-  { nombre: "Alitas Buffalo Picantes", descripcion: "Alitas con salsa buffalo picante y un toque de limón", precio: "$9.50"},
-  { nombre: "Alitas Honey Mustard", descripcion: "Alitas glaseadas con miel y mostaza, sabor agridulce", precio: "$9.99"},
-  { nombre: "Alitas Teriyaki", descripcion: "Alitas marinadas en salsa teriyaki con sésamo", precio: "$10.50"},
-  { nombre: "Alitas Cajún", descripcion: "Alitas con especias cajún, para los amantes del picante", precio: "$10.99"},
-  { nombre: "Combo Alitas Mixtas", descripcion: "Prueba 3 sabores diferentes: BBQ, Buffalo y Honey Mustard", precio: "$14.99"},
-];
+const API_BASE_URL = 'http://127.0.0.1:8000';
 
-// Categoría: Hamburguesas Gourmet
-const hamburguesas = [
-  { nombre: "Chuwue Clásica", descripcion: "Carne de res, queso cheddar, lechuga, tomate, cebolla y salsa especial", precio: "$10.50"},
-  { nombre: "BBQ Bacon Burger", descripcion: "Carne de res, tocino crujiente, queso, cebolla caramelizada y salsa BBQ", precio: "$12.99"},
-  { nombre: "Mushroom Swiss", descripcion: "Carne de res, queso suizo, champiñones salteados y mayonesa de ajo", precio: "$11.99"},
-  { nombre: "Jalapeño Fire", descripcion: "Carne de res, queso pepper jack, jalapeños, aguacate y salsa picante", precio: "$13.50"},
-  { nombre: "Pollo Crispy", descripcion: "Pechuga de pollo empanizada, lechuga, tomate y salsa ranch", precio: "$11.50"},
-  { nombre: "Veggie Deluxe", descripcion: "Hamburguesa de vegetales, queso, aguacate, sprouts y salsa tahini", precio: "$10.99"},
-];
+interface Plato {
+  id_plato: number;
+  nombre: string;
+  descripcion: string;
+  precio: number;
+  estado: string;
+  id_categoria: number;
+  disponible: boolean;
+}
 
-// Categoría: Parrilladas
-const parrilladas = [
-  { nombre: "Parrillada Individual", descripcion: "Bife de chorizo, pollo, chorizo criollo y vegetales asados", precio: "$15.99"},
-  { nombre: "Parrillada para Dos", descripcion: "Variedad de carnes para compartir: bife, pollo, chorizo y morcilla", precio: "$28.99"},
-  { nombre: "Parrillada Familiar", descripcion: "La más completa: múltiples cortes, embutidos y guarniciones", precio: "$45.99"},
-  { nombre: "Bife de Chorizo Premium", descripcion: "Corte premium de 300g con papas rústicas y ensalada", precio: "$22.00"},
-  { nombre: "Costillas BBQ", descripcion: "Costillas de cerdo glaseadas con salsa BBQ, cocción lenta", precio: "$18.50"},
-  { nombre: "Pollo a la Parrilla", descripcion: "Pollo entero marinado con hierbas, acompañado de vegetales", precio: "$16.99"},
-];
+interface CategoriaMenu {
+  id_categoria: number;
+  nombre: string;
+}
 
-// Categoría: Entradas para Compartir
-const entradas = [
-  { nombre: "Nachos Supremos", descripcion: "Nachos con queso fundido, guacamole, pico de gallo y jalapeños", precio: "$7.99"},
-  { nombre: "Dedos de Mozzarella", descripcion: "Bastones de queso mozzarella empanizados con salsa marinara", precio: "$6.50"},
-  { nombre: "Anillos de Cebolla", descripcion: "Aros de cebolla crujientes con salsa ranch para dipear", precio: "$5.99"},
-  { nombre: "Papas Cargadas", descripcion: "Papas fritas con queso cheddar, tocino y cebollín", precio: "$8.50"},
-  { nombre: "Combo Entrada", descripcion: "Alitas, nachos y dedos de mozzarella para compartir", precio: "$12.99"},
-];
-
-// Categoría: Bebidas
-const bebidas = [
-  { nombre: "Cerveza Artesanal", descripcion: "Selección de cervezas locales: IPA, Lager, Stout", precio: "$4.50"},
-  { nombre: "Cerveza Importada", descripcion: "Corona, Heineken, Stella Artois", precio: "$5.50"},
-  { nombre: "Refrescos", descripcion: "Coca Cola, Pepsi, Sprite, Fanta", precio: "$2.99"},
-  { nombre: "Jugos Naturales", descripcion: "Naranja, manzana, piña, limonada", precio: "$3.50"},
-  { nombre: "Agua Mineral", descripcion: "Con gas o sin gas", precio: "$1.99"},
-  { nombre: "Café Americano", descripcion: "Café recién molido", precio: "$2.50"},
-];
-
-// Categoría: Postres
-const postres = [
-  { nombre: "Brownie con Helado", descripcion: "Brownie tibio con helado de vainilla y salsa de chocolate", precio: "$5.99"},
-  { nombre: "Cheesecake de Frutos Rojos", descripcion: "Cheesecake cremoso con compota de frutos del bosque", precio: "$6.50"},
-  { nombre: "Flan Casero", descripcion: "Flan tradicional con dulce de leche y crema chantilly", precio: "$4.99"},
-  { nombre: "Helado Artesanal", descripcion: "Tres bochas: vainilla, chocolate y dulce de leche", precio: "$4.50"},
-  { nombre: "Tiramisú", descripcion: "Postre italiano con café, mascarpone y cacao", precio: "$7.50"},
-];
+interface PlatoFormateado {
+  nombre: string;
+  descripcion: string;
+  precio: string;
+}
 
 export default function Menu() {
+  const [platos, setPlatos] = useState<Plato[]>([]);
+  const [categorias, setCategorias] = useState<CategoriaMenu[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
+    cargarDatos();
+  }, []);
+
+  useEffect(() => {
+    if (!loading && categorias.length > 0) {
+      // Configurar navegación y scroll después de que los datos estén cargados
+      configurarNavegacion();
+    }
+  }, [loading, categorias]);
+
+  const cargarDatos = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Cargar platos y categorías en paralelo
+      const [platosRes, categoriasRes] = await Promise.all([
+        fetch(`${API_BASE_URL}/platos/`),
+        fetch(`${API_BASE_URL}/categorias/`)
+      ]);
+
+      if (!platosRes.ok || !categoriasRes.ok) {
+        throw new Error('Error al cargar datos del menú');
+      }
+
+      const platosData = await platosRes.json();
+      const categoriasData = await categoriasRes.json();
+
+      // Filtrar solo platos disponibles para el menú público
+      const platosDisponibles = platosData.filter((plato: Plato) => 
+        plato.disponible && plato.estado === 'disponible'
+      );
+      
+      setPlatos(platosDisponibles);
+      setCategorias(categoriasData);
+    } catch (error) {
+      console.error('Error cargando menú:', error);
+      setError('Error al cargar el menú. Por favor, inténtalo de nuevo.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const configurarNavegacion = () => {
     const navegacionCategorias = document.querySelector('.navegacion-categorias');
     const enlaces = document.querySelectorAll('.enlace-categoria');
     const secciones = document.querySelectorAll('.seccion-categoria');
@@ -90,7 +104,7 @@ export default function Menu() {
       let currentSection = '';
       secciones.forEach((seccion) => {
         const rect = seccion.getBoundingClientRect();
-        const offset = navbarHeight + 80; // Altura del navbar + margen adicional
+        const offset = navbarHeight + 80;
         
         if (rect.top <= offset && rect.bottom >= offset) {
           currentSection = seccion.getAttribute('id') || '';
@@ -129,15 +143,92 @@ export default function Menu() {
 
     // Agregar event listener para scroll
     window.addEventListener('scroll', handleScroll);
-    
-    // Llamar una vez para inicializar
-    handleScroll();
+    handleScroll(); // Llamar una vez para inicializar
 
     // Cleanup
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  };
+
+  // Convertir platos a formato esperado por MenuCard
+  const convertirPlatosParaMenuCard = (platosCategoria: Plato[]): PlatoFormateado[] => {
+    return platosCategoria.map(plato => ({
+      nombre: plato.nombre,
+      descripcion: plato.descripcion,
+      precio: `$${plato.precio.toFixed(2)}`
+    }));
+  };
+
+  // Obtener platos por categoría
+  const obtenerPlatosPorCategoria = (idCategoria: number): PlatoFormateado[] => {
+    const platosCategoria = platos.filter(plato => plato.id_categoria === idCategoria);
+    return convertirPlatosParaMenuCard(platosCategoria);
+  };
+
+  // Función para generar ID de sección desde nombre de categoría
+  const generarIdSeccion = (nombreCategoria: string): string => {
+    return nombreCategoria.toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[áàäâ]/g, 'a')
+      .replace(/[éèëê]/g, 'e')
+      .replace(/[íìïî]/g, 'i')
+      .replace(/[óòöô]/g, 'o')
+      .replace(/[úùüû]/g, 'u')
+      .replace(/[ñ]/g, 'n')
+      .replace(/[^a-z0-9-]/g, '');
+  };
+
+  // Función para obtener emoji por categoría
+  const obtenerEmojiCategoria = (nombreCategoria: string): string => {
+    const emojis: { [key: string]: string } = {
+      'entradas': '🥗',
+      'platos principales': '🍖',
+      'postres': '🍰',
+      'bebidas': '🥤',
+      'ensaladas': '🥬',
+      'sopas': '🍲',
+      'mariscos': '🦐',
+      'carnes': '🥩',
+      'pastas': '🍝',
+      'pizzas': '🍕'
+    };
+    return emojis[nombreCategoria.toLowerCase()] || '🍽️';
+  };
+
+  if (loading) {
+    return (
+      <div>
+        <Navbar />
+        <div className="loading-menu">
+          <div className="spinner"></div>
+          <p>Cargando nuestro delicioso menú...</p>
+        </div>
+        <PiePagina />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div>
+        <Navbar />
+        <div className="error-menu">
+          <h2>😔 Oops! Algo salió mal</h2>
+          <p>{error}</p>
+          <button onClick={cargarDatos} className="boton-reintentar">
+            Intentar de nuevo
+          </button>
+        </div>
+        <PiePagina />
+      </div>
+    );
+  }
+
+  // Filtrar categorías que tienen platos disponibles
+  const categoriasConPlatos = categorias.filter(categoria => 
+    platos.some(plato => plato.id_categoria === categoria.id_categoria)
+  );
 
   return (
     <div>
@@ -147,102 +238,118 @@ export default function Menu() {
       <section className="banner-menu">
         <div className="contenedor-banner-menu">
           <h1 className="titulo-menu">Nuestro Menú Completo</h1>
-          <p className="subtitulo-menu">Descubre todos nuestros sabores organizados por categorías</p>
+          <p className="subtitulo-menu">
+            Descubre todos nuestros sabores organizados por categorías
+          </p>
+          <div className="stats-menu-banner">
+            <div className="stat-item">
+              <span className="stat-number">{platos.length}</span>
+              <span className="stat-label">Platos Disponibles</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-number">{categoriasConPlatos.length}</span>
+              <span className="stat-label">Categorías</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-number">100%</span>
+              <span className="stat-label">Fresco</span>
+            </div>
+          </div>
           <p className="nota-menu">Todos los precios incluyen IVA • Aceptamos efectivo y tarjetas</p>
         </div>
       </section>
 
       {/* Navegación por categorías */}
-      <section className="navegacion-categorias">
-        <div className="contenedor-categorias">
-          <a href="#alitas" className="enlace-categoria">Alitas</a>
-          <a href="#hamburguesas" className="enlace-categoria">Hamburguesas</a>
-          <a href="#parrilladas" className="enlace-categoria">Parrilladas</a>
-          <a href="#entradas" className="enlace-categoria">Entradas</a>
-          <a href="#bebidas" className="enlace-categoria">Bebidas</a>
-          <a href="#postres" className="enlace-categoria">Postres</a>
-        </div>
-      </section>
+      {categoriasConPlatos.length > 0 && (
+        <section className="navegacion-categorias">
+          <div className="contenedor-categorias">
+            {categoriasConPlatos.map(categoria => {
+              const idSeccion = generarIdSeccion(categoria.nombre);
+              const cantidadPlatos = platos.filter(p => p.id_categoria === categoria.id_categoria).length;
+              
+              return (
+                <a 
+                  key={categoria.id_categoria}
+                  href={`#${idSeccion}`} 
+                  className="enlace-categoria"
+                >
+                  {obtenerEmojiCategoria(categoria.nombre)} {categoria.nombre}
+                  <span className="contador-platos">({cantidadPlatos})</span>
+                </a>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       <div className="contenedor-menu">
-        {/* Categoría: Alitas - Nuestro plato estrella */}
-        <section id="alitas" className="seccion-categoria destacada">
-          <div className="cabecera-categoria">
-            <h2 className="titulo-categoria">🔥 Alitas - Nuestro Plato Estrella</h2>
-            <p className="descripcion-categoria">Las mejores alitas de la ciudad con salsas caseras</p>
-          </div>
-          <div className="grilla-menu">
-            {alitas.map((plato, index) => (
-              <MenuCard key={index} {...plato} />
-            ))}
-          </div>
-        </section>
+        {categoriasConPlatos.length === 0 ? (
+          <section className="sin-menu-disponible">
+            <h2>😔 Menú temporalmente no disponible</h2>
+            <p>Estamos actualizando nuestro menú. Por favor, vuelve pronto.</p>
+            <button onClick={() => window.location.href = '/reservas'} className="boton-reservar">
+              Hacer una Reserva
+            </button>
+          </section>
+        ) : (
+          categoriasConPlatos.map((categoria, index) => {
+            const idSeccion = generarIdSeccion(categoria.nombre);
+            const platosCategoria = obtenerPlatosPorCategoria(categoria.id_categoria);
+            const emoji = obtenerEmojiCategoria(categoria.nombre);
+            
+            // Destacar la primera categoría o la de "Platos principales"
+            const esDestacada = index === 0 || categoria.nombre.toLowerCase().includes('principal');
 
-        {/* Categoría: Hamburguesas */}
-        <section id="hamburguesas" className="seccion-categoria">
-          <div className="cabecera-categoria">
-            <h2 className="titulo-categoria">🍔 Hamburguesas Gourmet</h2>
-            <p className="descripcion-categoria">Hamburguesas artesanales con ingredientes premium</p>
-          </div>
-          <div className="grilla-menu">
-            {hamburguesas.map((plato, index) => (
-              <MenuCard key={index} {...plato} />
-            ))}
-          </div>
-        </section>
-
-        {/* Categoría: Parrilladas */}
-        <section id="parrilladas" className="seccion-categoria">
-          <div className="cabecera-categoria">
-            <h2 className="titulo-categoria">🥩 Parrilladas</h2>
-            <p className="descripcion-categoria">Cortes selectos cocinados a la parrilla al carbón</p>
-          </div>
-          <div className="grilla-menu">
-            {parrilladas.map((plato, index) => (
-              <MenuCard key={index} {...plato} />
-            ))}
-          </div>
-        </section>
-
-        {/* Categoría: Entradas */}
-        <section id="entradas" className="seccion-categoria">
-          <div className="cabecera-categoria">
-            <h2 className="titulo-categoria">🥨 Entradas para Compartir</h2>
-            <p className="descripcion-categoria">Perfectas para comenzar o acompañar tu comida</p>
-          </div>
-          <div className="grilla-menu">
-            {entradas.map((plato, index) => (
-              <MenuCard key={index} {...plato} />
-            ))}
-          </div>
-        </section>
-
-        {/* Categoría: Bebidas */}
-        <section id="bebidas" className="seccion-categoria">
-          <div className="cabecera-categoria">
-            <h2 className="titulo-categoria">🍺 Bebidas</h2>
-            <p className="descripcion-categoria">Refréscate con nuestra selección de bebidas</p>
-          </div>
-          <div className="grilla-menu">
-            {bebidas.map((plato, index) => (
-              <MenuCard key={index} {...plato} />
-            ))}
-          </div>
-        </section>
-
-        {/* Categoría: Postres */}
-        <section id="postres" className="seccion-categoria">
-          <div className="cabecera-categoria">
-            <h2 className="titulo-categoria">🍰 Postres</h2>
-            <p className="descripcion-categoria">El final perfecto para tu comida</p>
-          </div>
-          <div className="grilla-menu">
-            {postres.map((plato, index) => (
-              <MenuCard key={index} {...plato} />
-            ))}
-          </div>
-        </section>
+            return (
+              <section 
+                key={categoria.id_categoria}
+                id={idSeccion} 
+                className={`seccion-categoria ${esDestacada ? 'destacada' : ''}`}
+              >
+                <div className="cabecera-categoria">
+                  <h2 className="titulo-categoria">
+                    {emoji} {categoria.nombre}
+                    {esDestacada && <span className="badge-destacada">⭐ Destacada</span>}
+                  </h2>
+                  <p className="descripcion-categoria">
+                    {categoria.nombre === 'Entradas' && 'Perfectas para comenzar o acompañar tu comida'}
+                    {categoria.nombre === 'Platos principales' && 'Nuestras especialidades principales'}
+                    {categoria.nombre === 'Postres' && 'El final perfecto para tu comida'}
+                    {!['Entradas', 'Platos principales', 'Postres'].includes(categoria.nombre) && 
+                     `Deliciosos ${categoria.nombre.toLowerCase()} preparados con ingredientes frescos`}
+                  </p>
+                  <div className="info-categoria">
+                    <span className="contador-platos-categoria">
+                      {platosCategoria.length} platos disponibles
+                    </span>
+                  </div>
+                </div>
+                <div className="grilla-menu">
+                  {platosCategoria.map((plato, platoIndex) => (
+                    <MenuCard key={platoIndex} {...plato} />
+                  ))}
+                </div>
+              </section>
+            );
+          })
+        )}
       </div>
+
+      {/* Llamada a la acción */}
+      {categoriasConPlatos.length > 0 && (
+        <section className="cta-menu">
+          <div className="contenedor-cta">
+            <h2>¿Listo para ordenar?</h2>
+            <p>Reserva tu mesa y disfruta de nuestros deliciosos platos</p>
+            <button 
+              className="boton-reservar-cta" 
+              onClick={() => window.location.href = '/reservas'}
+            >
+              Hacer Reserva Ahora
+            </button>
+          </div>
+        </section>
+      )}
 
       <PiePagina />
     </div>
