@@ -33,7 +33,7 @@ export default function ReservaFormConAPI() {
     try {
       // Crear reserva usando tu API REST
       const reservaData = {
-        id_reserva: Date.now(), // ID temporal, tu API debería generarlo automáticamente
+        // No enviamos id_reserva: lo genera el servidor
         id_cliente: formData.id_cliente,
         id_mesa: formData.id_mesa,
         fecha: formData.fecha,

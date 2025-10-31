@@ -32,12 +32,24 @@ class ApiService {
 
     try {
       const response = await fetch(url, config);
-      
+
+      const contentType = response.headers.get('content-type') || '';
+      const isJson = contentType.includes('application/json');
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // Intentar leer el cuerpo para dar más contexto en el error
+        let body: any = null;
+        try {
+          body = isJson ? await response.json() : await response.text();
+        } catch (readErr) {
+          body = `Could not read response body: ${readErr}`;
+        }
+        const err = new Error(`HTTP ${response.status} ${response.statusText}: ${JSON.stringify(body)}`);
+        console.error(`Error en petición a ${endpoint}:`, err);
+        throw err;
       }
-      
-      return await response.json();
+
+      return isJson ? await response.json() : await response.text();
     } catch (error) {
       console.error(`Error en petición a ${endpoint}:`, error);
       throw error;
@@ -100,14 +112,46 @@ class ApiService {
 
   // Mesas
   async getMesas() {
-    return this.request('/mesas/');
+    const data = await this.request('/mesas/');
+    // Mapear la forma del backend (id_mesa) a la forma que el frontend espera
+    return (data || []).map((m: any) => ({
+      id: m.id_mesa ?? m.id ?? Math.floor(Math.random() * 1000000),
+      numero: m.numero,
+      capacidad: m.capacidad,
+      estado: m.estado ?? m.estado_mesa ?? 'libre',
+      ubicacion: m.ubicacion ?? ''
+    }));
   }
 
   async crearMesa(mesaData: any) {
-    return this.request('/mesa/', {
+    // Alinear la forma de la UI con lo que espera el backend
+    // Obtener mesas actuales para generar id_mesa si no se provee
+    const existing: any[] = await this.request('/mesas/');
+    const maxId = (existing || []).reduce((acc, cur) => {
+      const id = cur.id_mesa ?? cur.id ?? 0;
+      return id > acc ? id : acc;
+    }, 0);
+
+    const backendPayload = {
+      id_mesa: mesaData.id ?? maxId + 1,
+      numero: mesaData.numero,
+      capacidad: mesaData.capacidad,
+      estado: mesaData.estado ?? 'libre'
+    };
+
+    const created = await this.request('/mesa/', {
       method: 'POST',
-      body: JSON.stringify(mesaData),
+      body: JSON.stringify(backendPayload),
     });
+
+    // Mapear respuesta a la forma frontend
+    return {
+      id: created.id_mesa ?? created.id ?? backendPayload.id_mesa,
+      numero: created.numero ?? backendPayload.numero,
+      capacidad: created.capacidad ?? backendPayload.capacidad,
+      estado: created.estado ?? backendPayload.estado,
+      ubicacion: created.ubicacion ?? ''
+    };
   }
 
   // Clientes
@@ -144,27 +188,60 @@ class ApiService {
 
   // Fila Virtual
   async getFilaVirtual() {
-    return this.request('/filas/');
+    const data = await this.request('/filas/');
+    // Mapear la forma del backend a la forma que espera el frontend
+    return (data || []).map((f: any, idx: number) => ({
+      id: f.id_fila ?? f.id ?? idx,
+      nombre: f.nombre ?? `Cliente ${f.id_cliente ?? f.id_fila ?? idx}`,
+      telefono: f.telefono ?? '',
+      numeroPersonas: f.numero_personas ?? f.numeroPersonas ?? 2,
+      posicion: f.posicion ?? (idx + 1),
+      tiempoEstimado: (() => {
+        const raw = f.tiempo_espera ?? f.tiempoEstimado ?? '15';
+        const n = String(raw).match(/\d+/)?.[0];
+        return n ? parseInt(n, 10) : 15;
+      })(),
+    }));
   }
 
   // Alias para compatibilidad con componentes
   async getFilas() {
-    return this.request('/filas/');
+    // Reusar la versión mapeada
+    return this.getFilaVirtual();
   }
 
   async unirseFilaVirtual(filaData: any) {
-    return this.request('/fila/', {
+    // Dejar que el backend genere id_fila y posicion; enviar solo datos relevantes
+    const backendPayload = {
+      id_cliente: filaData.cliente_id ?? filaData.id_cliente ?? Math.floor(Math.random() * 1000000),
+      tiempo_espera: filaData.tiempo_espera ?? `${(filaData.numeroPersonas ?? filaData.numero_personas ?? 1) * 15} min`,
+      estado: filaData.estado ?? 'esperando'
+    };
+
+    const created = await this.request('/fila/', {
       method: 'POST',
-      body: JSON.stringify(filaData),
+      body: JSON.stringify(backendPayload),
     });
+
+    // Mapear la respuesta del backend a la forma del frontend
+    return {
+      id: created.id_fila ?? created.id,
+      nombre: filaData.nombre ?? `Cliente ${backendPayload.id_cliente}`,
+      telefono: filaData.telefono ?? '',
+      numeroPersonas: filaData.numeroPersonas ?? filaData.numero_personas ?? 2,
+      posicion: created.posicion,
+      tiempoEstimado: (() => {
+        const raw = created.tiempo_espera ?? backendPayload.tiempo_espera ?? '15';
+        const n = String(raw).match(/\d+/)?.[0];
+        return n ? parseInt(n, 10) : 15;
+      })(),
+    };
   }
 
   // Alias para compatibilidad con componentes
   async crearFila(filaData: any) {
-    return this.request('/fila/', {
-      method: 'POST',
-      body: JSON.stringify(filaData),
-    });
+    // Reusar la lógica de unirseFilaVirtual que ya normaliza y mapea la respuesta
+    return this.unirseFilaVirtual(filaData);
   }
 
   async buscarFilaVirtual(query: string) {
