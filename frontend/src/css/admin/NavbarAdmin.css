@@ -151,9 +151,9 @@
 .boton-notificaciones,
 .boton-ver-sitio,
 .boton-logout {
-  background: var(--color-surface-elevated);
+  background: var(--color-surface-dark);
   color: var(--color-text-light);
-  border: 1px solid var(--color-border-light);
+  border: 1px solid var(--color-border-dark);
   padding: var(--spacing-xs) var(--spacing-sm);
   border-radius: var(--border-radius-md);
   font-size: var(--font-size-sm);

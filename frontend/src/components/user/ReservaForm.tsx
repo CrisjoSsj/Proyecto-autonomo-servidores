@@ -1,6 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { apiService } from "../../services/ApiService";
 import "../../css/user/Reservas.css";
+
+// Interfaces
+interface Mesa {
+  id_mesa: number;
+  numero: number;
+  capacidad: number;
+  estado: string;
+}
 
 export default function ReservaFormConAPI() {
   const [formData, setFormData] = useState({
@@ -14,8 +22,35 @@ export default function ReservaFormConAPI() {
     comentarios: ''
   });
   
+  const [mesas, setMesas] = useState<Mesa[]>([]);
   const [loading, setLoading] = useState(false);
   const [mensaje, setMensaje] = useState('');
+  const [loadingMesas, setLoadingMesas] = useState(true);
+
+  // Cargar mesas al montar el componente
+  useEffect(() => {
+    const cargarMesas = async () => {
+      try {
+        setLoadingMesas(true);
+        const mesasData = await apiService.getMesas();
+        console.log('Mesas cargadas:', mesasData);
+        setMesas(mesasData);
+        
+        // Seleccionar la primera mesa disponible por defecto
+        const mesaDisponible = mesasData.find((mesa: Mesa) => mesa.estado === 'disponible');
+        if (mesaDisponible) {
+          setFormData(prev => ({ ...prev, id_mesa: mesaDisponible.id_mesa }));
+        }
+      } catch (error) {
+        console.error('Error cargando mesas:', error);
+        setMensaje('Error al cargar las mesas disponibles');
+      } finally {
+        setLoadingMesas(false);
+      }
+    };
+
+    cargarMesas();
+  }, []);
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -31,11 +66,27 @@ export default function ReservaFormConAPI() {
     setMensaje('');
 
     try {
+      // Validar que haya una mesa seleccionada
+      if (!formData.id_mesa) {
+        setMensaje('Error: Debes seleccionar una mesa disponible');
+        return;
+      }
+
+      // Validar que la fecha no sea en el pasado
+      const fechaSeleccionada = new Date(formData.fecha);
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      
+      if (fechaSeleccionada < hoy) {
+        setMensaje('Error: No puedes hacer reservas para fechas pasadas');
+        return;
+      }
+
       // Crear reserva usando tu API REST
       const reservaData = {
-        id_reserva: Date.now(), // ID temporal, tu API debería generarlo automáticamente
+        id_reserva: Math.floor(Math.random() * 10000) + Date.now(), // ID más único
         id_cliente: formData.id_cliente,
-        id_mesa: formData.id_mesa,
+        id_mesa: parseInt(formData.id_mesa.toString()),
         fecha: formData.fecha,
         hora_inicio: formData.hora_inicio,
         hora_fin: formData.hora_fin,
@@ -47,12 +98,12 @@ export default function ReservaFormConAPI() {
       const resultado = await apiService.crearReserva(reservaData);
       
       console.log('Reserva creada:', resultado);
-      setMensaje('¡Reserva creada exitosamente!');
+      setMensaje('¡Reserva creada exitosamente! Tu reserva está pendiente de confirmación.');
       
       // Limpiar formulario
       setFormData({
         id_cliente: 1,
-        id_mesa: 1,
+        id_mesa: mesas.find(mesa => mesa.estado === 'disponible')?.id_mesa || 1,
         fecha: '',
         hora_inicio: '',
         hora_fin: '',
@@ -60,6 +111,10 @@ export default function ReservaFormConAPI() {
         ocasion_especial: '',
         comentarios: ''
       });
+
+      // Recargar mesas para actualizar disponibilidad
+      const mesasActualizadas = await apiService.getMesas();
+      setMesas(mesasActualizadas);
 
     } catch (error) {
       console.error('Error creando reserva:', error);
@@ -123,18 +178,29 @@ export default function ReservaFormConAPI() {
 
         <div className="grupo-campo">
           <label className="etiqueta-campo" htmlFor="id_mesa">Mesa</label>
-          <select 
-            id="id_mesa" 
-            name="id_mesa"
-            className="campo-seleccion"
-            value={formData.id_mesa}
-            onChange={handleChange}
-          >
-            <option value="1">Mesa 1 (2 personas)</option>
-            <option value="2">Mesa 2 (4 personas)</option>
-            <option value="3">Mesa 3 (6 personas)</option>
-            <option value="4">Mesa 4 (8 personas)</option>
-          </select>
+          {loadingMesas ? (
+            <div className="loading-mesas">Cargando mesas...</div>
+          ) : (
+            <select 
+              id="id_mesa" 
+              name="id_mesa"
+              className="campo-seleccion"
+              value={formData.id_mesa}
+              onChange={handleChange}
+            >
+              {mesas
+                .filter(mesa => mesa.estado === 'disponible')
+                .map(mesa => (
+                  <option key={mesa.id_mesa} value={mesa.id_mesa}>
+                    Mesa {mesa.numero} ({mesa.capacidad} personas) - {mesa.estado}
+                  </option>
+                ))
+              }
+              {mesas.filter(mesa => mesa.estado === 'disponible').length === 0 && (
+                <option value="">No hay mesas disponibles</option>
+              )}
+            </select>
+          )}
         </div>
 
         <div className="grupo-campo">

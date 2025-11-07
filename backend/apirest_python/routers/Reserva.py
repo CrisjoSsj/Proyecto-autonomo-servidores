@@ -22,31 +22,41 @@ reservas_list = [Reserva(id_reserva=1, id_cliente=1, id_mesa=1, fecha="2024-10-0
                  Reserva(id_reserva=3, id_cliente=3, id_mesa=3, fecha="2024-10-07", hora_inicio="18:30", hora_fin="20:30", estado="cancelada")]
 
 @router.get("/reserva/")
-async def reserva():
+async def reserva_status():
     return {"api reserva activa"}
 
 @router.get("/reservas/")
-async def reservas():
+async def get_reservas():
     return reservas_list
 
 #path
 @router.get("/reserva/{id_reserva}")
-async def reserva(id_reserva: int):
+async def get_reserva_by_id(id_reserva: int):
     return Buscar_reserva(id_reserva)
 
-#QUERY
-@router.get("/reserva/")
-async def reserva(id_reserva: int):
+#QUERY - usando diferente endpoint para evitar conflictos
+@router.get("/reserva/buscar")
+async def buscar_reserva_query(id_reserva: int):
     return Buscar_reserva(id_reserva)
 
 #POST
 @router.post("/reserva/", response_model=Reserva)
-async def reserva(reserva: Reserva):
-    if type(Buscar_reserva(reserva.id_reserva)) == Reserva:
-        raise HTTPException(status_code=400, detail="La reserva ya existe")
-    else:
-        reservas_list.append(reserva)
-        # Enviar notificación al WebSocket
+async def crear_reserva(reserva: Reserva):
+    # Verificar si ya existe una reserva con el mismo ID
+    try:
+        existing_reserva = Buscar_reserva(reserva.id_reserva)
+        if existing_reserva:
+            raise HTTPException(status_code=400, detail="La reserva ya existe")
+    except HTTPException as e:
+        # Si no existe, continuamos (esto es lo que queremos)
+        if e.status_code != 404:
+            raise e
+    
+    # Agregar la nueva reserva
+    reservas_list.append(reserva)
+    
+    # Enviar notificación al WebSocket
+    try:
         await broadcast_reservas("new_reservation", {
             "reserva_id": reserva.id_reserva,
             "cliente_id": reserva.id_cliente,
@@ -55,36 +65,53 @@ async def reserva(reserva: Reserva):
             "hora_inicio": reserva.hora_inicio,
             "estado": reserva.estado
         })
-        return reserva
+    except Exception as ws_error:
+        # Si el WebSocket falla, no afectar la creación de la reserva
+        print(f"Warning: WebSocket broadcast failed: {ws_error}")
+    
+    return reserva
 
 #PUT
 @router.put("/reserva/")
-async def reserva(reserva: Reserva):
+async def actualizar_reserva(reserva: Reserva):
     found = False
     for index, guardar_reserva in enumerate(reservas_list):
         if guardar_reserva.id_reserva == reserva.id_reserva:
             reservas_list[index] = reserva
             found = True
             # Enviar notificación al WebSocket
-            await broadcast_reservas("update_reservation", {
-                "reserva_id": reserva.id_reserva,
-                "estado": reserva.estado,
-                "fecha": reserva.fecha,
-                "hora_inicio": reserva.hora_inicio
-            })
-            return {"actualizado exitosamente"}
+            try:
+                await broadcast_reservas("update_reservation", {
+                    "reserva_id": reserva.id_reserva,
+                    "estado": reserva.estado,
+                    "fecha": reserva.fecha,
+                    "hora_inicio": reserva.hora_inicio
+                })
+            except Exception as ws_error:
+                print(f"Warning: WebSocket broadcast failed: {ws_error}")
+            return {"message": "Reserva actualizada exitosamente", "reserva": reserva}
+    
     if not found:
         raise HTTPException(status_code=404, detail="No se encontró la reserva")
 
 #Delete
 @router.delete("/reserva/{id}")
-async def reserva(id: int):
+async def eliminar_reserva(id: int):
     found = False
     for index, guardar_reserva in enumerate(reservas_list):
         if guardar_reserva.id_reserva == id:
+            reserva_eliminada = reservas_list[index]
             del reservas_list[index]
             found = True
-            return {"Eliminado exitosamente"}
+            return {
+                "message": "Reserva eliminada exitosamente", 
+                "reserva_eliminada": {
+                    "id_reserva": reserva_eliminada.id_reserva,
+                    "fecha": reserva_eliminada.fecha,
+                    "hora_inicio": reserva_eliminada.hora_inicio
+                }
+            }
+    
     if not found:
         raise HTTPException(status_code=404, detail="No se encontró la reserva")
 

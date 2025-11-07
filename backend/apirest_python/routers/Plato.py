@@ -25,53 +25,74 @@ platos_list = [
 ]
 
 @router.get("/plato/")
-async def plato():
+async def plato_status():
     return {"api plato activa"}
 
 @router.get("/platos/")
-async def platos():
+async def get_platos():
     return platos_list
 
 #path
 @router.get("/plato/{id_plato}")
-async def plato(id_plato: int):
+async def get_plato_by_id(id_plato: int):
     return Buscar_plato(id_plato)
 
-#QUERY
-@router.get("/plato/")
-async def plato(id_plato: int):
+#QUERY - usando diferente endpoint para evitar conflictos
+@router.get("/plato/buscar")
+async def buscar_plato_query(id_plato: int):
     return Buscar_plato(id_plato)
 
 #POST
 @router.post("/plato/", response_model=Plato)
-async def plato(plato: Plato):
-    if type(Buscar_plato(plato.id_plato)) == Plato:
-        raise HTTPException(status_code=400, detail="El plato ya existe")
-    else:
-        platos_list.append(plato)
-        return plato
+async def crear_plato(plato: Plato):
+    # Generar ID automáticamente
+    if not plato.id_plato or plato.id_plato == 0:
+        plato.id_plato = max([p.id_plato for p in platos_list]) + 1 if platos_list else 1
+    
+    # Verificar si ya existe un plato con el mismo ID
+    try:
+        existing_plato = Buscar_plato(plato.id_plato)
+        if existing_plato:
+            raise HTTPException(status_code=400, detail="El plato ya existe")
+    except HTTPException as e:
+        if e.status_code != 404:
+            raise e
+    
+    platos_list.append(plato)
+    return plato
 
 #PUT
-@router.put("/plato/")
-async def plato(plato: Plato):
+@router.put("/plato/{id_plato}")
+async def actualizar_plato(id_plato: int, plato: Plato):
     found = False
     for index, guardar_plato in enumerate(platos_list):
-        if guardar_plato.id_plato == plato.id_plato:
+        if guardar_plato.id_plato == id_plato:
+            # Mantener el ID original
+            plato.id_plato = id_plato
             platos_list[index] = plato
             found = True
-            return {"actualizado exitosamente"}
+            return {"message": "Plato actualizado exitosamente", "plato": plato}
+    
     if not found:
         raise HTTPException(status_code=404, detail="No se encontró el plato")
 
 #Delete
 @router.delete("/plato/{id}")
-async def plato(id: int):
+async def eliminar_plato(id: int):
     found = False
     for index, guardar_plato in enumerate(platos_list):
         if guardar_plato.id_plato == id:
+            plato_eliminado = platos_list[index]
             del platos_list[index]
             found = True
-            return {"Eliminado exitosamente"}
+            return {
+                "message": "Plato eliminado exitosamente",
+                "plato_eliminado": {
+                    "id_plato": plato_eliminado.id_plato,
+                    "nombre": plato_eliminado.nombre
+                }
+            }
+    
     if not found:
         raise HTTPException(status_code=404, detail="No se encontró el plato")
 

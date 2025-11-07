@@ -21,20 +21,24 @@ body, html {
 
 /* Banner Principal - Estilo transparente profesional */
 .banner-principal {
-  background: transparent;
-  color: var(--color-text-primary);
-  padding: var(--spacing-3xl) var(--spacing-xl);
+  background: var(--color-surface-dark);
+  color: var(--color-text-light);
+  padding: var(--spacing-2xl) var(--spacing-md);
   text-align: center;
   position: relative;
-  margin-bottom: 0;
-  min-height: 60vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
 }
 
 .banner-principal::before {
-  display: none;
+  display: none; /* Eliminamos patrones complejos para mayor minimalismo */
+}
+
+.contenedor-banner-contenido {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
 }
 
 .banner-contenido {
@@ -797,8 +801,6 @@ body, html {
   justify-content: center;
   gap: var(--spacing-2xl);
   margin-top: var(--spacing-2xl);
-  padding: var(--spacing-xl);
-  background: rgba(217, 119, 6, 0.1);
   border-radius: 16px;
   backdrop-filter: blur(10px);
 }
