@@ -84,11 +84,7 @@ export default function ReservaFormConAPI() {
 
       // Crear reserva usando tu API REST
       const reservaData = {
-<<<<<<< HEAD
-        id_reserva: Math.floor(Math.random() * 10000) + Date.now(), // ID más único
-=======
         // No enviamos id_reserva: lo genera el servidor
->>>>>>> 3d58fbbef77cfac37a52cfe2c6d4e3b5b5c40e0d
         id_cliente: formData.id_cliente,
         id_mesa: parseInt(formData.id_mesa.toString()),
         fecha: formData.fecha,

@@ -42,36 +42,6 @@ async def buscar_reserva_query(id_reserva: int):
 
 #POST
 @router.post("/reserva/", response_model=Reserva)
-<<<<<<< HEAD
-async def crear_reserva(reserva: Reserva):
-    # Verificar si ya existe una reserva con el mismo ID
-    try:
-        existing_reserva = Buscar_reserva(reserva.id_reserva)
-        if existing_reserva:
-            raise HTTPException(status_code=400, detail="La reserva ya existe")
-    except HTTPException as e:
-        # Si no existe, continuamos (esto es lo que queremos)
-        if e.status_code != 404:
-            raise e
-    
-    # Agregar la nueva reserva
-    reservas_list.append(reserva)
-    
-    # Enviar notificación al WebSocket
-    try:
-        await broadcast_reservas("new_reservation", {
-            "reserva_id": reserva.id_reserva,
-            "cliente_id": reserva.id_cliente,
-            "mesa_id": reserva.id_mesa,
-            "fecha": reserva.fecha,
-            "hora_inicio": reserva.hora_inicio,
-            "estado": reserva.estado
-        })
-    except Exception as ws_error:
-        # Si el WebSocket falla, no afectar la creación de la reserva
-        print(f"Warning: WebSocket broadcast failed: {ws_error}")
-    
-=======
 async def reserva(reserva: Reserva):
     # Generar id_reserva automáticamente si no fue provisto
     max_id = 0
@@ -117,7 +87,6 @@ async def reserva(reserva: Reserva):
         "hora_inicio": reserva.hora_inicio,
         "estado": reserva.estado
     })
->>>>>>> 3d58fbbef77cfac37a52cfe2c6d4e3b5b5c40e0d
     return reserva
 
 #PUT

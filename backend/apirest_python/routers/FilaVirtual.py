@@ -1,12 +1,8 @@
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
-<<<<<<< HEAD
-from typing import List, Optional
-from datetime import datetime, timedelta
-import json
-=======
 from typing import Optional
->>>>>>> 3d58fbbef77cfac37a52cfe2c6d4e3b5b5c40e0d
+from typing import Optional, List
+from datetime import datetime, timedelta
 import sys
 sys.path.append('..')
 from websocket_broadcast import broadcast_fila_virtual
@@ -93,14 +89,6 @@ async def fila_por_id_legacy(id_fila: int):
     return Buscar_fila(id_fila)
 
 @router.post("/fila/", response_model=FilaVirtual)
-<<<<<<< HEAD
-async def crear_fila_legacy(fila: FilaVirtual):
-    if type(Buscar_fila(fila.id_fila)) == FilaVirtual:
-        raise HTTPException(status_code=400, detail="La fila ya existe")
-    else:
-        filas_list.append(fila)
-        return fila
-=======
 async def fila(fila: FilaVirtual):
     # Generar id_fila automáticamente si no fue provisto
     max_id = 0
@@ -133,7 +121,6 @@ async def fila(fila: FilaVirtual):
         "estado": fila.estado
     })
     return fila
->>>>>>> 3d58fbbef77cfac37a52cfe2c6d4e3b5b5c40e0d
 
 # ===== ENDPOINTS NUEVOS =====
 @router.get("/fila-virtual/", response_model=List[PersonaFilaVirtual])
