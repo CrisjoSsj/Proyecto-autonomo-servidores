@@ -25,7 +25,8 @@ class WebSocketService {
    */
   connect(): void {
     if (this.ws?.readyState === WebSocket.OPEN || this.isConnecting) {
-      console.log('WebSocket: Ya está conectado o conectando');
+      // Ya estamos conectados o en proceso de conexión: no hacer nada (silenciar en dev para evitar ruido por StrictMode)
+      console.debug('WebSocket: conexión existente o en progreso');
       return;
     }
 

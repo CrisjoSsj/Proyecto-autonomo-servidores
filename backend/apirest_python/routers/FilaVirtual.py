@@ -1,8 +1,12 @@
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
+<<<<<<< HEAD
 from typing import List, Optional
 from datetime import datetime, timedelta
 import json
+=======
+from typing import Optional
+>>>>>>> 3d58fbbef77cfac37a52cfe2c6d4e3b5b5c40e0d
 import sys
 sys.path.append('..')
 from websocket_broadcast import broadcast_fila_virtual
@@ -31,11 +35,11 @@ class PersonaFilaVirtual(BaseModel):
 
 # Modelo legacy para compatibilidad
 class FilaVirtual(BaseModel):
-    id_fila: int
-    id_cliente: int
-    posicion: int
-    tiempo_espera: str
-    estado: str
+    id_fila: Optional[int] = None
+    id_cliente: Optional[int] = None
+    posicion: Optional[int] = None
+    tiempo_espera: Optional[str] = None
+    estado: Optional[str] = 'esperando'
 
 # Base de datos simulada para la fila virtual
 fila_virtual_db: List[PersonaFilaVirtual] = []
@@ -89,12 +93,47 @@ async def fila_por_id_legacy(id_fila: int):
     return Buscar_fila(id_fila)
 
 @router.post("/fila/", response_model=FilaVirtual)
+<<<<<<< HEAD
 async def crear_fila_legacy(fila: FilaVirtual):
     if type(Buscar_fila(fila.id_fila)) == FilaVirtual:
         raise HTTPException(status_code=400, detail="La fila ya existe")
     else:
         filas_list.append(fila)
         return fila
+=======
+async def fila(fila: FilaVirtual):
+    # Generar id_fila automáticamente si no fue provisto
+    max_id = 0
+    for existing in filas_list:
+        if existing.id_fila and existing.id_fila > max_id:
+            max_id = existing.id_fila
+
+    if fila.id_fila is None:
+        fila.id_fila = max_id + 1
+
+    # Comprobar existencia por id_fila ahora que tenemos id asignado
+    exists = any(guardar_fila.id_fila == fila.id_fila for guardar_fila in filas_list)
+    if exists:
+        raise HTTPException(status_code=400, detail="La fila ya existe")
+
+    # Asignar posición si no fue provista
+    if fila.posicion is None:
+        fila.posicion = len(filas_list) + 1
+
+    # Asegurar tiempo_espera por defecto
+    if fila.tiempo_espera is None:
+        fila.tiempo_espera = "15 min"
+
+    filas_list.append(fila)
+    # Enviar notificación al WebSocket
+    await broadcast_fila_virtual("join", {
+        "cliente_id": fila.id_cliente,
+        "posicion": fila.posicion,
+        "tiempo_espera": fila.tiempo_espera,
+        "estado": fila.estado
+    })
+    return fila
+>>>>>>> 3d58fbbef77cfac37a52cfe2c6d4e3b5b5c40e0d
 
 # ===== ENDPOINTS NUEVOS =====
 @router.get("/fila-virtual/", response_model=List[PersonaFilaVirtual])

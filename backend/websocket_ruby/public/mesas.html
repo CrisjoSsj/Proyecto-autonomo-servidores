@@ -7,6 +7,21 @@
 <script>
   const socket = new WebSocket("ws://localhost:8080");
   const mesasDiv = document.getElementById("mesas");
+  // Último mensaje recibido (útil para depuración)
+  let lastMessage = null;
+
+  // Mostrar errores al usuario en la UI
+  function showError(msg) {
+    let errDiv = document.getElementById('error-mesas');
+    if (!errDiv) {
+      errDiv = document.createElement('div');
+      errDiv.id = 'error-mesas';
+      errDiv.style.color = 'red';
+      mesasDiv.parentNode.insertBefore(errDiv, mesasDiv);
+    }
+    errDiv.textContent = msg;
+    console.error('Mesas error:', msg);
+  }
 
   socket.onopen = () => {
     console.log("✅ Conectado al WebSocket");
@@ -18,24 +33,43 @@
   };
 
   socket.onmessage = (event) => {
-    const msg = JSON.parse(event.data);
-    console.log("📩 Mensaje recibido:", msg);
+    try {
+      const msg = JSON.parse(event.data);
+      lastMessage = msg;
+      console.log("📩 Mensaje recibido:", msg);
 
-    if (msg.channel === "mesas") {
+      if (msg.channel !== "mesas") return; // ignorar otros canales
+
+      // Manejo de errores estructurados desde el servidor
+      if (msg.message === 'error') {
+        const errorText = msg.data && msg.data.error ? msg.data.error : 'Error desconocido';
+        showError(errorText);
+        return;
+      }
+
       switch (msg.message) {
         case "estado_inicial":
-          renderMesas(msg.data.mesas);
+          // proteger si no existe data o mesas
+          const mesas = (msg.data && msg.data.mesas) || [];
+          renderMesas(mesas);
           break;
         case "mesa_agregada":
-          agregarMesaVista(msg.data);
+          if (msg.data) agregarMesaVista(msg.data);
           break;
         case "mesa_eliminada":
-          eliminarMesaVista(msg.data.id_mesa);
+          if (msg.data && (msg.data.id_mesa || msg.data.id)) {
+            eliminarMesaVista(msg.data.id_mesa || msg.data.id);
+          }
           break;
         case "mesa_actualizada":
-          updateMesa(msg.data);
+          if (msg.data) updateMesa(msg.data);
           break;
+        default:
+          console.warn('Acción de mesas desconocida:', msg.message);
       }
+    } catch (err) {
+      console.error('Error parseando mensaje WebSocket:', err, event.data);
+      showError('Error interno al recibir datos de mesas');
     }
   };
 
@@ -63,13 +97,17 @@
 
   function agregarMesaVista(mesa) {
     const div = document.createElement("div");
-    div.className = `mesa ${mesa.estado}`;
-    div.id = `mesa-${mesa.id_mesa}`;
+    const estado = mesa.estado || 'desconocido';
+    const numero = mesa.numero !== undefined ? mesa.numero : (mesa.id_mesa || 'N/A');
+    const capacidad = mesa.capacidad !== undefined ? mesa.capacidad : 'N/A';
+
+    div.className = `mesa ${estado}`;
+    div.id = `mesa-${mesa.id_mesa || mesa.id}`;
     div.innerHTML = `
-      <h3>Mesa ${mesa.numero}</h3>
-      <p>Capacidad: ${mesa.capacidad}</p>
-      <p>Estado: ${mesa.estado}</p>
-      <button onclick="eliminarMesa(${mesa.id_mesa})">Eliminar</button>
+      <h3>Mesa ${numero}</h3>
+      <p>Capacidad: ${capacidad}</p>
+      <p>Estado: ${estado}</p>
+      <button onclick="eliminarMesa(${mesa.id_mesa || mesa.id})">Eliminar</button>
     `;
     mesasDiv.appendChild(div);
   }
@@ -88,10 +126,17 @@
   }
 
   function updateMesa(mesa) {
-    const div = document.getElementById(`mesa-${mesa.id_mesa}`);
+    const id = mesa.id_mesa || mesa.id;
+    const div = document.getElementById(`mesa-${id}`);
     if (div) {
-      div.className = `mesa ${mesa.estado}`;
-      div.querySelector("p:last-child").textContent = `Estado: ${mesa.estado}`;
+      const estado = mesa.estado || 'desconocido';
+      div.className = `mesa ${estado}`;
+      // actualizar todos los campos visibles si existen
+      const paras = div.querySelectorAll('p');
+      if (paras.length >= 2) {
+        paras[0].textContent = `Capacidad: ${mesa.capacidad !== undefined ? mesa.capacidad : paras[0].textContent.split(':')[1].trim()}`;
+        paras[1].textContent = `Estado: ${estado}`;
+      }
     }
   }
 </script>

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Navbar from "../../components/user/Navbar";
 import PiePagina from "../../components/user/PiePagina";
 import { wsService } from "../../services/WebSocketService";
+import { apiService } from "../../services/ApiService";
 import "../../css/user/FilaVirtual.css";
 
 interface Mesa {
@@ -34,9 +35,9 @@ export default function FilaVirtual() {
         // Conectar al WebSocket
         wsService.connect();
 
-        // Cargar mesas iniciales
-        cargarMesas();
-        cargarCola();
+            // Cargar mesas iniciales
+            cargarMesas();
+            cargarCola();
 
         // Suscribirse a actualizaciones de mesas
         const unsubscribeMesas = wsService.subscribe('mesas', (message: any) => {
@@ -59,9 +60,16 @@ export default function FilaVirtual() {
 
     const cargarMesas = async () => {
         try {
-            const response = await fetch('http://localhost:8000/mesas/');
-            const data = await response.json();
-            setMesas(data);
+            const data = await apiService.getMesas();
+            // El backend devuelve 'id_mesa' mientras el componente espera 'id'
+            const mapped = (data || []).map((m: any) => ({
+                id: m.id_mesa ?? m.id ?? Math.floor(Math.random() * 1000000),
+                numero: m.numero,
+                capacidad: m.capacidad,
+                estado: m.estado,
+                ubicacion: m.ubicacion ?? ''
+            }));
+            setMesas(mapped);
         } catch (error) {
             console.error('Error al cargar mesas:', error);
         }
@@ -69,9 +77,9 @@ export default function FilaVirtual() {
 
     const cargarCola = async () => {
         try {
-            const response = await fetch('http://localhost:8000/fila-virtual/');
-            const data = await response.json();
-            setCola(data);
+            // Usar el servicio API centralizado para evitar endpoints incorrectos
+            const data = await apiService.getFilaVirtual();
+            setCola(data || []);
         } catch (error) {
             console.error('Error al cargar cola:', error);
         }
@@ -90,23 +98,30 @@ export default function FilaVirtual() {
         
         try {
             // Crear entrada en la fila virtual via API REST
-            const response = await fetch('http://localhost:8000/fila-virtual/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    cliente_id: Math.floor(Math.random() * 1000), // Generar ID temporal
-                    ...formData,
-                    hora_llegada: new Date().toISOString(),
-                    estado: 'esperando'
-                }),
-            });
+            // Usar ApiService para crear la entrada en la fila virtual
+            const payload = {
+                cliente_id: Math.floor(Math.random() * 1000), // Generar ID temporal
+                ...formData,
+                hora_llegada: new Date().toISOString(),
+                estado: 'esperando'
+            };
 
-            if (response.ok) {
-                const data = await response.json();
-                // Notificar via WebSocket
-                wsService.joinFilaVirtual(data.id, formData.nombre);
+            const data = await apiService.unirseFilaVirtual(payload);
+
+            // Si la API devolvió el recurso creado, notificar por WebSocket
+            if (data) {
+                try {
+                    const createdId = (data && data.id) ? data.id : undefined;
+                    if (createdId) {
+                        wsService.joinFilaVirtual(createdId, formData.nombre);
+                    } else {
+                        // Intentar enviar sin id si no se devolvió (el servidor puede aceptar)
+                        wsService.joinFilaVirtual(Math.floor(Math.random() * 1000000), formData.nombre);
+                    }
+                } catch (wsErr) {
+                    console.warn('Advertencia: no se pudo notificar por WebSocket:', wsErr);
+                }
+
                 alert('¡Te has unido a la cola virtual! Te notificaremos cuando sea tu turno.');
                 setFormData({ nombre: '', telefono: '', numeroPersonas: 2 });
                 cargarCola();
@@ -281,7 +296,7 @@ export default function FilaVirtual() {
                         <h3 className="titulo-estado-cola">Cola Actual</h3>
                         <div className="lista-cola">
                             {cola.length > 0 ? cola.map((persona, index) => (
-                                <div key={persona.id} className="persona-en-cola">
+                                <div key={persona.id ?? `cola-${index}`} className="persona-en-cola">
                                     <span className="posicion-cola">{index + 1}°</span>
                                     <span className="nombre-cola">{persona.nombre}</span>
                                     <span className="personas-cola">{persona.numeroPersonas} personas</span>

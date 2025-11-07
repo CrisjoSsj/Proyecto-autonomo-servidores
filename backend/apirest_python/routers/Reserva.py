@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+from typing import Optional
 import sys
 sys.path.append('..')
 from websocket_broadcast import broadcast_reservas
@@ -7,13 +8,13 @@ from websocket_broadcast import broadcast_reservas
 router= APIRouter (tags=["Reserva"])
 
 class Reserva(BaseModel):
-    id_reserva: int
-    id_cliente: int
-    id_mesa: int
-    fecha: str
-    hora_inicio: str
-    hora_fin: str
-    estado: str
+    id_reserva: Optional[int] = None
+    id_cliente: Optional[int] = None
+    id_mesa: Optional[int] = None
+    fecha: Optional[str] = None
+    hora_inicio: Optional[str] = None
+    hora_fin: Optional[str] = None
+    estado: Optional[str] = 'pendiente'
 '''    cliente: Cliente'''
 '''    mesa: Mesa'''   
 
@@ -41,6 +42,7 @@ async def buscar_reserva_query(id_reserva: int):
 
 #POST
 @router.post("/reserva/", response_model=Reserva)
+<<<<<<< HEAD
 async def crear_reserva(reserva: Reserva):
     # Verificar si ya existe una reserva con el mismo ID
     try:
@@ -69,6 +71,53 @@ async def crear_reserva(reserva: Reserva):
         # Si el WebSocket falla, no afectar la creación de la reserva
         print(f"Warning: WebSocket broadcast failed: {ws_error}")
     
+=======
+async def reserva(reserva: Reserva):
+    # Generar id_reserva automáticamente si no fue provisto
+    max_id = 0
+    for existing in reservas_list:
+        if existing.id_reserva and existing.id_reserva > max_id:
+            max_id = existing.id_reserva
+
+    # Forzar que el servidor genere el id_reserva (ignorar cualquier id enviado por el cliente)
+    reserva.id_reserva = max_id + 1
+
+    # Comprobar existencia por id_reserva (debería ser única tras generación)
+    exists = any(r.id_reserva == reserva.id_reserva for r in reservas_list)
+    if exists:
+        # Muy improbable porque acabamos de generar un id nuevo, pero conservamos la comprobación
+        raise HTTPException(status_code=400, detail="La reserva ya existe")
+
+    # Validación mínima de campos obligatorios
+    missing_fields = []
+    if not reserva.fecha:
+        missing_fields.append('fecha')
+    if not reserva.hora_inicio:
+        missing_fields.append('hora_inicio')
+    if not reserva.id_mesa:
+        missing_fields.append('id_mesa')
+
+    if missing_fields:
+        raise HTTPException(status_code=400, detail={
+            'error': 'Faltan campos obligatorios',
+            'missing': missing_fields
+        })
+
+    # Asegurar valores por defecto mínimos
+    if reserva.estado is None:
+        reserva.estado = 'pendiente'
+
+    reservas_list.append(reserva)
+    # Enviar notificación al WebSocket
+    await broadcast_reservas("new_reservation", {
+        "reserva_id": reserva.id_reserva,
+        "cliente_id": reserva.id_cliente,
+        "mesa_id": reserva.id_mesa,
+        "fecha": reserva.fecha,
+        "hora_inicio": reserva.hora_inicio,
+        "estado": reserva.estado
+    })
+>>>>>>> 3d58fbbef77cfac37a52cfe2c6d4e3b5b5c40e0d
     return reserva
 
 #PUT
