@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Navbar from "../../components/user/Navbar";
 import PiePagina from "../../components/user/PiePagina";
+import { MesasMap } from "../../components/user/MesasMap";
 import { wsService } from "../../services/WebSocketService";
 import { apiService } from "../../services/ApiService";
 import "../../css/user/FilaVirtual.css";
@@ -180,6 +181,11 @@ export default function FilaVirtual() {
             <section className="seccion-disponibilidad-mesas">
                 <div className="contenedor-disponibilidad">
                     <h2 className="titulo-disponibilidad">Estado de Mesas en Tiempo Real</h2>
+                    <p className="descripcion-disponibilidad">
+                        Visualiza el salón como si fuera un cine: cada mesa cambia de color según su disponibilidad
+                        y se actualiza en tiempo real cuando alguien reserva, ocupa o libera un espacio.
+                    </p>
+                    <MesasMap mesas={mesas} />
                     
                     <div className="grilla-mesas">
                         {/* Mesas para 2 personas */}

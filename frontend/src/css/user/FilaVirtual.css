@@ -167,6 +167,15 @@
   border-radius: 2px;
 }
 
+.descripcion-disponibilidad {
+  max-width: 760px;
+  margin: 1.5rem auto 2.75rem;
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+}
+
 .grilla-mesas {
   display: grid;
   grid-template-columns: 1fr;

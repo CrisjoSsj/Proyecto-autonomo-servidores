@@ -50,6 +50,15 @@ async def crear_mesa(mesa: Mesa):
             raise e
     
     mesas_list.append(mesa)
+    try:
+        await broadcast_mesas("mesa_creada", {
+            "id_mesa": mesa.id_mesa,
+            "numero": mesa.numero,
+            "capacidad": mesa.capacidad,
+            "estado": mesa.estado
+        })
+    except Exception as ws_error:
+        print(f"Warning: WebSocket broadcast failed: {ws_error}")
     return mesa
 
 #PUT
@@ -84,6 +93,15 @@ async def eliminar_mesa(id: int):
             mesa_eliminada = mesas_list[index]
             del mesas_list[index]
             found = True
+            try:
+                await broadcast_mesas("mesa_eliminada", {
+                    "id_mesa": mesa_eliminada.id_mesa,
+                    "numero": mesa_eliminada.numero,
+                    "capacidad": mesa_eliminada.capacidad,
+                    "estado": mesa_eliminada.estado
+                })
+            except Exception as ws_error:
+                print(f"Warning: WebSocket broadcast failed: {ws_error}")
             return {
                 "message": "Mesa eliminada exitosamente",
                 "mesa_eliminada": {
