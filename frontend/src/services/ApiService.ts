@@ -154,6 +154,36 @@ class ApiService {
     };
   }
 
+  async actualizarMesa(mesaData: any) {
+    const backendPayload = {
+      id_mesa: mesaData.id ?? mesaData.id_mesa,
+      numero: mesaData.numero,
+      capacidad: mesaData.capacidad,
+      estado: mesaData.estado ?? 'libre'
+    };
+
+    const updated = await this.request('/mesa/', {
+      method: 'PUT',
+      body: JSON.stringify(backendPayload),
+    });
+
+    const source = updated?.mesa ?? updated ?? backendPayload;
+
+    return {
+      id: source.id_mesa ?? source.id ?? backendPayload.id_mesa,
+      numero: source.numero ?? backendPayload.numero,
+      capacidad: source.capacidad ?? backendPayload.capacidad,
+      estado: source.estado ?? backendPayload.estado,
+      ubicacion: source.ubicacion ?? mesaData.ubicacion ?? ''
+    };
+  }
+
+  async eliminarMesa(idMesa: number) {
+    return this.request(`/mesa/${idMesa}`, {
+      method: 'DELETE',
+    });
+  }
+
   // Clientes
   async getClientes() {
     return this.request('/clientes/');
