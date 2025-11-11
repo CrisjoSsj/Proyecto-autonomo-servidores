@@ -111,20 +111,8 @@ export default function FilaVirtual() {
 
             // Si la API devolvió el recurso creado, notificar por WebSocket
             if (data) {
-                try {
-                    const createdId = (data && data.id) ? data.id : undefined;
-                    if (createdId) {
-                        wsService.joinFilaVirtual(createdId, formData.nombre);
-                    } else {
-                        // Intentar enviar sin id si no se devolvió (el servidor puede aceptar)
-                        wsService.joinFilaVirtual(Math.floor(Math.random() * 1000000), formData.nombre);
-                    }
-                } catch (wsErr) {
-                    console.warn('Advertencia: no se pudo notificar por WebSocket:', wsErr);
-                }
-
                 alert('¡Te has unido a la cola virtual! Te notificaremos cuando sea tu turno.');
-                setFormData({ nombre: '', telefono: '', numeroPersonas: 2 });
+                setFormData({ nombre: '', telefono: '', numeroPersonas: 2 } as any);
                 cargarCola();
             }
         } catch (error) {

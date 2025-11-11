@@ -29,6 +29,34 @@ module ApiClient
       request('Delete', "/mesa/#{id}")
     end
 
+    def list_fila_virtual
+      request('Get', '/fila-virtual/')
+    end
+
+    def create_fila_virtual(attributes)
+      request('Post', '/fila-virtual/', attributes)
+    end
+
+    def llamar_persona_fila(fila_id)
+      request('Put', "/fila-virtual/#{fila_id}/siguiente")
+    end
+
+    def confirmar_persona_fila(fila_id)
+      request('Put', "/fila-virtual/#{fila_id}/confirmar")
+    end
+
+    def delete_fila_virtual(fila_id)
+      request('Delete', "/fila-virtual/#{fila_id}")
+    end
+
+    def admin_llamar_siguiente
+      request('Post', '/fila-virtual/admin/llamar-siguiente')
+    end
+
+    def admin_limpiar_vencidos
+      request('Post', '/fila-virtual/admin/limpiar-vencidos')
+    end
+
     private
 
     def request(method_name, path, body = nil)
