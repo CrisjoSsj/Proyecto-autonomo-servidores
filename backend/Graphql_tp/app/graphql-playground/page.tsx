@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { queryExamples } from "@/components/query-examples"
-import { Play, Copy, Check } from "lucide-react"
+import { Play, Copy, Check, Download } from "lucide-react"
+import { ReportButtons } from "@/components/report-buttons"
+import { exportPdfFromResult, exportExcelFromResult } from '@/lib/client-export'
 
 export default function GraphQLPlayground() {
   const [query, setQuery] = useState(queryExamples[0].query)
@@ -75,11 +77,32 @@ export default function GraphQLPlayground() {
               />
 
               {result && (
-                <div className="space-y-2">
-                  <h3 className="font-semibold">Resultado:</h3>
-                  <pre className="rounded-lg bg-muted p-4 overflow-x-auto">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold">Resultado:</h3>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => exportPdfFromResult(result)}
+                        title="Exportar PDF del resultado"
+                      >
+                        <Download className="mr-1 h-4 w-4" /> PDF
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => exportExcelFromResult(result)}
+                        title="Exportar Excel del resultado"
+                      >
+                        <Download className="mr-1 h-4 w-4" /> Excel
+                      </Button>
+                    </div>
+                  </div>
+                  <pre className="rounded-lg bg-muted p-4 overflow-x-auto max-h-[380px]">
                     <code className="text-sm">{result}</code>
                   </pre>
+                  <p className="text-xs text-muted-foreground">Exportación local: genera el archivo directamente en tu navegador sin pasar por la ruta /api/report.</p>
                 </div>
               )}
             </CardContent>
@@ -102,6 +125,10 @@ export default function GraphQLPlayground() {
                     <span className="truncate">{example.name}</span>
                   </Button>
                 ))}
+              </div>
+              <div className="mt-6 border-t pt-4">
+                <h3 className="text-sm font-semibold mb-2">Reportes</h3>
+                <ReportButtons />
               </div>
             </CardContent>
           </Card>

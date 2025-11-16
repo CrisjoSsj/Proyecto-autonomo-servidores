@@ -1,6 +1,6 @@
 # GraphQL + TypeScript - Proyecto Completo
 
-Implementación completa de GraphQL con TypeScript en Next.js, incluyendo esquemas tipados, consultas complejas y reportes analíticos con interfaz visual.
+Implementación completa de GraphQL con TypeScript en Next.js, incluyendo esquemas tipados, consultas complejas y generación de reportes analíticos (actualmente en el cliente) con interfaz visual.
 
 ## Solución al Error de Tailwind CSS
 
@@ -45,6 +45,7 @@ npm run dev
 - Documentación del esquema GraphQL
 - Botón para copiar consultas
 - Ejecución en tiempo real
+ - Exportación local a PDF/Excel del resultado de cada consulta
 
 ## Estructura del Proyecto
 
@@ -79,6 +80,36 @@ npm run dev
   "lucide-react": "^0.468.0"
 }
 \`\`\`
+
+## Reportes (PDF / Excel)
+
+Los reportes se generan actualmente en el navegador a partir del JSON de la respuesta GraphQL:
+
+1. Ejecuta una consulta en el playground.
+2. Usa los botones "PDF" / "Excel" encima del resultado para descargar.
+
+Las rutas de backend `/api/report` y `/api/report/[format]/[resource]` fueron eliminadas por inestabilidad (el proceso se cerraba). Para volver a tener generación en el servidor se recomienda un micro‑servicio Node independiente.
+
+### Futuro Micro‑Servicio (Sugerencia)
+
+Crear un pequeño servicio Express/Fastify que:
+```bash
+GET /report/pdf/:recurso
+GET /report/excel/:recurso
+```
+Consuma datos persistentes (DB) y utilice `pdf-lib` y `exceljs` con manejo de errores y límites de tamaño.
+
+### Personalización de Reportes Cliente
+
+Modificar `lib/client-export.ts` para:
+- Ajustar anchos de columna y estilos.
+- Añadir colores o resaltar headers.
+- Separar páginas por tipo de entidad en PDF.
+
+### Limitaciones Actuales
+- Datos en memoria (se reinician al reiniciar servidor).
+- Sin paginación ni filtros avanzados.
+- Formato PDF básico (tablas texto).
 
 ## Ejemplos de Uso
 

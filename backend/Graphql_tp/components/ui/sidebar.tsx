@@ -607,8 +607,12 @@ function SidebarMenuSkeleton({
   showIcon?: boolean
 }) {
   // Random width between 50 to 90%.
-  const width = React.useMemo(() => {
-    return `${Math.floor(Math.random() * 40) + 50}%`
+  const [width, setWidth] = React.useState<string | null>(null)
+
+  // Only compute a random width on the client after mount to avoid
+  // server/client HTML mismatch during hydration.
+  React.useEffect(() => {
+    setWidth(`${Math.floor(Math.random() * 40) + 50}%`)
   }, [])
 
   return (
@@ -628,9 +632,11 @@ function SidebarMenuSkeleton({
         className="h-4 max-w-(--skeleton-width) flex-1"
         data-sidebar="menu-skeleton-text"
         style={
-          {
-            '--skeleton-width': width,
-          } as React.CSSProperties
+          width
+            ? ({
+                '--skeleton-width': width,
+              } as React.CSSProperties)
+            : undefined
         }
       />
     </div>
