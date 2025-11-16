@@ -121,6 +121,15 @@ async def eliminar_reserva(id: int):
             reserva_eliminada = reservas_list[index]
             del reservas_list[index]
             found = True
+            # Enviar notificación al WebSocket
+            try:
+                await broadcast_reservas("reserva_eliminada", {
+                    "reserva_id": reserva_eliminada.id_reserva,
+                    "fecha": reserva_eliminada.fecha,
+                    "hora_inicio": reserva_eliminada.hora_inicio
+                })
+            except Exception as ws_error:
+                print(f"Warning: WebSocket broadcast failed: {ws_error}")
             return {
                 "message": "Reserva eliminada exitosamente", 
                 "reserva_eliminada": {

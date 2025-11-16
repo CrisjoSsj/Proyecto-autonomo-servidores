@@ -209,16 +209,38 @@ class WebSocketService {
   }
 
   /**
+   * RESERVAS - Suscribirse al canal de reservas
+   */
+  subscribeReservas(): void {
+    this.send({
+      channel: 'reservas',
+      action: 'subscribed',
+      data: {}
+    });
+  }
+
+  /**
    * RESERVAS - Nueva reserva
    */
   newReserva(reservaData: any): void {
     this.send({
       channel: 'reservas',
-      action: 'new_reservation',
-      data: {
+      action: 'crear',
+      payload: {
         ...reservaData,
         timestamp: new Date().toISOString()
       }
+    });
+  }
+
+  /**
+   * RESERVAS - Listar reservas
+   */
+  listReservas(): void {
+    this.send({
+      channel: 'reservas',
+      action: 'listar',
+      payload: {}
     });
   }
 
@@ -228,9 +250,9 @@ class WebSocketService {
   updateReserva(reservaId: number, updates: any): void {
     this.send({
       channel: 'reservas',
-      action: 'update_reservation',
-      data: {
-        reserva_id: reservaId,
+      action: 'actualizar',
+      payload: {
+        id_reserva: reservaId,
         ...updates,
         timestamp: new Date().toISOString()
       }
@@ -243,9 +265,23 @@ class WebSocketService {
   cancelReserva(reservaId: number): void {
     this.send({
       channel: 'reservas',
-      action: 'cancel_reservation',
-      data: {
-        reserva_id: reservaId,
+      action: 'cancelar',
+      payload: {
+        id_reserva: reservaId,
+        timestamp: new Date().toISOString()
+      }
+    });
+  }
+
+  /**
+   * RESERVAS - Eliminar reserva
+   */
+  deleteReserva(reservaId: number): void {
+    this.send({
+      channel: 'reservas',
+      action: 'eliminar',
+      payload: {
+        id_reserva: reservaId,
         timestamp: new Date().toISOString()
       }
     });

@@ -57,6 +57,26 @@ module ApiClient
       request('Post', '/fila-virtual/admin/limpiar-vencidos')
     end
 
+    def list_reservas
+      request('Get', '/reservas/')
+    end
+
+    def fetch_reserva(id)
+      request('Get', "/reserva/#{id}")
+    end
+
+    def create_reserva(attributes)
+      request('Post', '/reserva/', attributes)
+    end
+
+    def update_reserva(attributes)
+      request('Put', '/reserva/', attributes)
+    end
+
+    def delete_reserva(id)
+      request('Delete', "/reserva/#{id}")
+    end
+
     private
 
     def request(method_name, path, body = nil)

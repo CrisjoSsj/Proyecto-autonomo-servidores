@@ -4,7 +4,8 @@ import "../../css/user/Reservas.css";
 
 // Interfaces
 interface Mesa {
-  id_mesa: number;
+  id?: number;
+  id_mesa?: number;
   numero: number;
   capacidad: number;
   estado: string;
@@ -13,7 +14,7 @@ interface Mesa {
 export default function ReservaFormConAPI() {
   const [formData, setFormData] = useState({
     id_cliente: 1, // Por ahora hardcodeado, después lo obtienes del usuario logueado
-    id_mesa: 1,    // Lo seleccionará el usuario de una lista
+    id_mesa: '' as number | string,    // Lo seleccionará el usuario de una lista
     fecha: '',
     hora_inicio: '',
     hora_fin: '',
@@ -37,9 +38,9 @@ export default function ReservaFormConAPI() {
         setMesas(mesasData);
         
         // Seleccionar la primera mesa disponible por defecto
-        const mesaDisponible = mesasData.find((mesa: Mesa) => mesa.estado === 'disponible');
+        const mesaDisponible = mesasData.find((mesa: any) => mesa.estado === 'disponible' || mesa.estado === 'libre');
         if (mesaDisponible) {
-          setFormData(prev => ({ ...prev, id_mesa: mesaDisponible.id_mesa }));
+          setFormData(prev => ({ ...prev, id_mesa: mesaDisponible.id || mesaDisponible.id_mesa }));
         }
       } catch (error) {
         console.error('Error cargando mesas:', error);
@@ -67,8 +68,9 @@ export default function ReservaFormConAPI() {
 
     try {
       // Validar que haya una mesa seleccionada
-      if (!formData.id_mesa) {
+      if (!formData.id_mesa || formData.id_mesa === '') {
         setMensaje('Error: Debes seleccionar una mesa disponible');
+        setLoading(false);
         return;
       }
 
@@ -79,14 +81,25 @@ export default function ReservaFormConAPI() {
       
       if (fechaSeleccionada < hoy) {
         setMensaje('Error: No puedes hacer reservas para fechas pasadas');
+        setLoading(false);
         return;
       }
 
       // Crear reserva usando tu API REST
+      const idMesaNumero = typeof formData.id_mesa === 'string' 
+        ? parseInt(formData.id_mesa, 10) 
+        : formData.id_mesa;
+
+      if (isNaN(idMesaNumero) || idMesaNumero <= 0) {
+        setMensaje('Error: ID de mesa inválido');
+        setLoading(false);
+        return;
+      }
+
       const reservaData = {
         // No enviamos id_reserva: lo genera el servidor
-        id_cliente: formData.id_cliente,
-        id_mesa: parseInt(formData.id_mesa.toString()),
+        id_cliente: formData.id_cliente || 1,
+        id_mesa: idMesaNumero,
         fecha: formData.fecha,
         hora_inicio: formData.hora_inicio,
         hora_fin: formData.hora_fin,
@@ -101,9 +114,10 @@ export default function ReservaFormConAPI() {
       setMensaje('¡Reserva creada exitosamente! Tu reserva está pendiente de confirmación.');
       
       // Limpiar formulario
+      const primeraMesaDisponible = mesas.find((mesa: any) => mesa.estado === 'disponible' || mesa.estado === 'libre');
       setFormData({
         id_cliente: 1,
-        id_mesa: mesas.find(mesa => mesa.estado === 'disponible')?.id_mesa || 1,
+        id_mesa: primeraMesaDisponible?.id || primeraMesaDisponible?.id_mesa || '',
         fecha: '',
         hora_inicio: '',
         hora_fin: '',
@@ -187,16 +201,20 @@ export default function ReservaFormConAPI() {
               className="campo-seleccion"
               value={formData.id_mesa}
               onChange={handleChange}
+              required
             >
               {mesas
-                .filter(mesa => mesa.estado === 'disponible')
-                .map(mesa => (
-                  <option key={mesa.id_mesa} value={mesa.id_mesa}>
-                    Mesa {mesa.numero} ({mesa.capacidad} personas) - {mesa.estado}
-                  </option>
-                ))
+                .filter((mesa: any) => mesa.estado === 'disponible' || mesa.estado === 'libre')
+                .map((mesa: any) => {
+                  const mesaId = mesa.id || mesa.id_mesa;
+                  return (
+                    <option key={mesaId} value={mesaId}>
+                      Mesa {mesa.numero} ({mesa.capacidad} personas) - {mesa.estado === 'libre' ? 'Disponible' : mesa.estado}
+                    </option>
+                  );
+                })
               }
-              {mesas.filter(mesa => mesa.estado === 'disponible').length === 0 && (
+              {mesas.filter((mesa: any) => mesa.estado === 'disponible' || mesa.estado === 'libre').length === 0 && (
                 <option value="">No hay mesas disponibles</option>
               )}
             </select>
