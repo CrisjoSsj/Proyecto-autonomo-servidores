@@ -1,8 +1,7 @@
 import { NextRequest } from 'next/server'
 import { graphql, buildSchema } from 'graphql'
-import typeDefs from '@/lib/graphql/schema'
-import resolvers from '@/lib/graphql/resolvers'
-import { exportPdfFromResult, exportExcelFromResult } from '@/lib/client-export'
+import { typeDefs } from '@/lib/graphql/schema'
+import { resolvers } from '@/lib/graphql/resolvers'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -23,7 +22,6 @@ async function ejecutar(query: string) {
 // Aquí implementamos versión servidor mínima.
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import ExcelJS from 'exceljs'
-import { users, platos, pedidos, calcularEstadisticasVentas } from '@/lib/graphql/resolvers'
 
 function extraerTablas(data: any) {
   const tablas: { nombre: string; filas: any[] }[] = []

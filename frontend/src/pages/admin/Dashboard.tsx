@@ -74,7 +74,7 @@ export default function Dashboard() {
             color: 'white',
             fontWeight: 'bold'
           }}>
-            <span style={{ fontSize: '24px' }}>📊</span>
+            <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>analytics</span>
             <span>DATOS EN TIEMPO REAL VIA GRAPHQL</span>
             <span style={{ 
               marginLeft: 'auto',
@@ -89,7 +89,9 @@ export default function Dashboard() {
           <div className="grilla-estadisticas">
             
             <div className="tarjeta-estadistica ventas">
-              <div className="icono-estadistica ventas-icon"></div>
+              <div className="icono-estadistica ventas-icon">
+                <span className="material-symbols-outlined" style={{fontSize: '1.5rem', color: 'white'}}>event_note</span>
+              </div>
               <div className="contenido-estadistica">
                 <h3 className="titulo-estadistica">Total de Reservas</h3>
                 <p className="valor-estadistica">{dashboardData?.totalReservas || 0}</p>
@@ -98,7 +100,9 @@ export default function Dashboard() {
             </div>
 
             <div className="tarjeta-estadistica ordenes">
-              <div className="icono-estadistica ordenes-icon"></div>
+              <div className="icono-estadistica ordenes-icon">
+                <span className="material-symbols-outlined" style={{fontSize: '1.5rem', color: 'white'}}>table_restaurant</span>
+              </div>
               <div className="contenido-estadistica">
                 <h3 className="titulo-estadistica">Mesas Populares</h3>
                 <p className="valor-estadistica">{dashboardData?.mesasPopulares?.length || 0}</p>
@@ -107,7 +111,9 @@ export default function Dashboard() {
             </div>
 
             <div className="tarjeta-estadistica clientes">
-              <div className="icono-estadistica clientes-icon"></div>
+              <div className="icono-estadistica clientes-icon">
+                <span className="material-symbols-outlined" style={{fontSize: '1.5rem', color: 'white'}}>people</span>
+              </div>
               <div className="contenido-estadistica">
                 <h3 className="titulo-estadistica">Platos Más Pedidos</h3>
                 <p className="valor-estadistica">{dashboardData?.platosPopulares?.length || 0}</p>
@@ -116,7 +122,9 @@ export default function Dashboard() {
             </div>
 
             <div className="tarjeta-estadistica tiempo-promedio">
-              <div className="icono-estadistica tiempo-icon"></div>
+              <div className="icono-estadistica tiempo-icon">
+                <span className="material-symbols-outlined" style={{fontSize: '1.5rem', color: 'white'}}>calendar_month</span>
+              </div>
               <div className="contenido-estadistica">
                 <h3 className="titulo-estadistica">Reservas este Mes</h3>
                 <p className="valor-estadistica">
@@ -191,28 +199,36 @@ export default function Dashboard() {
           <div className="grilla-acciones">
             
             <div className="tarjeta-accion">
-              <div className="icono-accion mesas-icon"></div>
+              <div className="icono-accion mesas-icon">
+                <span className="material-symbols-outlined" style={{fontSize: '2.5rem', color: 'white'}}>table_restaurant</span>
+              </div>
               <h3 className="titulo-accion">Gestionar Mesas</h3>
               <p className="descripcion-accion">Ver estado y gestionar ocupación de mesas</p>
               <button className="boton-accion">Ir a Mesas</button>
             </div>
 
             <div className="tarjeta-accion">
-              <div className="icono-accion reservas-icon"></div>
+              <div className="icono-accion reservas-icon">
+                <span className="material-symbols-outlined" style={{fontSize: '2.5rem', color: 'white'}}>event_available</span>
+              </div>
               <h3 className="titulo-accion">Ver Reservas</h3>
               <p className="descripcion-accion">Gestionar reservas de hoy y futuras</p>
               <button className="boton-accion">Ver Reservas</button>
             </div>
 
             <div className="tarjeta-accion">
-              <div className="icono-accion menu-icon"></div>
+              <div className="icono-accion menu-icon">
+                <span className="material-symbols-outlined" style={{fontSize: '2.5rem', color: 'white'}}>restaurant_menu</span>
+              </div>
               <h3 className="titulo-accion">Editar Menú</h3>
               <p className="descripcion-accion">Actualizar platos, precios y disponibilidad</p>
               <button className="boton-accion">Editar Menú</button>
             </div>
 
             <div className="tarjeta-accion">
-              <div className="icono-accion reportes-icon"></div>
+              <div className="icono-accion reportes-icon">
+                <span className="material-symbols-outlined" style={{fontSize: '2.5rem', color: 'white'}}>bar_chart</span>
+              </div>
               <h3 className="titulo-accion">Ver Reportes</h3>
               <p className="descripcion-accion">Análisis de ventas y estadísticas</p>
               <button className="boton-accion">Ver Reportes</button>
@@ -228,7 +244,9 @@ export default function Dashboard() {
           <div className="lista-alertas-admin">
             
             <div className="alerta-admin urgente">
-              <div className="icono-alerta-admin urgente-icon"></div>
+              <div className="icono-alerta-admin urgente-icon">
+                <span className="material-symbols-outlined" style={{fontSize: '1.5rem', color: 'white'}}>error</span>
+              </div>
               <div className="contenido-alerta-admin">
                 <h3 className="titulo-alerta-admin">Mesa 4 - Tiempo excedido</h3>
                 <p className="mensaje-alerta-admin">
@@ -240,7 +258,9 @@ export default function Dashboard() {
             </div>
 
             <div className="alerta-admin importante">
-              <div className="icono-alerta-admin importante-icon"></div>
+              <div className="icono-alerta-admin importante-icon">
+                <span className="material-symbols-outlined" style={{fontSize: '1.5rem', color: 'white'}}>inventory_2</span>
+              </div>
               <div className="contenido-alerta-admin">
                 <h3 className="titulo-alerta-admin">Inventario Bajo</h3>
                 <p className="mensaje-alerta-admin">
@@ -252,7 +272,9 @@ export default function Dashboard() {
             </div>
 
             <div className="alerta-admin informativa">
-              <div className="icono-alerta-admin info-icon"></div>
+              <div className="icono-alerta-admin info-icon">
+                <span className="material-symbols-outlined" style={{fontSize: '1.5rem', color: 'white'}}>info</span>
+              </div>
               <div className="contenido-alerta-admin">
                 <h3 className="titulo-alerta-admin">Nueva Reserva</h3>
                 <p className="mensaje-alerta-admin">

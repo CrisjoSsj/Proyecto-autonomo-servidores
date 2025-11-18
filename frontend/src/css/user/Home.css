@@ -1,585 +1,519 @@
 /* ===================================
-   HOME.CSS - PÁGINA DE INICIO ESTILO GOLDIFOX
-   Diseño inspirado en Pace Law con paleta dorada profesional
-   AHORA USANDO SISTEMA DE VARIABLES GLOBALES
+   HOME.CSS - ESTILO EJECUTIVO MODERNO (REFINADO)
    =================================== */
 
-/* Estilos globales con variables Goldifox */
-body, html {
-  background: var(--color-background-main) !important;
-  font-family: var(--font-family-primary) !important;
-  color: var(--color-text-primary) !important;
-  line-height: var(--line-height-normal);
-  margin: 0;
-  padding: 0;
+/* --- Variables Base --- */
+:root {
+  --font-heading: 'Playfair Display', serif;
+  --font-body: 'Roboto', sans-serif;
+  
+  /* Paleta de colores UNIFICADA con variables.css */
+  --color-dark-bg: #252523; /* UNIFICADO: Mismo que --color-surface-dark */
+  --color-dark-surface: #252523; /* UNIFICADO */
+  --color-primary-accent: #a39274; /* UNIFICADO: Mismo que --color-primary */
+  --color-secondary-accent: #dfd8c8; /* UNIFICADO: Mismo que --color-background-main */
+  
+  --color-text-light: #dfd8c8; /* UNIFICADO con variables */
+  --color-text-dark: #252523; /* UNIFICADO */
+  --color-text-muted: #6b6b6b; /* UNIFICADO */
+  --color-success: #22c55e;
+  --color-error: #ef4444;
+  --color-background-light: #f5f5f5;
+
+  --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.05);
+  --shadow-dark: 0 8px 30px rgba(0, 0, 0, 0.15);
+  --border-radius: 12px;
+  --transition-speed: 0.4s;
 }
 
-#root {
-  background: transparent;
-  min-height: 100vh;
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 300, /* Más fino */
+  'GRAD' 0,
+  'opsz' 24;
+  vertical-align: middle;
 }
 
-/* Banner Principal - Estilo transparente profesional */
-.banner-principal {
-  background: var(--color-surface-dark);
+/* --- Contenedores de Carga y Error --- */
+.loading-home, .error-home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  text-align: center;
+  padding: 2rem;
+  background-color: var(--color-background-light);
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(0,0,0,0.1);
+  border-top-color: var(--color-primary-accent);
+  border-radius: 50%;
+  animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  margin-bottom: 1.5rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-home h2 {
+  color: var(--color-error);
+  font-family: var(--font-heading);
+}
+
+.boton-reintentar {
+  background-color: var(--color-primary-accent);
+  color: var(--color-dark-bg);
+  border: none;
+  padding: 0.8rem 1.8rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all var(--transition-speed) ease;
+  margin-top: 1rem;
+}
+
+.boton-reintentar:hover {
+  background-color: var(--color-secondary-accent);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-dark);
+}
+
+/* --- Banner Principal (HERO rediseñado) --- */
+.banner-menu {
+  background-color: var(--color-dark-bg);
+  background-image: 
+    linear-gradient(135deg, rgba(37, 37, 35, 0.95) 0%, rgba(37, 37, 35, 0.98) 100%),
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 52 52"><path fill="%23a39274" fill-opacity="0.03" d="M13 52c-8.284 0-13-4.716-13-13S4.716 26 13 26s13 4.716 13 13-4.716 13-13 13zM39 52c-8.284 0-13-4.716-13-13s4.716-13 13-13 13 4.716 13 13-4.716 13-13 13zM13 26C4.716 26 0 21.284 0 13S4.716 0 13 0s13 4.716 13 13-4.716 13-13 13zM39 26c-8.284 0-13-4.716-13-13s4.716-13 13-13 13 4.716 13 13-4.716 13-13 13z"></path></svg>');
   color: var(--color-text-light);
-  padding: var(--spacing-2xl) var(--spacing-md);
+  padding: 2.5rem 2rem;
   text-align: center;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  border-bottom: 3px solid var(--color-primary-accent);
 }
 
-.banner-principal::before {
-  display: none; /* Eliminamos patrones complejos para mayor minimalismo */
-}
-
-.contenedor-banner-contenido {
+.contenedor-banner-menu {
   max-width: 1200px;
   margin: 0 auto;
   position: relative;
   z-index: 2;
 }
 
-.banner-contenido {
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.titulo-restaurante {
-  font-size: var(--font-size-5xl);
-  font-weight: 300;
-  margin-bottom: var(--spacing-lg);
-  font-family: var(--font-family-heading);
-  color: var(--color-text-light);
-  letter-spacing: var(--letter-spacing-wide);
-  text-transform: uppercase;
-  text-shadow: none;
-  background: none;
-  background-clip: unset;
-  animation: none;
-  line-height: var(--line-height-tight);
-}
-
-.descripcion-restaurante {
-  font-size: 1.125rem;
-  margin-bottom: 2rem;
+.titulo-menu {
+  font-size: 3rem;
   font-weight: 400;
-  opacity: 0.9;
-  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+  font-family: var(--font-heading);
+  color: var(--color-primary-accent);
   text-transform: uppercase;
-  font-size: 0.9rem;
+  letter-spacing: 3px;
 }
 
-.eslogan-restaurante {
-  display: none; /* Ocultamos para mantener minimalismo */
-}
-
-/* Botón CTA estilo Pace Law */
-.boton-cta-principal {
-  display: inline-block;
-  background: var(--color-primary);
-  color: white;
-  border: 2px solid var(--color-primary);
-  padding: 1rem 2.5rem;
-  margin-top: 2rem;
-  text-decoration: none;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  font-size: 0.875rem;
-  transition: all 0.3s ease;
-  border-radius: 0;
-}
-
-.boton-cta-principal:hover {
-  background: transparent;
-  color: var(--color-primary);
-  transform: none;
-}
-
-/* Sección de Información Importante - Estilo Goldifox Optimizado */
-.seccion-informacion-importante {
-  padding: var(--spacing-2xl) var(--spacing-lg);
-  background: var(--color-background-main);
-  border-top: 1px solid rgba(163, 146, 116, 0.2);
-}
-
-.contenedor-informacion {
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-.titulo-informacion {
-  font-size: var(--font-size-3xl);
+.subtitulo-menu {
+  font-size: 1.2rem;
+  margin-bottom: 0.75rem;
   font-weight: 300;
-  text-align: center;
-  margin-bottom: var(--spacing-2xl);
-  color: var(--color-text-primary);
-  font-family: var(--font-family-heading);
-  letter-spacing: var(--letter-spacing-wide);
-  text-transform: uppercase;
+  opacity: 0.8;
+  letter-spacing: 1px;
+  font-family: var(--font-body);
 }
 
-.titulo-informacion::after {
-  display: none;
-}
-
-.grilla-informacion {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--spacing-xl);
-  margin-top: var(--spacing-lg);
-}
-
-.tarjeta-info {
-  background: var(--color-background-main);
-  border: 1px solid rgba(163, 146, 116, 0.3);
-  border-radius: var(--border-radius-md);
-  padding: var(--spacing-xl);
-  text-align: left;
-  transition: all 0.3s ease;
-  box-shadow: none;
-}
-
-.tarjeta-info::before {
-  display: none;
-}
-
-.tarjeta-info:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(37, 37, 35, 0.1);
-  border-color: var(--color-primary);
-}
-
-.titulo-tarjeta {
-  font-size: 1.125rem;
-  font-weight: 500;
-  margin-bottom: 1rem;
-  color: var(--color-text-primary);
-  font-family: 'Inter', sans-serif;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.detalle-info {
-  font-size: var(--font-size-xl);
-  font-weight: 300;
-  margin-bottom: var(--spacing-sm);
-  color: var(--color-primary);
-  font-family: 'Inter', sans-serif;
-}
-
-.disponibilidad {
-  font-size: 0.8rem;
-  color: var(--color-text-primary);
-  font-weight: 400;
-  background: transparent;
-  padding: 0.5rem 0;
-  border-radius: 0;
-  display: block;
-  border: none;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.condicion-promo {
-  font-size: 0.8rem;
-  color: var(--color-primary);
-  font-weight: 400;
-  background: transparent;
-  padding: 0.5rem 0;
-  border-radius: 0;
-  display: block;
-  border: none;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.nota-tiempo {
-  font-size: 0.8rem;
-  color: var(--color-text-primary);
-  font-style: normal;
-  letter-spacing: 0.05em;
+.nota-menu {
+  font-size: 1rem;
   opacity: 0.7;
+  font-style: normal;
+  max-width: 650px;
+  margin: 1.5rem auto 0;
+  color: var(--color-secondary-accent);
+  line-height: 1.6;
+  font-family: var(--font-body);
 }
 
-.horarios-libres {
-  font-size: 0.8rem;
-  color: var(--color-primary);
-  font-weight: 400;
-  background: transparent;
-  padding: 0.5rem 0;
-  border-radius: 0;
+.stats-menu-banner {
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 0.5rem 1rem;
+}
+
+.stat-number {
   display: block;
-  border: none;
-  letter-spacing: 0.05em;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-primary-accent);
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  font-size: 0.9rem;
   text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--color-secondary-accent);
+  font-family: var(--font-body);
+  font-weight: 400;
 }
 
-/* Iconos minimalistas Goldifox */
-.icono-estado,
-.icono-promocion,
-.icono-tiempo,
-.icono-reservas {
-  display: none; /* Eliminamos iconos para mayor minimalismo */
+/* --- Secciones Generales --- */
+.seccion-informacion-importante,
+.seccion-acceso-rapido,
+.seccion-platos-populares,
+.seccion-alertas {
+  padding: 2.5rem 2rem;
+  background-color: var(--color-secondary-accent); /* UNIFICADO: Beige dorado claro */
 }
 
-/* Líneas laterales minimalistas */
-.tarjeta-info.estado-restaurante {
-  border-left: 3px solid var(--color-primary);
-}
-
-.tarjeta-info.promocion-dia {
-  border-left: 3px solid var(--color-primary);
-}
-
-.tarjeta-info.tiempo-espera {
-  border-left: 3px solid var(--color-primary);
-}
-
-.tarjeta-info.reservas-hoy {
-  border-left: 3px solid var(--color-primary);
-}
-
-/* Sección de Acceso Rápido - Estilo Goldifox profesional */
 .seccion-acceso-rapido {
-  padding: 4rem 2rem;
-  background: white;
+  background-color: var(--color-secondary-accent); /* UNIFICADO: Mismo color */
 }
 
-.contenedor-acceso {
+.contenedor-informacion,
+.contenedor-acceso,
+.contenedor-populares,
+.contenedor-alertas {
   max-width: 1200px;
   margin: 0 auto;
 }
 
-.titulo-acceso {
+.titulo-informacion,
+.titulo-acceso,
+.titulo-populares {
+  font-family: var(--font-heading);
   font-size: 2.5rem;
-  font-weight: 300;
-  text-align: left;
+  text-align: center;
+  margin-bottom: 1.75rem;
+  position: relative;
+  color: var(--color-text-dark);
+  font-weight: 400;
+  letter-spacing: 1px;
+}
+
+.titulo-informacion::after,
+.titulo-acceso::after,
+.titulo-populares::after {
+  content: '';
+  display: block;
+  width: 100px;
+  height: 2px;
+  background: var(--color-primary-accent);
+  margin: 1rem auto 0;
+  opacity: 0.7;
+}
+
+/* --- Grilla de Información --- */
+.grilla-informacion {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.tarjeta-info {
+  background-color: #fff;
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: var(--shadow-light);
+  transition: all var(--transition-speed) ease-in-out;
+  border: 1px solid #eee;
+  position: relative;
+}
+
+.tarjeta-info:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-dark);
+  border-color: var(--color-primary-accent);
+}
+
+.icono-tarjeta {
+  font-size: 2.5rem;
+  color: var(--color-primary-accent);
   margin-bottom: 1rem;
-  color: var(--color-text-primary);
-  font-family: 'Inter', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  display: block;
 }
 
-.titulo-acceso::after {
-  display: none; /* Removemos decoraciones */
+.titulo-tarjeta {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  color: var(--color-text-dark);
+  letter-spacing: 0.5px;
 }
 
+.detalle-info {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0.5rem 0;
+  color: var(--color-primary-accent);
+}
+
+.tarjeta-info p {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  margin: 0.5rem 0 0;
+  line-height: 1.5;
+}
+
+.tarjeta-info.abierto .icono-tarjeta { color: var(--color-success); }
+.tarjeta-info.cerrado .icono-tarjeta { color: var(--color-error); }
+
+/* --- Acceso Rápido --- */
 .grilla-servicios {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  margin-top: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
 }
 
 .tarjeta-servicio {
-  background: var(--color-background-main);
-  border: 1px solid var(--color-border-light);
-  border-radius: 0;
-  padding: 2.5rem 2rem;
-  text-align: left;
-  transition: all 0.3s ease;
-  cursor: pointer;
+  display: block;
+  background-color: #fff;
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: var(--shadow-light);
+  transition: all var(--transition-speed) ease-in-out;
+  color: var(--color-text-dark);
   text-decoration: none;
-  color: inherit;
-  box-shadow: none;
-}
-
-.tarjeta-servicio::before {
-  display: none; /* Removemos efectos complejos */
+  border: 1px solid #eee;
+  position: relative;
 }
 
 .tarjeta-servicio:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 25px rgba(163, 146, 116, 0.15);
-  border-color: var(--color-primary);
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-dark);
+  border-color: var(--color-primary-accent);
   text-decoration: none;
 }
 
 .icono-servicio {
-  display: none; /* Eliminamos iconos para mayor minimalismo */
+  font-size: 2.8rem;
+  color: var(--color-primary-accent);
+  margin-bottom: 1rem;
+  display: block;
+  transition: transform var(--transition-speed) ease;
 }
 
-.icono-servicio.menu {
-  background: transparent;
-}
-
-.icono-servicio.reservas {
-  background: transparent;
-}
-
-.icono-servicio.fila {
-  background: transparent;
+.tarjeta-servicio:hover .icono-servicio {
+  transform: scale(1.1);
 }
 
 .titulo-servicio {
+  font-family: var(--font-heading);
   font-size: 1.5rem;
+  margin: 0 0 0.5rem;
   font-weight: 400;
-  margin-bottom: 1rem;
-  color: var(--color-text-primary);
-  font-family: 'Inter', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  color: var(--color-text-dark);
 }
 
 .descripcion-servicio {
-  color: var(--color-text-primary);
-  opacity: 0.7;
+  color: var(--color-text-muted);
   line-height: 1.6;
-  font-size: 1rem;
-  font-family: 'Inter', sans-serif;
-  letter-spacing: 0.02em;
+  font-size: 0.95rem;
 }
 
-/* Sección de Platos Populares - Estilo Goldifox profesional */
-.seccion-platos-populares {
-  padding: 4rem 2rem;
-  background: var(--color-background-main);
-}
-
-.contenedor-populares {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.titulo-populares {
-  font-size: 2.5rem;
-  font-weight: 300;
-  text-align: left;
-  margin-bottom: 1rem;
-  color: var(--color-text-primary);
-  font-family: 'Inter', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
-
-.titulo-populares::after {
-  display: none; /* Removemos decoraciones */
-}
-
+/* --- Platos Populares --- */
 .grilla-populares {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  margin-top: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
 }
 
 .tarjeta-plato-popular {
-  background: white;
-  border: 1px solid var(--color-border-light);
-  border-radius: 0;
+  background-color: #fff;
+  border-radius: var(--border-radius);
   overflow: hidden;
-  transition: all 0.3s ease;
-  box-shadow: none;
-}
-
-.tarjeta-plato-popular::before {
-  display: none; /* Removemos efectos complejos */
+  box-shadow: var(--shadow-light);
+  transition: all var(--transition-speed) ease-in-out;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .tarjeta-plato-popular:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 25px rgba(163, 146, 116, 0.15);
-  border-color: var(--color-primary);
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-dark);
 }
 
 .imagen-plato {
-  width: 100%;
-  height: 12rem;
+  height: 200px;
+  background-size: cover;
+  background-position: center;
   position: relative;
+  overflow: hidden;
+}
+
+.imagen-plato::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 50%);
+  transition: background var(--transition-speed) ease;
+}
+
+.tarjeta-plato-popular:hover .imagen-plato::after {
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 70%);
+}
+
+.contenido-plato {
+  padding: 1.25rem;
+  flex-grow: 1;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 3rem;
-  color: var(--color-text-primary);
-  font-weight: 400;
-  text-shadow: none;
-  background: var(--color-background-main);
-}
-
-.imagen-plato.alitas-bbq {
-  background: var(--color-background-main);
-}
-
-.imagen-plato.alitas-bbq::after {
-  content: '🍖';
-}
-
-.imagen-plato.hamburguesa {
-  background: var(--color-background-main);
-}
-
-.imagen-plato.hamburguesa::after {
-  content: '🍔';
-}
-
-.imagen-plato.parrillada {
-  background: var(--color-background-main);
-}
-
-.imagen-plato.parrillada::after {
-  content: '🥩';
+  flex-direction: column;
 }
 
 .nombre-plato-popular {
-  font-size: 1.25rem;
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  margin: 0 0 0.5rem;
   font-weight: 400;
-  padding: 1.5rem 1.5rem 0.5rem;
-  color: var(--color-text-primary);
-  font-family: 'Inter', sans-serif;
-  margin: 0;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  color: var(--color-text-dark);
 }
 
 .descripcion-popular {
-  padding: 0 1.5rem;
-  color: var(--color-text-primary);
-  opacity: 0.7;
+  color: var(--color-text-muted);
   font-size: 0.9rem;
-  margin: 0 0 1rem 0;
+  margin-bottom: 1rem;
+  flex-grow: 1;
   line-height: 1.5;
-  font-family: 'Inter', sans-serif;
 }
 
 .precio-popular {
-  padding: 0 1.5rem 1.5rem;
-  font-size: 1.5rem;
-  font-weight: 400;
-  color: var(--color-primary);
-  margin: 0;
-  font-family: 'Inter', sans-serif;
-  letter-spacing: 0.05em;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--color-primary-accent);
+  font-family: var(--font-heading);
+  text-align: right;
 }
 
-/* Sección de Alertas - Estilo Goldifox profesional */
-.seccion-alertas {
-  padding: 4rem 2rem;
-  background: white;
+.badge-destacado {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: var(--color-primary-accent);
+  color: var(--color-dark-bg);
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 15px rgba(0,0,0, 0.2);
 }
 
+.badge-destacado .material-symbols-outlined {
+  font-size: 1.2rem;
+}
+
+/* --- Alertas --- */
 .contenedor-alertas {
-  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
   margin: 0 auto;
-}
-
-.contenedor-alertas > * + * {
-  margin-top: 1.5rem;
+  max-width: 900px;
 }
 
 .alerta {
-  border-left: 3px solid var(--color-primary);
-  border-radius: 0;
-  padding: 1.5rem;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 1rem;
-  box-shadow: none;
-  border: 1px solid var(--color-border-light);
-  background: var(--color-background-main);
-  transition: all 0.3s ease;
-}
-
-.alerta:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(163, 146, 116, 0.15);
-}
-
-.alerta.importante {
-  border-color: var(--color-primary);
-  background: var(--color-background-main);
-}
-
-.alerta.informativa {
-  border-color: var(--color-primary);
-  background: var(--color-background-main);
-}
-
-.icono-alerta {
-  display: none; /* Eliminamos iconos para mayor minimalismo */
-}
-
-.alerta.importante .icono-alerta {
-  background: transparent;
-}
-
-.alerta.importante .icono-alerta::after {
-  content: '';
-}
-
-.alerta.informativa .icono-alerta {
-  background: transparent;
-}
-
-.alerta.informativa .icono-alerta::after {
-  content: '';
+  padding: 1.25rem;
+  border-radius: var(--border-radius);
+  border: 1px solid;
+  background: #fff;
+  box-shadow: var(--shadow-light);
 }
 
 .contenido-alerta {
   flex: 1;
 }
 
+.alerta.importante {
+  border-color: #FEEBCB;
+  background-color: #FFF9F0;
+  color: #9C4221;
+}
+
+.alerta.informativa {
+  border-color: #E2E8F0;
+  background-color: #F8FAFC;
+  color: #4A5568;
+}
+
+.icono-alerta {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.alerta.importante .icono-alerta {
+  color: #DD6B20;
+}
+
+.alerta.informativa .icono-alerta {
+  color: #718096;
+}
+
 .titulo-alerta {
-  font-weight: 400;
-  margin-bottom: 0.5rem;
-  color: var(--color-text-primary);
+  font-weight: 600;
+  margin: 0 0 0.25rem;
   font-size: 1rem;
-  font-family: 'Inter', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.alerta.importante .titulo-alerta {
-  color: var(--color-text-primary);
-}
-
-.alerta.informativa .titulo-alerta {
-  color: var(--color-text-primary);
 }
 
 .mensaje-alerta {
-  color: var(--color-text-primary);
-  opacity: 0.7;
+  margin: 0;
   line-height: 1.5;
   font-size: 0.9rem;
-  margin: 0;
-  font-family: 'Inter', sans-serif;
 }
 
-/* Responsive Design Minimalista */
+/* --- Responsive --- */
 @media (max-width: 768px) {
-  .titulo-restaurante {
+  .titulo-menu { 
     font-size: 2.5rem;
   }
   
-  .descripcion-restaurante {
-    font-size: 1.125rem;
+  .subtitulo-menu {
+    font-size: 1rem;
   }
   
-  .banner-principal {
-    padding: 4rem 1rem;
+  .stats-menu-banner {
+    gap: 1.5rem;
+  }
+  
+  .stat-number {
+    font-size: 2rem;
   }
   
   .seccion-informacion-importante,
   .seccion-acceso-rapido,
   .seccion-platos-populares,
-  .seccion-alertas {
-    padding: 3rem 1rem;
+  .seccion-alertas { 
+    padding: 3rem 1.5rem;
   }
   
   .titulo-informacion,
   .titulo-acceso,
-  .titulo-populares {
+  .titulo-populares { 
     font-size: 2rem;
+    margin-bottom: 2rem;
   }
   
   .grilla-informacion,
   .grilla-servicios,
   .grilla-populares {
-    grid-template-columns: 1fr;
     gap: 1.5rem;
   }
   
@@ -590,364 +524,83 @@ body, html {
 }
 
 @media (max-width: 480px) {
-  .banner-principal {
+  .banner-menu {
     padding: 3rem 1rem;
   }
   
-  .titulo-restaurante {
+  .titulo-menu { 
     font-size: 2rem;
+    letter-spacing: 2px;
   }
   
-  .descripcion-restaurante {
+  .subtitulo-menu {
     font-size: 1rem;
+  }
+  
+  .stats-menu-banner { 
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  
+  .stat-number {
+    font-size: 1.8rem;
+  }
+  
+  .stat-item {
+    padding: 0.5rem;
+  }
+  
+  .nota-menu {
+    font-size: 0.9rem;
+  }
+  
+  .seccion-informacion-importante,
+  .seccion-acceso-rapido,
+  .seccion-platos-populares,
+  .seccion-alertas { 
+    padding: 2.5rem 1rem;
   }
   
   .titulo-informacion,
   .titulo-acceso,
-  .titulo-populares {
-    font-size: 1.75rem;
+  .titulo-populares { 
+    font-size: 1.8rem;
+  }
+  
+  .grilla-informacion,
+  .grilla-servicios,
+  .grilla-populares { 
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
   
   .tarjeta-info,
-  .tarjeta-servicio {
-    padding: 1.25rem;
+  .tarjeta-servicio,
+  .tarjeta-plato-popular {
+    padding: 1.5rem;
   }
   
-  .icono-servicio,
-  .icono-estado,
-  .icono-promocion,
-  .icono-tiempo,
-  .icono-reservas {
-    width: 2.5rem;
-    height: 2.5rem;
+  .icono-tarjeta,
+  .icono-servicio {
+    font-size: 2rem;
+  }
+  
+  .titulo-tarjeta {
     font-size: 1rem;
   }
-}
-
-/* Estilos de compatibilidad - Minimalista */
-.seccion-destacados {
-  padding: 4rem 2rem;
-  background: white;
-}
-
-.seccion-destacados h2 {
-  font-size: 2.5rem;
-  font-weight: 600;
-  margin-bottom: 3rem;
-  color: var(--color-text-primary);
-  font-family: 'Inter', sans-serif;
-  text-align: center;
-  letter-spacing: -0.5px;
-}
-
-.grilla-platos {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
-}
-
-.tarjeta-plato {
-  border: 1px solid var(--color-border-light);
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  transition: all 0.3s ease;
-  background: white;
-}
-
-.tarjeta-plato:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-4px);
-  border-color: var(--color-border-main);
-}
-
-.pie-pagina {
-  background: var(--color-surface-dark);
-  color: var(--color-text-light);
-  padding: var(--spacing-xl) var(--spacing-md);
-  text-align: center;
-  margin-top: 0;
-}
-
-/* Estados de hover minimalistas */
-.tarjeta-servicio:hover .titulo-servicio {
-  color: var(--color-primary);
-  transition: color 0.3s ease;
-}
-
-.tarjeta-servicio:hover .descripcion-servicio {
-  color: var(--color-text-secondary);
-  transition: color 0.3s ease;
-}
-
-/* Animaciones suaves */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.tarjeta-info,
-.tarjeta-servicio,
-.tarjeta-plato-popular {
-  animation: fadeInUp 0.6s ease forwards;
-}
-
-.tarjeta-info:nth-child(2) { animation-delay: 0.1s; }
-.tarjeta-info:nth-child(3) { animation-delay: 0.2s; }
-.tarjeta-info:nth-child(4) { animation-delay: 0.3s; }
-
-.tarjeta-servicio:nth-child(2) { animation-delay: 0.1s; }
-.tarjeta-servicio:nth-child(3) { animation-delay: 0.2s; }
-
-.tarjeta-plato-popular:nth-child(2) { animation-delay: 0.1s; }
-.tarjeta-plato-popular:nth-child(3) { animation-delay: 0.2s; }
-
-/* Media queries para hacer secciones más compactas */
-@media (max-width: 768px) {
-  .seccion-informacion-importante {
-    padding: var(--spacing-xl) var(--spacing-md);
+  
+  .titulo-servicio {
+    font-size: 1.2rem;
   }
   
-  .titulo-informacion {
-    font-size: var(--font-size-2xl);
-    margin-bottom: var(--spacing-lg);
+  .alerta {
+    padding: 1rem;
+    gap: 1rem;
   }
   
-  .grilla-informacion {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-lg);
-  }
-  
-  .tarjeta-info {
-    padding: var(--spacing-lg);
-  }
-}
-
-@media (max-width: 480px) {
-  .seccion-informacion-importante {
-    padding: var(--spacing-lg) var(--spacing-sm);
-  }
-  
-  .titulo-informacion {
-    font-size: var(--font-size-xl);
-    margin-bottom: var(--spacing-md);
-  }
-  
-  .tarjeta-info {
-    padding: var(--spacing-md);
-  }
-  
-  .detalle-info {
-    font-size: var(--font-size-lg);
-  }
-}
-
-/* ===================================
-   NUEVOS ESTILOS PARA API INTEGRATION
-   =================================== */
-
-/* Loading y Error States */
-.loading-home, .error-home {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-  padding: var(--spacing-2xl);
-  color: var(--color-text-secondary);
-  text-align: center;
-}
-
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid var(--color-border-light);
-  border-top: 4px solid var(--color-primary);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: var(--spacing-lg);
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.boton-reintentar {
-  background-color: var(--color-primary);
-  color: white;
-  border: none;
-  padding: var(--spacing-md) var(--spacing-xl);
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.2s ease;
-  margin-top: var(--spacing-lg);
-}
-
-.boton-reintentar:hover {
-  background-color: var(--color-primary-dark);
-}
-
-/* Stats en Banner */
-.stats-banner {
-  display: flex;
-  justify-content: center;
-  gap: var(--spacing-2xl);
-  margin-top: var(--spacing-2xl);
-  border-radius: 16px;
-  backdrop-filter: blur(10px);
-}
-
-.stat-item {
-  text-align: center;
-}
-
-.stat-number {
-  display: block;
-  font-size: var(--font-size-3xl);
-  font-weight: 700;
-  color: var(--color-primary);
-  margin-bottom: var(--spacing-xs);
-}
-
-.stat-label {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
-  text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-wide);
-}
-
-/* Estados dinámicos de tarjetas */
-.estado-restaurante.cerrado {
-  background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
-  color: white;
-}
-
-.estado-restaurante.cerrado .icono-estado {
-  background-color: #fca5a5;
-}
-
-.icono-estado.cerrado::before {
-  content: "🔒";
-}
-
-.icono-estado.abierto::before {
-  content: "🟢";
-}
-
-/* Resumen de menú */
-.resumen-menu {
-  display: flex;
-  justify-content: center;
-  gap: var(--spacing-xl);
-  margin-top: var(--spacing-2xl);
-  padding: var(--spacing-xl);
-  background: linear-gradient(135deg, var(--color-primary-alpha) 0%, rgba(217, 119, 6, 0.05) 100%);
-  border-radius: 12px;
-}
-
-.stat-menu {
-  text-align: center;
-}
-
-.numero-stat {
-  display: block;
-  font-size: var(--font-size-2xl);
-  font-weight: 700;
-  color: var(--color-primary);
-  margin-bottom: var(--spacing-xs);
-}
-
-.label-stat {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-/* Badge destacado */
-.badge-destacado {
-  background: linear-gradient(45deg, #ffd700, #ffed4e);
-  color: #1a202c;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: 12px;
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  margin-top: var(--spacing-sm);
-  display: inline-block;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
-}
-
-/* Alertas dinámicas mejoradas */
-.alerta.importante {
-  background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
-  border-left: 5px solid #fca5a5;
-  color: white;
-}
-
-.alerta.importante .icono-alerta::before {
-  content: "⚠️";
-  font-size: var(--font-size-lg);
-}
-
-.alerta.informativa .icono-alerta::before {
-  content: "ℹ️";
-  font-size: var(--font-size-lg);
-}
-
-/* Responsive para nuevos elementos */
-@media (max-width: 768px) {
-  .stats-banner {
-    flex-direction: column;
-    gap: var(--spacing-lg);
-    margin-top: var(--spacing-lg);
-  }
-  
-  .resumen-menu {
-    flex-direction: column;
-    gap: var(--spacing-lg);
-  }
-  
-  .stat-number {
-    font-size: var(--font-size-2xl);
-  }
-  
-  .numero-stat {
-    font-size: var(--font-size-xl);
-  }
-}
-
-/* Animaciones para carga */
-.tarjeta-plato-popular {
-  transition: all 0.3s ease;
-}
-
-.tarjeta-plato-popular:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(217, 119, 6, 0.2);
-}
-
-/* Mejoras para alertas responsivas */
-@media (max-width: 480px) {
-  .contenido-alerta {
-    padding: var(--spacing-sm);
-  }
-  
-  .titulo-alerta {
-    font-size: var(--font-size-base);
-  }
-  
-  .mensaje-alerta {
-    font-size: var(--font-size-sm);
+  .icono-alerta {
+    font-size: 1.5rem;
   }
 }
 

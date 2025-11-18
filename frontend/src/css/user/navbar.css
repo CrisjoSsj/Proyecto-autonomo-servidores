@@ -42,13 +42,13 @@
 }
 
 .nombre-restaurante {
-  font-size: 2rem;
-  font-weight: 400;
+  font-size: 1.75rem;
+  font-weight: 500;
   color: var(--color-primary);
   margin: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Google Sans', 'Inter', sans-serif;
   text-shadow: none;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   background: none;
   -webkit-background-clip: unset;
@@ -66,15 +66,15 @@
 .enlace-navegacion {
   color: var(--color-text-light);
   text-decoration: none;
-  font-weight: 400;
+  font-weight: 500;
   font-size: var(--font-size-sm);
   padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--border-radius-sm);
   transition: var(--transition-smooth);
   position: relative;
   text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-wide);
-  font-family: var(--font-family-heading);
+  letter-spacing: 0.05em;
+  font-family: 'Google Sans', 'Inter', sans-serif;
 }
 
 .enlace-navegacion:hover {
@@ -123,10 +123,10 @@
   background: var(--color-primary);
   color: white;
   text-decoration: none;
-  padding: 1rem 2rem;
+  padding: 0.9rem 1.75rem;
   border-radius: 0;
-  font-weight: 400;
-  font-size: 0.9rem;
+  font-weight: 500;
+  font-size: 0.85rem;
   transition: all 0.3s ease;
   box-shadow: none;
   border: none;
@@ -134,7 +134,7 @@
   letter-spacing: 0.05em;
   position: relative;
   overflow: hidden;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Google Sans', 'Inter', sans-serif;
 }
 
 .boton-contacto::before {
@@ -286,12 +286,12 @@
 }
 
 .nav-brand {
-  font-size: 1.8rem;
-  font-weight: 400;
+  font-size: 1.75rem;
+  font-weight: 500;
   color: var(--color-primary);
-  font-family: 'Inter', sans-serif;
+  font-family: 'Google Sans', 'Inter', sans-serif;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.05em;
 }
 
 .nav-links {
@@ -306,9 +306,10 @@
   border-radius: 0;
   transition: all 0.3s ease;
   text-transform: uppercase;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   letter-spacing: 0.05em;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Google Sans', 'Inter', sans-serif;
+  font-weight: 500;
 }
 
 .nav-link:hover {

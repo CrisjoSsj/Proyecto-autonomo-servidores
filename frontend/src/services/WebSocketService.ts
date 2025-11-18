@@ -226,7 +226,7 @@ class WebSocketService {
     this.send({
       channel: 'reservas',
       action: 'crear',
-      payload: {
+      data: {
         ...reservaData,
         timestamp: new Date().toISOString()
       }
@@ -240,7 +240,7 @@ class WebSocketService {
     this.send({
       channel: 'reservas',
       action: 'listar',
-      payload: {}
+      data: {}
     });
   }
 
@@ -251,7 +251,7 @@ class WebSocketService {
     this.send({
       channel: 'reservas',
       action: 'actualizar',
-      payload: {
+      data: {
         id_reserva: reservaId,
         ...updates,
         timestamp: new Date().toISOString()
@@ -266,7 +266,7 @@ class WebSocketService {
     this.send({
       channel: 'reservas',
       action: 'cancelar',
-      payload: {
+      data: {
         id_reserva: reservaId,
         timestamp: new Date().toISOString()
       }
@@ -280,7 +280,7 @@ class WebSocketService {
     this.send({
       channel: 'reservas',
       action: 'eliminar',
-      payload: {
+      data: {
         id_reserva: reservaId,
         timestamp: new Date().toISOString()
       }

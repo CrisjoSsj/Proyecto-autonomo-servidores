@@ -13,7 +13,7 @@
 /* Header del Dashboard */
 .header-dashboard {
   background: var(--color-surface-dar);
-  padding: var(--spacing-2xl) var(--spacing-md) var(--spacing-xl);
+  padding: 1.5rem var(--spacing-md) 1rem;
   border-bottom: 1px solid var(--color-border-light);
   box-shadow: var(--shadow-sm);
 }
@@ -25,19 +25,19 @@
 }
 
 .titulo-dashboard {
-  font-size: var(--font-size-3xl);
+  font-size: 2rem;
   font-weight: 400;
   color: var(--color-text-primary);
-  margin: 0 0 var(--spacing-sm) 0;
+  margin: 0 0 0.5rem 0;
   font-family: var(--font-family-heading);
   text-transform: uppercase;
   letter-spacing: var(--letter-spacing-wide);
 }
 
 .subtitulo-dashboard {
-  font-size: var(--font-size-lg);
+  font-size: 1rem;
   color: var(--color-text-secondary);
-  margin: 0 0 var(--spacing-lg) 0;
+  margin: 0 0 0.75rem 0;
   opacity: var(--opacity-text-muted);
 }
 
@@ -64,7 +64,7 @@
 .seccion-estado-actual,
 .seccion-acciones-rapidas,
 .seccion-alertas-admin {
-  padding: var(--spacing-2xl) var(--spacing-md);
+  padding: 1.5rem var(--spacing-md);
 }
 
 .contenedor-estadisticas,
@@ -76,10 +76,10 @@
 }
 
 .titulo-seccion-admin {
-  font-size: var(--font-size-2xl);
+  font-size: 1.75rem;
   font-weight: 400;
   color: var(--color-text-primary);
-  margin: 0 0 var(--spacing-xl) 0;
+  margin: 0 0 1.25rem 0;
   font-family: var(--font-family-heading);
   text-transform: uppercase;
   letter-spacing: var(--letter-spacing-wide);
@@ -102,22 +102,22 @@
 /* Grilla de Estadísticas */
 .grilla-estadisticas {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--spacing-xl);
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
 }
 
 .tarjeta-estadistica {
   background: var(--color-background-card);
   border: 1px solid var(--color-border-light);
-  border-radius: var(--border-radius-lg);
-  padding: var(--spacing-xl);
+  border-radius: 12px;
+  padding: 1.25rem;
   display: flex;
   align-items: center;
-  gap: var(--spacing-lg);
+  gap: 1rem;
   transition: var(--transition-smooth);
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 .tarjeta-estadistica:hover {
@@ -142,13 +142,13 @@
 .tarjeta-estadistica.tiempo-promedio::before { background: #f59e0b; }
 
 .icono-estadistica {
-  width: 60px;
-  height: 60px;
-  border-radius: var(--border-radius-full);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--font-size-2xl);
+  font-size: 1.5rem;
   color: white;
   flex-shrink: 0;
 }
@@ -158,10 +158,10 @@
 .clientes-icon { background: #8b5cf6; }
 .tiempo-icon { background: #f59e0b; }
 
-.ventas-icon::before { content: '💰'; }
-.ordenes-icon::before { content: '📋'; }
-.clientes-icon::before { content: '👥'; }
-.tiempo-icon::before { content: '⏱️'; }
+.ventas-icon::before { content: ''; }
+.ordenes-icon::before { content: ''; }
+.clientes-icon::before { content: ''; }
+.tiempo-icon::before { content: ''; }
 
 .contenido-estadistica {
   flex: 1;
@@ -305,44 +305,44 @@
 /* Acciones Rápidas */
 .grilla-acciones {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--spacing-xl);
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
 }
 
 .tarjeta-accion {
   background: var(--color-background-card);
   border: 1px solid var(--color-border-light);
-  border-radius: var(--border-radius-lg);
-  padding: var(--spacing-xl);
+  border-radius: 12px;
+  padding: 1.5rem;
   text-align: center;
   transition: var(--transition-smooth);
   cursor: pointer;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 .tarjeta-accion:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
   border-color: var(--color-primary-alpha);
 }
 
 .icono-accion {
-  width: 80px;
-  height: 80px;
-  border-radius: var(--border-radius-full);
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
   background: var(--color-primary-alpha);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto var(--spacing-lg);
-  font-size: var(--font-size-3xl);
+  margin: 0 auto 1rem;
+  font-size: 2rem;
   transition: var(--transition-smooth);
 }
 
-.mesas-icon::before { content: '🪑'; }
-.reservas-icon::before { content: '📅'; }
-.menu-icon::before { content: '📋'; }
-.reportes-icon::before { content: '📊'; }
+.mesas-icon::before { content: ''; }
+.reservas-icon::before { content: ''; }
+.menu-icon::before { content: ''; }
+.reportes-icon::before { content: ''; }
 
 .tarjeta-accion:hover .icono-accion {
   background: var(--color-primary);
@@ -394,15 +394,15 @@
 .alerta-admin {
   background: var(--color-background-card);
   border: 1px solid var(--color-border-light);
-  border-radius: var(--border-radius-lg);
-  padding: var(--spacing-lg);
+  border-radius: 12px;
+  padding: 1rem;
   display: flex;
   align-items: center;
-  gap: var(--spacing-lg);
+  gap: 1rem;
   transition: var(--transition-smooth);
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 .alerta-admin::before {
@@ -411,7 +411,7 @@
   left: 0;
   top: 0;
   bottom: 0;
-  width: 4px;
+  width: 3px;
 }
 
 .alerta-admin.urgente::before { background: #ef4444; }
@@ -419,13 +419,13 @@
 .alerta-admin.informativa::before { background: #3b82f6; }
 
 .icono-alerta-admin {
-  width: 50px;
-  height: 50px;
-  border-radius: var(--border-radius-full);
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--font-size-xl);
+  font-size: 1.25rem;
   color: white;
   flex-shrink: 0;
 }
@@ -434,9 +434,9 @@
 .importante-icon { background: #f59e0b; }
 .info-icon { background: #3b82f6; }
 
-.urgente-icon::before { content: '⚠️'; }
-.importante-icon::before { content: '📦'; }
-.info-icon::before { content: 'ℹ️'; }
+.urgente-icon::before { content: ''; }
+.importante-icon::before { content: ''; }
+.info-icon::before { content: ''; }
 
 .contenido-alerta-admin {
   flex: 1;

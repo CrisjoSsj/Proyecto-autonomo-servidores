@@ -192,29 +192,16 @@ export default function Home() {
       <Navbar />
 
       {/* Banner principal del restaurante */}
-      <section className="banner-principal">
-        <div className="banner-contenido">
-          <h1 className="titulo-restaurante">
+      <section className="banner-menu">
+        <div className="contenedor-banner-menu">
+          <h1 className="titulo-menu">
             {data.restaurante?.nombre || "Chuwue Grill"}
           </h1>
-          <p className="descripcion-restaurante">Las mejores alitas y parrilladas de la ciudad</p>
-          <p className="eslogan-restaurante">¡Sabor auténtico que te enamorará!</p>
-          
-          {/* Estadísticas rápidas */}
-          <div className="stats-banner">
-            <div className="stat-item">
-              <span className="stat-number">{data.platos.length}</span>
-              <span className="stat-label">Platos Disponibles</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-number">{estadisticasMesas.disponibles}</span>
-              <span className="stat-label">Mesas Libres</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-number">{calcularTiempoEspera()}</span>
-              <span className="stat-label">Min. Espera</span>
-            </div>
-          </div>
+          <p className="subtitulo-menu">
+            Las mejores alitas y parrilladas de la ciudad
+          </p>
+
+          <p className="nota-menu">Ven a disfrutar de sabor auténtico • Atención desde 11 AM a 10 PM</p>
         </div>
       </section>
 
@@ -225,51 +212,51 @@ export default function Home() {
           
           <div className="grilla-informacion">
             {/* Estado actual */}
-            <div className={`tarjeta-info estado-restaurante ${estaAbierto() ? 'abierto' : 'cerrado'}`}>
-              <div className={`icono-estado ${estaAbierto() ? 'abierto' : 'cerrado'}`}></div>
+            <div className={`tarjeta-info ${estaAbierto() ? 'abierto' : 'cerrado'}`}>
+              <span className="material-symbols-outlined icono-tarjeta">
+                {estaAbierto() ? 'storefront' : 'door_front'}
+              </span>
               <h3 className="titulo-tarjeta">
                 {estaAbierto() ? 'Estamos Abiertos' : 'Cerrado'}
               </h3>
-              <p className="detalle-info">Hoy: 11:00 AM - 10:00 PM</p>
-              <p className="disponibilidad">
+              <p>Hoy: 11:00 AM - 10:00 PM</p>
+              <p className="detalle-info">
                 {estadisticasMesas.disponibles > 0 
-                  ? `${estadisticasMesas.disponibles} mesas disponibles` 
-                  : 'Sin mesas disponibles'}
+                  ? `${estadisticasMesas.disponibles} mesas libres` 
+                  : 'Sin mesas libres'}
               </p>
             </div>
 
             {/* Promoción del día */}
-            <div className="tarjeta-info promocion-dia">
-              <div className="icono-promocion"></div>
+            <div className="tarjeta-info">
+              <span className="material-symbols-outlined icono-tarjeta">sell</span>
               <h3 className="titulo-tarjeta">Promoción del Día</h3>
               <p className="detalle-info">
                 {data.platos.some(p => p.nombre.toLowerCase().includes('bbq')) 
                   ? '2x1 en Alitas BBQ' 
                   : 'Descuentos especiales'}
               </p>
-              <p className="condicion-promo">Válido hasta las 6:00 PM</p>
+              <p>Válido hasta las 6:00 PM</p>
             </div>
 
             {/* Tiempo de espera actual */}
-            <div className="tarjeta-info tiempo-espera">
-              <div className="icono-tiempo"></div>
+            <div className="tarjeta-info">
+              <span className="material-symbols-outlined icono-tarjeta">timer</span>
               <h3 className="titulo-tarjeta">Tiempo de Espera</h3>
-              <p className="detalle-info">Aprox. {calcularTiempoEspera()} minutos</p>
-              <p className="nota-tiempo">Para mesa de 2-4 personas</p>
+              <p className="detalle-info">Aprox. {calcularTiempoEspera()} min</p>
+              <p>Para mesa de 2-4 personas</p>
             </div>
 
             {/* Reservas para hoy */}
-            <div className="tarjeta-info reservas-hoy">
-              <div className="icono-reservas"></div>
-              <h3 className="titulo-tarjeta">Reservas Disponibles</h3>
+            <div className="tarjeta-info">
+              <span className="material-symbols-outlined icono-tarjeta">event_available</span>
+              <h3 className="titulo-tarjeta">Reservas para Hoy</h3>
               <p className="detalle-info">
                 {obtenerHorariosLibresHoy().length > 0 
-                  ? 'Horarios libres hoy' 
-                  : 'Sin horarios disponibles'}
+                  ? 'Horarios disponibles' 
+                  : 'Sin horarios libres'}
               </p>
-              <p className="horarios-libres">
-                {obtenerHorariosLibresHoy().slice(0, 3).join(', ')}
-              </p>
+              <p>{obtenerHorariosLibresHoy().slice(0, 3).join(', ')}</p>
             </div>
           </div>
         </div>
@@ -282,21 +269,21 @@ export default function Home() {
           <div className="grilla-servicios">
             
             <Link to="/menu" className="tarjeta-servicio">
-              <div className="icono-servicio menu"></div>
+              <span className="material-symbols-outlined icono-servicio">restaurant_menu</span>
               <h3 className="titulo-servicio">Ver Menú</h3>
-              <p className="descripcion-servicio">Explora nuestros deliciosos platos organizados por categorías</p>
+              <p className="descripcion-servicio">Explora nuestros deliciosos platos organizados por categorías.</p>
             </Link>
 
             <Link to="/reservas" className="tarjeta-servicio">
-              <div className="icono-servicio reservas"></div>
-              <h3 className="titulo-servicio">Hacer Reserva</h3>
-              <p className="descripcion-servicio">Reserva tu mesa con anticipación para fechas especiales</p>
+              <span className="material-symbols-outlined icono-servicio">book_online</span>
+              <h3 className="titulo-servicio">Hacer una Reserva</h3>
+              <p className="descripcion-servicio">Asegura tu mesa con anticipación para una experiencia sin esperas.</p>
             </Link>
 
             <Link to="/filavirtual" className="tarjeta-servicio">
-              <div className="icono-servicio fila"></div>
-              <h3 className="titulo-servicio">Fila Virtual</h3>
-              <p className="descripcion-servicio">Consulta disponibilidad de mesas y únete a la cola de espera</p>
+              <span className="material-symbols-outlined icono-servicio">groups</span>
+              <h3 className="titulo-servicio">Unirse a la Fila Virtual</h3>
+              <p className="descripcion-servicio">Consulta la disponibilidad y únete a la cola de espera desde donde estés.</p>
             </Link>
           </div>
         </div>
@@ -310,54 +297,21 @@ export default function Home() {
             {obtenerPlatosPopulares().length > 0 ? (
               obtenerPlatosPopulares().map((plato) => (
                 <div key={plato.id_plato} className="tarjeta-plato-popular">
-                  <div className={`imagen-plato ${plato.nombre.toLowerCase().replace(/\s+/g, '-')}`}></div>
-                  <h3 className="nombre-plato-popular">{plato.nombre}</h3>
-                  <p className="descripcion-popular">{plato.descripcion}</p>
-                  <span className="precio-popular">${plato.precio.toFixed(2)}</span>
-                  {plato.destacado && <span className="badge-destacado">★ Destacado</span>}
+                  <div className="imagen-plato" style={{ backgroundImage: `url(${plato.imagen || '/src/assets/placeholder-plato.jpg'})` }}></div>
+                  <div className="contenido-plato">
+                    <h3 className="nombre-plato-popular">{plato.nombre}</h3>
+                    <p className="descripcion-popular">{plato.descripcion}</p>
+                    <span className="precio-popular">${plato.precio.toFixed(2)}</span>
+                  </div>
+                  {plato.destacado && <span className="badge-destacado">
+                    <span className="material-symbols-outlined">star</span> Destacado
+                  </span>}
                 </div>
               ))
             ) : (
               // Fallback si no hay platos populares
-              <>
-                <div className="tarjeta-plato-popular">
-                  <div className="imagen-plato alitas-bbq"></div>
-                  <h3 className="nombre-plato-popular">Especialidad del Chef</h3>
-                  <p className="descripcion-popular">Nuestros platos más solicitados</p>
-                  <span className="precio-popular">Variados</span>
-                </div>
-                <div className="tarjeta-plato-popular">
-                  <div className="imagen-plato hamburguesa"></div>
-                  <h3 className="nombre-plato-popular">Platos Principales</h3>
-                  <p className="descripcion-popular">Las mejores opciones para disfrutar</p>
-                  <span className="precio-popular">Desde $8.99</span>
-                </div>
-                <div className="tarjeta-plato-popular">
-                  <div className="imagen-plato parrillada"></div>
-                  <h3 className="nombre-plato-popular">Para Compartir</h3>
-                  <p className="descripcion-popular">Perfectos para grupos y familias</p>
-                  <span className="precio-popular">Desde $20.00</span>
-                </div>
-              </>
+              <p>No se encontraron platos populares en este momento.</p>
             )}
-          </div>
-          
-          {/* Resumen estadístico */}
-          <div className="resumen-menu">
-            <div className="stat-menu">
-              <span className="numero-stat">{data.platos.length}</span>
-              <span className="label-stat">Platos Disponibles</span>
-            </div>
-            <div className="stat-menu">
-              <span className="numero-stat">{new Set(data.platos.map(p => p.categoria_id)).size}</span>
-              <span className="label-stat">Categorías</span>
-            </div>
-            <div className="stat-menu">
-              <span className="numero-stat">
-                ${Math.min(...data.platos.map(p => p.precio)).toFixed(0)}
-              </span>
-              <span className="label-stat">Desde</span>
-            </div>
           </div>
         </div>
       </section>
@@ -368,26 +322,24 @@ export default function Home() {
           {/* Alerta de ocupación */}
           {estadisticasMesas.disponibles === 0 && (
             <div className="alerta importante">
-              <div className="icono-alerta"></div>
+              <span className="material-symbols-outlined icono-alerta">error</span>
               <div className="contenido-alerta">
                 <h3 className="titulo-alerta">¡Restaurante Lleno!</h3>
                 <p className="mensaje-alerta">
-                  Todas nuestras mesas están ocupadas. Te recomendamos hacer una reserva 
-                  o unirte a nuestra fila virtual para ser notificado cuando haya una mesa disponible.
+                  Todas nuestras mesas están ocupadas. Te recomendamos unirte a nuestra fila virtual.
                 </p>
               </div>
             </div>
           )}
           
           {/* Alerta de pocas mesas */}
-          {estadisticasMesas.disponibles > 0 && estadisticasMesas.disponibles <= 2 && (
+          {estadisticasMesas.disponibles > 0 && estadisticasMesas.disponibles <= 3 && (
             <div className="alerta importante">
-              <div className="icono-alerta"></div>
+              <span className="material-symbols-outlined icono-alerta">warning</span>
               <div className="contenido-alerta">
                 <h3 className="titulo-alerta">¡Pocas Mesas Disponibles!</h3>
                 <p className="mensaje-alerta">
-                  Solo quedan {estadisticasMesas.disponibles} mesa(s) disponible(s). 
-                  Te recomendamos hacer tu reserva pronto o unirte a la fila virtual.
+                  Solo quedan {estadisticasMesas.disponibles} mesa(s). ¡Reserva pronto!
                 </p>
               </div>
             </div>
@@ -395,12 +347,11 @@ export default function Home() {
           
           {/* Información sobre fila virtual */}
           <div className="alerta informativa">
-            <div className="icono-alerta"></div>
+            <span className="material-symbols-outlined icono-alerta">info</span>
             <div className="contenido-alerta">
-              <h3 className="titulo-alerta">Nuevo servicio</h3>
+              <h3 className="titulo-alerta">Nuevo Servicio: Fila Virtual</h3>
               <p className="mensaje-alerta">
-                Ahora puedes unirte a nuestra fila virtual y recibir notificaciones 
-                cuando tu mesa esté lista. ¡Evita las esperas!
+                Evita las esperas. Únete a nuestra fila virtual y te notificaremos cuando tu mesa esté lista.
               </p>
             </div>
           </div>
@@ -408,11 +359,11 @@ export default function Home() {
           {/* Información de contacto del restaurante */}
           {data.restaurante && (
             <div className="alerta informativa">
-              <div className="icono-alerta"></div>
+              <span className="material-symbols-outlined icono-alerta">location_on</span>
               <div className="contenido-alerta">
-                <h3 className="titulo-alerta">Información de Contacto</h3>
+                <h3 className="titulo-alerta">Encuéntranos</h3>
                 <p className="mensaje-alerta">
-                  📍 {data.restaurante.direccion} | 📞 {data.restaurante.telefono}
+                  {data.restaurante.direccion} | Llámanos al {data.restaurante.telefono}
                 </p>
               </div>
             </div>

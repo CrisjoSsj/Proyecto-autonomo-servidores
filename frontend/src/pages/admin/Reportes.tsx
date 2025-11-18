@@ -203,7 +203,7 @@ export default function Reportes() {
     });
   };
 
-  const obtenerComparacionAnterior = (valorActual: number, tipo: 'ventas' | 'ordenes' | 'ticket' | 'clientes') => {
+  const obtenerComparacionAnterior = (valorActual: number) => {
     // Simular datos del día anterior (85-115% del valor actual)
     const factor = 0.85 + (Math.random() * 0.3);
     const valorAnterior = valorActual * factor;
@@ -269,8 +269,12 @@ export default function Reportes() {
               <option value="semana">Esta Semana</option>
               <option value="mes">Este Mes</option>
             </select>
-            <button className="boton-exportar-reporte">📊 Exportar Reporte</button>
-            <button className="boton-imprimir">🖨️ Imprimir</button>
+            <button className="boton-exportar-reporte">
+              <span className="material-symbols-outlined">monitoring</span> Exportar Reporte
+            </button>
+            <button className="boton-imprimir">
+              <span className="material-symbols-outlined">print</span> Imprimir
+            </button>
           </div>
         </div>
       </section>
@@ -282,14 +286,18 @@ export default function Reportes() {
           <div className="grilla-metricas-principales">
             
             <div className="tarjeta-metrica ventas-totales">
-              <div className="icono-metrica ventas"></div>
+              <div className="icono-metrica">
+                <span className="material-symbols-outlined">paid</span>
+              </div>
               <div className="contenido-metrica">
                 <h3 className="titulo-metrica">Ventas Estimadas</h3>
                 <p className="valor-metrica">{formatearMoneda(metricas.ventasEstimadas)}</p>
                 <div className="comparacion-metrica">
-                  <span className={`cambio ${obtenerComparacionAnterior(metricas.ventasEstimadas, 'ventas').esPositivo ? 'positivo' : 'negativo'}`}>
-                    {obtenerComparacionAnterior(metricas.ventasEstimadas, 'ventas').esPositivo ? '+' : ''}
-                    {obtenerComparacionAnterior(metricas.ventasEstimadas, 'ventas').cambio.toFixed(1)}%
+                  <span className={`cambio ${obtenerComparacionAnterior(metricas.ventasEstimadas).esPositivo ? 'positivo' : 'negativo'}`}>
+                    <span className="material-symbols-outlined">
+                      {obtenerComparacionAnterior(metricas.ventasEstimadas).esPositivo ? 'trending_up' : 'trending_down'}
+                    </span>
+                    {Math.abs(obtenerComparacionAnterior(metricas.ventasEstimadas).cambio).toFixed(1)}%
                   </span>
                   <span className="referencia">vs. período anterior</span>
                 </div>
@@ -297,14 +305,18 @@ export default function Reportes() {
             </div>
 
             <div className="tarjeta-metrica ordenes-completadas">
-              <div className="icono-metrica ordenes"></div>
+              <div className="icono-metrica">
+                <span className="material-symbols-outlined">playlist_add_check</span>
+              </div>
               <div className="contenido-metrica">
                 <h3 className="titulo-metrica">Órdenes Completadas</h3>
                 <p className="valor-metrica">{metricas.ordenesCompletadas}</p>
                 <div className="comparacion-metrica">
-                  <span className={`cambio ${obtenerComparacionAnterior(metricas.ordenesCompletadas, 'ordenes').esPositivo ? 'positivo' : 'negativo'}`}>
-                    {obtenerComparacionAnterior(metricas.ordenesCompletadas, 'ordenes').esPositivo ? '+' : ''}
-                    {obtenerComparacionAnterior(metricas.ordenesCompletadas, 'ordenes').cambio.toFixed(1)}%
+                  <span className={`cambio ${obtenerComparacionAnterior(metricas.ordenesCompletadas).esPositivo ? 'positivo' : 'negativo'}`}>
+                    <span className="material-symbols-outlined">
+                      {obtenerComparacionAnterior(metricas.ordenesCompletadas).esPositivo ? 'trending_up' : 'trending_down'}
+                    </span>
+                    {Math.abs(obtenerComparacionAnterior(metricas.ordenesCompletadas).cambio).toFixed(1)}%
                   </span>
                   <span className="referencia">vs. período anterior</span>
                 </div>
@@ -312,14 +324,18 @@ export default function Reportes() {
             </div>
 
             <div className="tarjeta-metrica ticket-promedio">
-              <div className="icono-metrica ticket"></div>
+              <div className="icono-metrica">
+                <span className="material-symbols-outlined">receipt_long</span>
+              </div>
               <div className="contenido-metrica">
                 <h3 className="titulo-metrica">Ticket Promedio</h3>
                 <p className="valor-metrica">{formatearMoneda(metricas.ticketPromedio)}</p>
                 <div className="comparacion-metrica">
-                  <span className={`cambio ${obtenerComparacionAnterior(metricas.ticketPromedio, 'ticket').esPositivo ? 'positivo' : 'negativo'}`}>
-                    {obtenerComparacionAnterior(metricas.ticketPromedio, 'ticket').esPositivo ? '+' : ''}
-                    {obtenerComparacionAnterior(metricas.ticketPromedio, 'ticket').cambio.toFixed(1)}%
+                  <span className={`cambio ${obtenerComparacionAnterior(metricas.ticketPromedio).esPositivo ? 'positivo' : 'negativo'}`}>
+                    <span className="material-symbols-outlined">
+                      {obtenerComparacionAnterior(metricas.ticketPromedio).esPositivo ? 'trending_up' : 'trending_down'}
+                    </span>
+                    {Math.abs(obtenerComparacionAnterior(metricas.ticketPromedio).cambio).toFixed(1)}%
                   </span>
                   <span className="referencia">vs. período anterior</span>
                 </div>
@@ -327,14 +343,18 @@ export default function Reportes() {
             </div>
 
             <div className="tarjeta-metrica clientes-atendidos">
-              <div className="icono-metrica clientes"></div>
+              <div className="icono-metrica">
+                <span className="material-symbols-outlined">groups</span>
+              </div>
               <div className="contenido-metrica">
                 <h3 className="titulo-metrica">Clientes Atendidos</h3>
                 <p className="valor-metrica">{metricas.clientesAtendidos}</p>
                 <div className="comparacion-metrica">
-                  <span className={`cambio ${obtenerComparacionAnterior(metricas.clientesAtendidos, 'clientes').esPositivo ? 'positivo' : 'negativo'}`}>
-                    {obtenerComparacionAnterior(metricas.clientesAtendidos, 'clientes').esPositivo ? '+' : ''}
-                    {obtenerComparacionAnterior(metricas.clientesAtendidos, 'clientes').cambio.toFixed(1)}%
+                  <span className={`cambio ${obtenerComparacionAnterior(metricas.clientesAtendidos).esPositivo ? 'positivo' : 'negativo'}`}>
+                    <span className="material-symbols-outlined">
+                      {obtenerComparacionAnterior(metricas.clientesAtendidos).esPositivo ? 'trending_up' : 'trending_down'}
+                    </span>
+                    {Math.abs(obtenerComparacionAnterior(metricas.clientesAtendidos).cambio).toFixed(1)}%
                   </span>
                   <span className="referencia">vs. período anterior</span>
                 </div>
@@ -362,7 +382,11 @@ export default function Reportes() {
                   </span>
                   <span className="ingresos-plato">{formatearMoneda(item.ventasEstimadas)}</span>
                   <span className="porcentaje-ventas">{item.porcentaje.toFixed(1)}% del total</span>
-                  {item.plato.destacado && <span className="badge-destacado">⭐ Destacado</span>}
+                  {item.plato.destacado && (
+                    <span className="badge-destacado">
+                      <span className="material-symbols-outlined">star</span> Destacado
+                    </span>
+                  )}
                 </div>
               </div>
             ))}
@@ -386,7 +410,10 @@ export default function Reportes() {
             <div className="tarjeta-ocupacion">
               <h3 className="titulo-ocupacion">Ocupación Actual</h3>
               <div className="grafico-circular">
-                <div className="circulo-progreso" data-porcentaje={Math.round(metricas.tasaOcupacion)}>
+                <div 
+                  className="circulo-progreso" 
+                  style={{ '--porcentaje': Math.round(metricas.tasaOcupacion) } as React.CSSProperties}
+                >
                   <span className="porcentaje-ocupacion">{Math.round(metricas.tasaOcupacion)}%</span>
                 </div>
               </div>
@@ -499,7 +526,11 @@ export default function Reportes() {
                     <div key={plato.id_plato} className="plato-margen">
                       <span className="nombre-plato-margen">{plato.nombre}</span>
                       <span className="precio-plato-margen">{formatearMoneda(plato.precio)}</span>
-                      {plato.destacado && <span className="badge-destacado-margen">⭐</span>}
+                      {plato.destacado && (
+                        <span className="badge-destacado-margen">
+                          <span className="material-symbols-outlined">star</span>
+                        </span>
+                      )}
                     </div>
                   ))}
               </div>
@@ -517,7 +548,9 @@ export default function Reportes() {
             {/* Recomendación de ocupación */}
             {metricas.tasaOcupacion > 80 && (
               <div className="recomendacion alta-prioridad">
-                <div className="icono-recomendacion alerta"></div>
+                <div className="icono-recomendacion alerta">
+                  <span className="material-symbols-outlined">warning</span>
+                </div>
                 <div className="contenido-recomendacion">
                   <h3 className="titulo-recomendacion">Alta Ocupación Detectada</h3>
                   <p className="descripcion-recomendacion">
@@ -532,7 +565,9 @@ export default function Reportes() {
             {/* Recomendación de inventario */}
             {datos.platos.filter(p => !p.disponible).length > 0 && (
               <div className="recomendacion media-prioridad">
-                <div className="icono-recomendacion sugerencia"></div>
+                <div className="icono-recomendacion sugerencia">
+                  <span className="material-symbols-outlined">inventory_2</span>
+                </div>
                 <div className="contenido-recomendacion">
                   <h3 className="titulo-recomendacion">Platos No Disponibles</h3>
                   <p className="descripcion-recomendacion">
@@ -547,7 +582,9 @@ export default function Reportes() {
             {/* Recomendación de reservas */}
             {datos.reservas.filter(r => r.estado === 'pendiente').length > 0 && (
               <div className="recomendacion media-prioridad">
-                <div className="icono-recomendacion info"></div>
+                <div className="icono-recomendacion info">
+                  <span className="material-symbols-outlined">pending_actions</span>
+                </div>
                 <div className="contenido-recomendacion">
                   <h3 className="titulo-recomendacion">Reservas Pendientes</h3>
                   <p className="descripcion-recomendacion">
@@ -562,7 +599,9 @@ export default function Reportes() {
             {/* Recomendación de promociones */}
             {metricas.platosPopulares.length > 0 && (
               <div className="recomendacion baja-prioridad">
-                <div className="icono-recomendacion info"></div>
+                <div className="icono-recomendacion info">
+                  <span className="material-symbols-outlined">campaign</span>
+                </div>
                 <div className="contenido-recomendacion">
                   <h3 className="titulo-recomendacion">Optimizar Platos Destacados</h3>
                   <p className="descripcion-recomendacion">
@@ -577,7 +616,9 @@ export default function Reportes() {
             {/* Recomendación de capacidad */}
             {metricas.tasaOcupacion < 30 && (
               <div className="recomendacion baja-prioridad">
-                <div className="icono-recomendacion info"></div>
+                <div className="icono-recomendacion info">
+                  <span className="material-symbols-outlined">trending_down</span>
+                </div>
                 <div className="contenido-recomendacion">
                   <h3 className="titulo-recomendacion">Baja Ocupación</h3>
                   <p className="descripcion-recomendacion">

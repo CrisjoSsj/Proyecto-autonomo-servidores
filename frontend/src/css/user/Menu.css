@@ -1,17 +1,43 @@
-/* ===================================
-   MENU.CSS - PÁGINA DEL MENÚ GOLDIFOX
-   Diseño profesional con sistema de variables
-   =================================== */
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 500,
+  'GRAD' 0,
+  'opsz' 24;
+  vertical-align: middle;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 
-/* Banner del Menú - Estilo Goldifox profesional optimizado */
+/* Títulos adaptativos */
 .banner-menu {
-  background: var(--color-surface-dark);
-  color: var(--color-text-light);
-  padding: var(--spacing-2xl) var(--spacing-md);
+  background: linear-gradient(135deg, rgba(37, 37, 35, 0.95) 0%, rgba(37, 37, 35, 0.98) 100%);
+  color: #f5f5f5;
+  padding: 1.75rem 2rem;
   text-align: center;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border-bottom: 3px solid #a39274;
+}
+
+.descripcion-categoria {
+  font-size: 0.95rem;
+  color: #6c757d;
+  font-style: normal;
+  opacity: 0.85;
+  max-width: 600px;
+  margin: 0;
+  line-height: 1.5;
+  font-family: 'Google Sans', 'Inter', sans-serif;
+}
+
+/* Grilla del Menú - Layout más compacto */
+.grilla-menu {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
 }
 
 .banner-menu::before {
@@ -26,13 +52,13 @@
 }
 
 .titulo-menu {
-  font-size: var(--font-size-3xl);
-  font-weight: 300;
-  margin-bottom: var(--spacing-lg);
-  font-family: var(--font-family-heading);
-  color: var(--color-primary);
+  font-size: 2.5rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  font-family: 'Google Sans', 'Inter', sans-serif;
+  color: #a39274;
   text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-wider);
+  letter-spacing: 3px;
   text-shadow: none;
   background: none;
   -webkit-background-clip: unset;
@@ -42,42 +68,46 @@
 }
 
 .subtitulo-menu {
-  font-size: var(--font-size-lg);
-  margin-bottom: var(--spacing-md);
-  font-weight: 400;
-  opacity: var(--opacity-text-muted);
-  letter-spacing: var(--letter-spacing-normal);
-  font-family: var(--font-family-primary);
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  opacity: 0.8;
+  letter-spacing: 1px;
+  font-family: 'Google Sans', 'Inter', sans-serif;
 }
 
 .nota-menu {
-  font-size: var(--font-size-base);
-  opacity: var(--opacity-text-muted);
+  font-size: 0.85rem;
+  opacity: 0.7;
   font-style: normal;
-  color: var(--color-text-light);
-  margin-top: var(--spacing-md);
-  font-family: var(--font-family-primary);
+  color: #EAE2D6;
+  margin-top: 1rem;
+  font-family: 'Google Sans', 'Inter', sans-serif;
+  max-width: 650px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.5;
 }
 
 /* Navegación por Categorías - Estilo Goldifox Sticky */
 .navegacion-categorias {
-  background: var(--color-background-card);
-  padding: var(--spacing-lg) 0;
-  border-bottom: 1px solid var(--color-border-light);
+  background: #f5f5f5;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(163, 146, 116, 0.2);
   position: sticky;
   top: 60px;
   z-index: 999;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  transition: all var(--transition-smooth);
+  transition: all 0.4s ease;
 }
 
 /* Efecto cuando está pegado en la parte superior */
 .navegacion-categorias.scrolled {
-  background: rgba(223, 216, 200, 0.95);
-  box-shadow: var(--shadow-lg);
-  padding: var(--spacing-md) 0;
+  background: rgba(245, 245, 245, 0.95);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  padding: 0.5rem 0;
 }
 
 .contenedor-categorias {
@@ -86,26 +116,29 @@
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: var(--spacing-lg);
-  padding: 0 var(--spacing-md);
+  gap: 0.75rem;
+  padding: 0 2rem;
 }
 
 .enlace-categoria {
   background: transparent;
-  color: var(--color-text-primary);
-  padding: var(--spacing-sm) var(--spacing-lg);
-  border-radius: var(--border-radius-sm);
+  color: #212529;
+  padding: 0.4rem 1rem;
+  border-radius: 25px;
   text-decoration: none;
-  font-weight: 400;
-  transition: var(--transition-normal);
-  border: 1px solid var(--color-border-light);
+  font-weight: 500;
+  transition: all 0.4s ease;
+  border: 2px solid #a39274;
   box-shadow: none;
   text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-wide);
-  font-size: var(--font-size-sm);
-  font-family: var(--font-family-primary);
+  letter-spacing: 0.5px;
+  font-size: 0.8rem;
+  font-family: 'Google Sans', 'Inter', sans-serif;
   position: relative;
   overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
 .enlace-categoria::before {
@@ -115,8 +148,8 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, var(--color-primary-alpha), transparent);
-  transition: left var(--transition-smooth);
+  background: linear-gradient(90deg, transparent, rgba(163, 146, 116, 0.1), transparent);
+  transition: left 0.4s ease;
 }
 
 .enlace-categoria:hover::before {
@@ -124,26 +157,26 @@
 }
 
 .enlace-categoria:hover {
-  background: var(--color-primary);
+  background: #a39274;
   color: white;
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   text-decoration: none;
-  border-color: var(--color-primary);
+  border-color: #a39274;
 }
 
 .enlace-categoria.activo {
-  background: var(--color-primary);
+  background: #a39274;
   color: white;
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
   text-decoration: none;
-  border-color: var(--color-primary);
-  font-weight: 500;
+  border-color: #a39274;
+  font-weight: 600;
 }
 
 .enlace-categoria:focus {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid #a39274;
   outline-offset: 2px;
 }
 
@@ -151,21 +184,22 @@
 .contenedor-menu {
   max-width: 1200px;
   margin: 0 auto;
-  padding: var(--spacing-2xl) var(--spacing-md);
-  background: var(--color-background-main);
+  padding: 1.75rem 2rem;
+  background: linear-gradient(135deg, #dfd8c8 0%, #dfd8c8 100%);
   min-height: 100vh;
 }
 
 /* Secciones de Categorías - Diseño profesional */
 .seccion-categoria {
-  margin-bottom: var(--spacing-2xl);
-  padding: var(--spacing-xl);
-  background: var(--color-background-card);
-  border-radius: var(--radius-none);
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--color-border-light);
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(163, 146, 116, 0.1);
   position: relative;
   overflow: hidden;
+  animation: fadeInUp 0.6s ease-out;
 }
 
 .seccion-categoria::before {
@@ -174,36 +208,39 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 2px;
-  background: var(--color-primary);
+  height: 3px;
+  background: linear-gradient(90deg, #a39274, #c7bca9);
 }
 
 .seccion-categoria.destacada {
-  border: 2px solid var(--color-primary);
-  background: var(--color-background-card);
-  box-shadow: var(--shadow-md);
+  border: 2px solid #a39274;
+  background: white;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
 }
 
 .cabecera-categoria {
   text-align: left;
-  margin-bottom: var(--spacing-xl);
-  padding-bottom: var(--spacing-md);
-  border-bottom: 1px solid var(--color-border-light);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(163, 146, 116, 0.15);
 }
 
 .seccion-categoria.destacada .cabecera-categoria {
-  border-bottom-color: var(--color-border-main);
+  border-bottom-color: rgba(163, 146, 116, 0.3);
 }
 
 .titulo-categoria {
-  font-size: var(--font-size-2xl);
-  font-weight: 400;
-  margin-bottom: var(--spacing-sm);
-  color: var(--color-text-primary);
-  font-family: var(--font-family-heading);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: #212529;
+  font-family: 'Google Sans', 'Inter', sans-serif;
   position: relative;
   text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-wide);
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .titulo-categoria::after {
@@ -230,58 +267,67 @@
 
 /* Estilos para MenuCard componente - Goldifox profesional */
 .tarjeta-plato-menu {
-  background: var(--color-background-card);
-  border: 1px solid var(--color-border-light);
-  border-radius: var(--radius-none);
-  padding: var(--spacing-lg);
-  transition: var(--transition-normal);
+  background: white;
+  border: 1px solid rgba(163, 146, 116, 0.15);
+  border-radius: 12px;
+  padding: 1rem;
+  transition: all 0.4s ease;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  animation: fadeInUp 0.8s ease-out;
 }
 
 .tarjeta-plato-menu::before {
-  display: none; /* Eliminamos efectos complejos */
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(163, 146, 116, 0.1), transparent);
+  transition: left 0.4s ease;
 }
 
 .tarjeta-plato-menu:hover::before {
-  display: none;
+  left: 100%;
 }
 
 .tarjeta-plato-menu:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--color-border-main);
+  transform: translateY(-6px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  border-color: #a39274;
 }
 
 .nombre-plato-menu {
-  font-size: var(--font-size-lg);
-  font-weight: 400;
-  margin-bottom: var(--spacing-sm);
-  color: var(--color-text-primary);
-  line-height: var(--line-height-tight);
-  font-family: var(--font-family-heading);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: #212529;
+  line-height: 1.4;
+  font-family: 'Google Sans', 'Inter', sans-serif;
   text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-wide);
+  letter-spacing: 0.5px;
 }
 
 .descripcion-plato-menu {
-  color: var(--color-text-primary);
-  opacity: var(--opacity-text-muted);
-  margin-bottom: var(--spacing-md);
-  line-height: var(--line-height-relaxed);
-  font-size: var(--font-size-base);
-  font-family: var(--font-family-primary);
+  color: #6c757d;
+  opacity: 0.85;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+  font-size: 0.85rem;
+  font-family: 'Google Sans', 'Inter', sans-serif;
 }
 
 .precio-plato-menu {
-  font-size: var(--font-size-xl);
-  font-weight: 400;
-  color: var(--color-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  color: #a39274;
   display: block;
-  text-align: right;
-  font-family: var(--font-family-primary);
-  letter-spacing: var(--letter-spacing-wide);
+  text-align: center;
+  font-family: 'Google Sans', 'Inter', sans-serif;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
 }
 
 /* Categoría Alitas - Estilos simplificados */
@@ -292,24 +338,24 @@
 /* Responsive Design Goldifox */
 @media (max-width: 768px) {
   .titulo-menu {
-    font-size: var(--font-size-2xl);
+    font-size: 2rem;
   }
   
   .subtitulo-menu {
-    font-size: var(--font-size-base);
+    font-size: 0.9rem;
   }
   
   .banner-menu {
-    padding: var(--spacing-2xl) var(--spacing-sm);
+    padding: 1.25rem 1rem;
   }
   
   .navegacion-categorias {
-    padding: var(--spacing-md) 0;
+    padding: 0.4rem 0;
     top: 80px; /* Altura ajustada para navbar móvil */
   }
   
   .navegacion-categorias.scrolled {
-    padding: var(--spacing-sm) 0;
+    padding: 0.3rem 0;
     top: 80px;
   }
   
@@ -317,11 +363,11 @@
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
-    gap: var(--spacing-sm);
+    gap: 0.5rem;
     overflow-x: auto;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
-    padding: 0 var(--spacing-md);
+    padding: 0 1rem;
   }
   
   .contenedor-categorias::-webkit-scrollbar {
@@ -329,46 +375,60 @@
   }
   
   .enlace-categoria {
-    padding: var(--spacing-xs) var(--spacing-md);
-    font-size: var(--font-size-xs);
+    padding: 0.35rem 0.75rem;
+    font-size: 0.7rem;
     white-space: nowrap;
     flex-shrink: 0;
   }
   
   .grilla-menu {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    gap: 1rem;
   }
   
   .seccion-categoria {
-    padding: 2rem;
-    margin-bottom: 3rem;
+    padding: 1rem;
+    margin-bottom: 1.25rem;
   }
   
   .titulo-categoria {
-    font-size: 2.25rem;
+    font-size: 1.25rem;
   }
   
   .tarjeta-plato-menu {
-    padding: 1.5rem;
+    padding: 0.9rem;
+  }
+  
+  .stats-menu-banner {
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 0.5rem 0;
+  }
+  
+  .stat-number {
+    font-size: 1.2rem;
+  }
+  
+  .stat-label {
+    font-size: 0.65rem;
   }
 }
 
 @media (max-width: 480px) {
   .banner-menu {
-    padding: 3rem 1rem;
+    padding: 1.5rem 0.75rem;
   }
   
   .titulo-menu {
-    font-size: var(--font-size-3xl);
+    font-size: 1.75rem;
   }
   
   .subtitulo-menu {
-    font-size: 1.125rem;
+    font-size: 0.85rem;
   }
   
   .nota-menu {
-    font-size: 1rem;
+    font-size: 0.8rem;
   }
   
   .navegacion-categorias {
@@ -380,36 +440,52 @@
   }
   
   .contenedor-categorias {
-    gap: 0.75rem;
+    gap: 0.4rem;
   }
   
   .enlace-categoria {
-    padding: 0.6rem 1.2rem;
-    font-size: 0.85rem;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.65rem;
   }
   
   .seccion-categoria {
-    padding: 1.5rem;
+    padding: 0.9rem;
   }
   
   .titulo-categoria {
-    font-size: 2rem;
+    font-size: 1.1rem;
+  }
+  
+  .tarjeta-plato-menu {
+    padding: 0.75rem;
+  }
+  
+  .nombre-plato-menu {
+    font-size: 0.9rem;
+  }
+  
+  .descripcion-plato-menu {
+    font-size: 0.75rem;
+  }
+  
+  .precio-plato-menu {
+    font-size: 0.9rem;
   }
 }
 
 /* Estilos originales para compatibilidad - Actualizados */
 .menu-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2rem;
-  padding: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+  padding: 1.5rem;
   background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-main) 100%);
 }
 
 .menu-card {
   border: 1px solid rgba(218, 165, 32, 0.2);
   border-radius: 16px;
-  padding: 1.5rem;
+  padding: 1rem;
   box-shadow: 0 8px 32px rgba(45, 27, 19, 0.1);
   text-align: center;
   transition: all 0.3s ease;
@@ -424,30 +500,30 @@
 
 .menu-card-img {
   width: 100%;
-  height: 180px;
+  height: 140px;
   object-fit: cover;
   border-radius: 12px;
 }
 
 .menu-card-title {
   font-weight: 700;
-  font-size: 1.25rem;
-  margin-top: 1rem;
+  font-size: 1.1rem;
+  margin-top: 0.7rem;
   color: var(--color-text-primary);
   font-family: 'Playfair Display', 'Georgia', serif;
 }
 
 .menu-card-desc {
   color: var(--color-text-secondary);
-  margin-top: 0.5rem;
-  line-height: 1.6;
+  margin-top: 0.3rem;
+  line-height: 1.4;
 }
 
 .menu-card-price {
   font-weight: 700;
-  margin-top: 1rem;
+  margin-top: 0.6rem;
   color: var(--color-primary);
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-family: 'Playfair Display', 'Georgia', serif;
 }
 
@@ -498,13 +574,9 @@ html {
 }
 
 /* Animación para enlaces activos */
-.enlace-categoria.activo {
-  animation: pulseActive 2s infinite;
-}
-
 @keyframes pulseActive {
-  0%, 100% { box-shadow: var(--shadow-sm); }
-  50% { box-shadow: var(--shadow-md); }
+  0%, 100% { box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); }
+  50% { box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15); }
 }
 
 /* Estados de accesibilidad */
@@ -547,13 +619,17 @@ html {
 /* Error states */
 .error-menu {
   text-align: center;
-  padding: var(--spacing-2xl);
+  padding: 3rem 2rem;
   color: var(--color-text-secondary);
 }
 
 .error-menu h2 {
   color: var(--color-error);
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .boton-reintentar {
@@ -576,8 +652,8 @@ html {
 .stats-menu-banner {
   display: flex;
   justify-content: center;
-  gap: var(--spacing-2xl);
-  margin: var(--spacing-xl) 0;
+  gap: 1.5rem;
+  margin: 0.75rem 0;
 }
 
 .stat-item {
@@ -586,14 +662,14 @@ html {
 
 .stat-number {
   display: block;
-  font-size: var(--font-size-2xl);
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--color-primary);
-  margin-bottom: var(--spacing-xs);
+  margin-bottom: 0.25rem;
 }
 
 .stat-label {
-  font-size: var(--font-size-sm);
+  font-size: 0.7rem;
   color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: var(--letter-spacing-wide);
@@ -603,8 +679,8 @@ html {
 .contador-platos {
   font-size: var(--font-size-xs);
   background-color: var(--color-primary-alpha);
-  padding: 2px 6px;
-  border-radius: 10px;
+  padding: 1px 4px;
+  border-radius: 8px;
   margin-left: var(--spacing-xs);
   font-weight: 500;
 }
@@ -613,40 +689,47 @@ html {
 .badge-destacada {
   background: linear-gradient(45deg, #ffd700, #ffed4e);
   color: #1a202c;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: 12px;
-  font-size: var(--font-size-xs);
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+  font-size: 0.7rem;
   font-weight: 600;
-  margin-left: var(--spacing-sm);
+  margin-left: 0.5rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 /* Info de categoría */
 .info-categoria {
-  margin-top: var(--spacing-sm);
+  margin-top: 0.4rem;
 }
 
 .contador-platos-categoria {
   background-color: var(--color-primary-alpha);
   color: var(--color-primary);
-  padding: var(--spacing-xs) var(--spacing-sm);
+  padding: 0.3rem 0.6rem;
   border-radius: 20px;
-  font-size: var(--font-size-sm);
+  font-size: 0.75rem;
   font-weight: 500;
 }
 
 /* Sin menú disponible */
 .sin-menu-disponible {
   text-align: center;
-  padding: var(--spacing-3xl);
+  padding: 3rem 2rem;
   color: var(--color-text-secondary);
 }
 
 .sin-menu-disponible h2 {
   color: var(--color-warning);
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .boton-reservar {
@@ -670,11 +753,11 @@ html {
 
 /* CTA Section */
 .cta-menu {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  background: linear-gradient(135deg, #252523 0%, #1a1a18 100%);
   color: white;
   text-align: center;
-  padding: var(--spacing-3xl) var(--spacing-lg);
-  margin-top: var(--spacing-3xl);
+  padding: 2rem var(--spacing-lg);
+  margin-top: 2rem;
 }
 
 .contenedor-cta {
@@ -683,20 +766,22 @@ html {
 }
 
 .cta-menu h2 {
-  font-size: var(--font-size-2xl);
-  margin-bottom: var(--spacing-lg);
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
   font-weight: 600;
+  color: #dfd8c8;
 }
 
 .cta-menu p {
-  font-size: var(--font-size-lg);
-  margin-bottom: var(--spacing-xl);
+  font-size: 1rem;
+  margin-bottom: 1rem;
   opacity: 0.9;
+  color: #dfd8c8;
 }
 
 .boton-reservar-cta {
   background-color: white;
-  color: var(--color-primary);
+  color: #252523;
   border: none;
   padding: var(--spacing-lg) var(--spacing-2xl);
   border-radius: 12px;

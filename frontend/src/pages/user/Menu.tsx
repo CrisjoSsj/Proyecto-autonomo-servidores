@@ -179,21 +179,21 @@ export default function Menu() {
       .replace(/[^a-z0-9-]/g, '');
   };
 
-  // Función para obtener emoji por categoría
-  const obtenerEmojiCategoria = (nombreCategoria: string): string => {
-    const emojis: { [key: string]: string } = {
-      'entradas': '🥗',
-      'platos principales': '🍖',
-      'postres': '🍰',
-      'bebidas': '🥤',
-      'ensaladas': '🥬',
-      'sopas': '🍲',
-      'mariscos': '🦐',
-      'carnes': '🥩',
-      'pastas': '🍝',
-      'pizzas': '🍕'
+  // Función para obtener ícono de Google Fonts por categoría
+  const obtenerIconoCategoria = (nombreCategoria: string): string => {
+    const iconos: { [key: string]: string } = {
+      'entradas': 'kebab_dining',
+      'platos principales': 'restaurant',
+      'postres': 'cake',
+      'bebidas': 'local_drink',
+      'ensaladas': 'eco',
+      'sopas': 'soup_kitchen',
+      'mariscos': 'set_meal',
+      'carnes': 'lunch_dining',
+      'pastas': 'ramen_dining',
+      'pizzas': 'local_pizza'
     };
-    return emojis[nombreCategoria.toLowerCase()] || '🍽️';
+    return iconos[nombreCategoria.toLowerCase()] || 'restaurant';
   };
 
   if (loading) {
@@ -214,7 +214,7 @@ export default function Menu() {
       <div>
         <Navbar />
         <div className="error-menu">
-          <h2>😔 Oops! Algo salió mal</h2>
+          <h2><span className="material-symbols-outlined" style={{verticalAlign: 'middle', marginRight: '8px'}}>error</span>Oops! Algo salió mal</h2>
           <p>{error}</p>
           <button onClick={cargarDatos} className="boton-reintentar">
             Intentar de nuevo
@@ -266,6 +266,7 @@ export default function Menu() {
             {categoriasConPlatos.map(categoria => {
               const idSeccion = generarIdSeccion(categoria.nombre);
               const cantidadPlatos = platos.filter(p => p.id_categoria === categoria.id_categoria).length;
+              const icono = obtenerIconoCategoria(categoria.nombre);
               
               return (
                 <a 
@@ -273,7 +274,10 @@ export default function Menu() {
                   href={`#${idSeccion}`} 
                   className="enlace-categoria"
                 >
-                  {obtenerEmojiCategoria(categoria.nombre)} {categoria.nombre}
+                  <span className="material-symbols-outlined" style={{fontSize: '20px', marginRight: '4px'}}>
+                    {icono}
+                  </span>
+                  {categoria.nombre}
                   <span className="contador-platos">({cantidadPlatos})</span>
                 </a>
               );
@@ -285,7 +289,7 @@ export default function Menu() {
       <div className="contenedor-menu">
         {categoriasConPlatos.length === 0 ? (
           <section className="sin-menu-disponible">
-            <h2>😔 Menú temporalmente no disponible</h2>
+            <h2><span className="material-symbols-outlined" style={{verticalAlign: 'middle', marginRight: '8px'}}>event_busy</span>Menú temporalmente no disponible</h2>
             <p>Estamos actualizando nuestro menú. Por favor, vuelve pronto.</p>
             <button onClick={() => window.location.href = '/reservas'} className="boton-reservar">
               Hacer una Reserva
@@ -295,7 +299,7 @@ export default function Menu() {
           categoriasConPlatos.map((categoria, index) => {
             const idSeccion = generarIdSeccion(categoria.nombre);
             const platosCategoria = obtenerPlatosPorCategoria(categoria.id_categoria);
-            const emoji = obtenerEmojiCategoria(categoria.nombre);
+            const icono = obtenerIconoCategoria(categoria.nombre);
             
             // Destacar la primera categoría o la de "Platos principales"
             const esDestacada = index === 0 || categoria.nombre.toLowerCase().includes('principal');
@@ -308,8 +312,11 @@ export default function Menu() {
               >
                 <div className="cabecera-categoria">
                   <h2 className="titulo-categoria">
-                    {emoji} {categoria.nombre}
-                    {esDestacada && <span className="badge-destacada">⭐ Destacada</span>}
+                    <span className="material-symbols-outlined" style={{fontSize: '24px'}}>
+                      {icono}
+                    </span>
+                    {categoria.nombre}
+                    {esDestacada && <span className="badge-destacada"><span className="material-symbols-outlined" style={{fontSize: '16px'}}>star</span> Destacada</span>}
                   </h2>
                   <p className="descripcion-categoria">
                     {categoria.nombre === 'Entradas' && 'Perfectas para comenzar o acompañar tu comida'}

@@ -40,14 +40,17 @@ export default function NavbarAdmin() {
             <span className="rol-admin">Administrador</span>
           </div>
           <div className="botones-admin">
-            <button className="boton-notificaciones">
-              🔔 <span className="contador-notificaciones">3</span>
+            <button className="boton-notificaciones" title="Notificaciones">
+              <span className="material-symbols-outlined">notifications</span>
+              <span className="contador-notificaciones">3</span>
             </button>
-            <Link to="/" className="boton-ver-sitio">
-              👁️ Ver Sitio
+            <Link to="/" className="boton-ver-sitio" title="Ver sitio">
+              <span className="material-symbols-outlined">visibility</span>
+              Ver Sitio
             </Link>
-            <button className="boton-logout">
-              🚪 Salir
+            <button className="boton-logout" title="Cerrar sesión">
+              <span className="material-symbols-outlined">logout</span>
+              Salir
             </button>
           </div>
         </div>

@@ -121,24 +121,6 @@ export default function FilaVirtual() {
         }
     };
 
-    const mesasPor2 = mesas.filter(m => m.capacidad === 2);
-    const mesasPor4 = mesas.filter(m => m.capacidad === 4);
-    const mesasPor6Plus = mesas.filter(m => m.capacidad >= 6);
-
-    const getEstadoClase = (estado: string) => {
-        return estado.toLowerCase().replace(' ', '-');
-    };
-
-    const getEstadoTexto = (estado: string) => {
-        const estados: any = {
-            'libre': 'Disponible',
-            'ocupada': 'Ocupada',
-            'reservada': 'Reservada',
-            'limpieza': 'En limpieza'
-        };
-        return estados[estado] || estado;
-    };
-
     return (
         <div>
             <Navbar />
@@ -155,11 +137,13 @@ export default function FilaVirtual() {
             <section className="seccion-estado-restaurante">
                 <div className="contenedor-estado">
                     <div className="tarjeta-estado-principal">
-                        <div className="indicador-abierto"></div>
+                        <div className="indicador-abierto">
+                            <span className="material-symbols-outlined">store</span>
+                        </div>
                         <h2 className="titulo-estado">Restaurante Abierto</h2>
                         <p className="horario-actual">Horario hoy: 11:00 AM - 10:00 PM</p>
                         <p className="actualizacion">
-                            🔴 Actualizaciones en tiempo real • Conectado
+                            <span className="material-symbols-outlined" style={{fontSize: '16px', verticalAlign: 'middle', marginRight: '4px'}}>radio_button_checked</span> Actualizaciones en tiempo real • Conectado
                         </p>
                     </div>
                 </div>
@@ -174,56 +158,6 @@ export default function FilaVirtual() {
                         y se actualiza en tiempo real cuando alguien reserva, ocupa o libera un espacio.
                     </p>
                     <MesasMap mesas={mesas} />
-                    
-                    <div className="grilla-mesas">
-                        {/* Mesas para 2 personas */}
-                        <div className="grupo-mesas">
-                            <h3 className="titulo-grupo-mesa">Mesas para 2 personas</h3>
-                            <div className="lista-mesas">
-                                {mesasPor2.length > 0 ? mesasPor2.map(mesa => (
-                                    <div key={mesa.id} className={`tarjeta-mesa ${getEstadoClase(mesa.estado)}`}>
-                                        <span className="numero-mesa">Mesa {mesa.numero}</span>
-                                        <span className="estado-mesa">{getEstadoTexto(mesa.estado)}</span>
-                                        {mesa.estado === 'libre' && (
-                                            <button className="boton-tomar-mesa">Tomar Mesa</button>
-                                        )}
-                                    </div>
-                                )) : <p>No hay mesas de 2 personas</p>}
-                            </div>
-                        </div>
-
-                        {/* Mesas para 4 personas */}
-                        <div className="grupo-mesas">
-                            <h3 className="titulo-grupo-mesa">Mesas para 4 personas</h3>
-                            <div className="lista-mesas">
-                                {mesasPor4.length > 0 ? mesasPor4.map(mesa => (
-                                    <div key={mesa.id} className={`tarjeta-mesa ${getEstadoClase(mesa.estado)}`}>
-                                        <span className="numero-mesa">Mesa {mesa.numero}</span>
-                                        <span className="estado-mesa">{getEstadoTexto(mesa.estado)}</span>
-                                        {mesa.estado === 'libre' && (
-                                            <button className="boton-tomar-mesa">Tomar Mesa</button>
-                                        )}
-                                    </div>
-                                )) : <p>No hay mesas de 4 personas</p>}
-                            </div>
-                        </div>
-
-                        {/* Mesas para 6+ personas */}
-                        <div className="grupo-mesas">
-                            <h3 className="titulo-grupo-mesa">Mesas para 6+ personas</h3>
-                            <div className="lista-mesas">
-                                {mesasPor6Plus.length > 0 ? mesasPor6Plus.map(mesa => (
-                                    <div key={mesa.id} className={`tarjeta-mesa ${getEstadoClase(mesa.estado)}`}>
-                                        <span className="numero-mesa">Mesa {mesa.numero}</span>
-                                        <span className="estado-mesa">{getEstadoTexto(mesa.estado)}</span>
-                                        {mesa.estado === 'libre' && (
-                                            <button className="boton-tomar-mesa">Tomar Mesa</button>
-                                        )}
-                                    </div>
-                                )) : <p>No hay mesas de 6+ personas</p>}
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </section>
 
@@ -316,16 +250,16 @@ export default function FilaVirtual() {
                         <h3 className="titulo-notificaciones">¿Cómo funcionan las notificaciones?</h3>
                         <ul className="lista-notificaciones">
                             <li className="item-notificacion">
-                                📱 Te enviaremos un SMS cuando falten 10 minutos para tu turno
+                                <span className="material-symbols-outlined">sms</span> Te enviaremos un SMS cuando falten 10 minutos para tu turno
                             </li>
                             <li className="item-notificacion">
-                                🔔 Recibirás una segunda notificación cuando tu mesa esté lista
+                                <span className="material-symbols-outlined">notifications_active</span> Recibirás una segunda notificación cuando tu mesa esté lista
                             </li>
                             <li className="item-notificacion">
-                                ⏰ Tendrás 15 minutos para confirmar tu llegada al restaurante
+                                <span className="material-symbols-outlined">schedule</span> Tendrás 15 minutos para confirmar tu llegada al restaurante
                             </li>
                             <li className="item-notificacion">
-                                🚫 Si no confirmas, tu turno pasará al siguiente cliente
+                                <span className="material-symbols-outlined">block</span> Si no confirmas, tu turno pasará al siguiente cliente
                             </li>
                         </ul>
                     </div>

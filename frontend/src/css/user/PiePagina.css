@@ -43,10 +43,10 @@
 }
 
 .titulo-footer {
-  font-size: var(--font-size-xl);
-  font-weight: 400;
+  font-size: var(--font-size-lg);
+  font-weight: 500;
   color: var(--color-primary);
-  font-family: var(--font-family-heading);
+  font-family: 'Google Sans', var(--font-family-heading), sans-serif;
   margin: 0 0 var(--spacing-sm) 0;
   text-shadow: none;
   background: none;
@@ -54,33 +54,34 @@
   -webkit-text-fill-color: unset;
   background-clip: unset;
   text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-wide);
+  letter-spacing: 0.05em;
   text-align: center;
 }
 
 .descripcion-footer {
-  font-size: 1rem;
+  font-size: 0.95rem;
   line-height: 1.6;
   color: var(--color-text-light);
   font-style: normal;
   margin: 0;
   opacity: 0.8;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Google Sans', 'Inter', sans-serif;
   text-align: center;
   max-width: 280px;
+  font-weight: 400;
 }
 
 /* Estilos Comunes para Títulos de Sección */
 .titulo-seccion-footer {
-  font-size: var(--font-size-lg);
-  font-weight: 400;
+  font-size: var(--font-size-base);
+  font-weight: 500;
   color: var(--color-primary);
   margin: 0 0 var(--spacing-md) 0;
   text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-wide);
+  letter-spacing: 0.05em;
   position: relative;
   padding-bottom: var(--spacing-xs);
-  font-family: var(--font-family-heading);
+  font-family: 'Google Sans', var(--font-family-heading), sans-serif;
   text-align: center;
 }
 
@@ -110,13 +111,21 @@
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
-  font-size: var(--font-size-sm);
+  font-size: 0.9rem;
   color: var(--color-text-light);
   margin: 0;
   padding: var(--spacing-xs) 0;
   transition: var(--transition-smooth);
   cursor: pointer;
   line-height: var(--line-height-normal);
+  font-weight: 400;
+}
+
+.dato-contacto .material-symbols-outlined {
+  font-size: 1.25rem;
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
 }
 
 .dato-contacto:hover {
@@ -142,13 +151,14 @@
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
-  font-size: var(--font-size-sm);
+  font-size: 0.9rem;
   color: var(--color-text-light);
   margin: 0;
   padding: var(--spacing-xs) 0;
   transition: var(--transition-smooth);
   cursor: pointer;
   line-height: var(--line-height-normal);
+  font-weight: 400;
 }
 
 
@@ -181,18 +191,46 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 45px;
-  height: 45px;
-  background: var(--color-surface-elevated);
-  color: var(--color-text-light);
+  width: 50px;
+  height: 50px;
+  background: transparent;
+  color: white;
   text-decoration: none;
   border-radius: var(--border-radius-md);
-  font-weight: var(--font-weight-semibold);
+  font-weight: 500;
   font-size: var(--font-size-sm);
   transition: all var(--transition-smooth);
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: none;
+  font-family: 'Google Sans', 'Inter', sans-serif;
+  border: 2px solid white;
+}
+
+.enlace-red-social .material-symbols-outlined {
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.enlace-red-social .icon-text {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Google Sans', 'Inter', sans-serif;
+}
+
+.enlace-red-social svg {
+  width: 24px;
+  height: 24px;
+  color: white;
+  fill: white;
 }
 
 .enlace-red-social::before {
@@ -211,11 +249,36 @@
 }
 
 .enlace-red-social:hover {
-  background: var(--color-primary);
-  color: var(--color-background);
+  background: white;
+  color: white;
   text-decoration: none;
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+  border-color: white;
+}
+
+.enlace-red-social:hover .icon-text {
+  filter: drop-shadow(none);
+}
+
+.enlace-red-social:hover svg {
+  fill: currentColor;
+}
+
+/* Colores específicos para cada red en hover */
+.enlace-red-social.facebook-icon:hover svg {
+  color: #1877f2;
+  fill: #1877f2;
+}
+
+.enlace-red-social.github-icon:hover svg {
+  color: #333333;
+  fill: #333333;
+}
+
+.enlace-red-social.twitter-icon:hover svg {
+  color: #000000;
+  fill: #000000;
 }
 
 /* Copyright - Optimizado */
@@ -229,11 +292,11 @@
 
 .texto-copyright {
   color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
+  font-size: 0.85rem;
   margin: 0;
   opacity: var(--opacity-text-muted);
   font-weight: 400;
-  font-family: var(--font-family-primary);
+  font-family: 'Google Sans', 'Inter', sans-serif;
 }
 
 /* Efectos Especiales removidos para mantener diseño profesional */
