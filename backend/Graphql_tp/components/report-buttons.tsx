@@ -3,7 +3,13 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Select } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 // Recursos soportados por la API de reportes
 const RECURSOS: { value: string; label: string; fecha?: boolean }[] = [
@@ -52,11 +58,16 @@ export function ReportButtons() {
       <div className="grid gap-2">
         <label className="text-sm font-medium">Recurso</label>
         <Select value={recurso} onValueChange={setRecurso}>
-          {RECURSOS.map((r) => (
-            <option key={r.value} value={r.value}>
-              {r.label}
-            </option>
-          ))}
+          <SelectTrigger>
+            <SelectValue placeholder="Selecciona un recurso" />
+          </SelectTrigger>
+          <SelectContent>
+            {RECURSOS.map((r) => (
+              <SelectItem key={r.value} value={r.value}>
+                {r.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
         </Select>
       </div>
       {recursoActual?.fecha && (

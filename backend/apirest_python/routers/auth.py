@@ -42,6 +42,14 @@ class UserCreate(BaseModel):
 # Base de datos de usuarios con autenticación
 # Las contraseñas están hasheadas con bcrypt
 users_auth_db = {
+    "admin": {
+        "username": "admin",
+        "full_name": "Administrador",
+        "email": "admin@restaurante.com",
+        "telefono": "123456789",
+        "disabled": False,
+        "password": "$2a$12$R9h7cIPz0gi.URNNX3kh2OPST9/PgBkqquzi.Ss7KKUgO2BJqKovm"  # admin123
+    },
     "crisjo": {
         "username": "crisjo",
         "full_name": "Crisjo Admin",
@@ -113,10 +121,83 @@ async def current_user(user: UserAuth = Depends(auth_user)):
         )
     return user
 
-# Endpoint de login
-@router.post("/login")
-async def login(form: OAuth2PasswordRequestForm = Depends()):
-    """Endpoint para iniciar sesión y obtener token JWT"""
+# Modelo para login JSON (Frontend Admin)
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+    is_admin: bool = False
+
+class LoginResponse(BaseModel):
+    access_token: str
+    user: dict
+    token_type: str = "bearer"
+
+# Endpoint de login JSON para admin (desde frontend)
+@router.post("/login", response_model=LoginResponse)
+async def login_json(credentials: LoginRequest):
+    """Endpoint para iniciar sesión del admin desde frontend (JSON)"""
+    
+    # Si no es admin, rechazar
+    if not credentials.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, 
+            detail="Solo administradores pueden acceder"
+        )
+    
+    # Buscar usuario por email
+    user_db = None
+    username_found = None
+    for username, user_data in users_auth_db.items():
+        if user_data.get("email") == credentials.email:
+            user_db = user_data
+            username_found = username
+            break
+    
+    if not user_db:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, 
+            detail="Credenciales incorrectas"
+        )
+
+    # Verificar la contraseña usando bcrypt
+    try:
+        password_correct = crypt.verify(credentials.password, user_db["password"])
+    except Exception as e:
+        print(f"Error verificando contraseña: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, 
+            detail="Credenciales incorrectas"
+        )
+    
+    if not password_correct:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, 
+            detail="Credenciales incorrectas"
+        )
+
+    # Crear token de acceso
+    access_token = {
+        "sub": username_found,
+        "exp": datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_DURATION)
+    }
+
+    token = jwt.encode(access_token, SECRET, algorithm=ALGORITHM)
+
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "id": 1,
+            "email": credentials.email,
+            "name": user_db.get("full_name", "Administrador"),
+            "is_admin": True
+        }
+    }
+
+# Endpoint de login (form-data - para otros clientes)
+@router.post("/login-form")
+async def login_form(form: OAuth2PasswordRequestForm = Depends()):
+    """Endpoint para iniciar sesión con form-data (OAuth2 estándar)"""
     
     # Verificar si el usuario existe
     user_db = users_auth_db.get(form.username)

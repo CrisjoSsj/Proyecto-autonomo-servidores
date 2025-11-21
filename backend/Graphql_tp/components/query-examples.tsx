@@ -13,9 +13,10 @@ export const queryExamples = [
   {
     name: 'Obtener todos los platos del menú',
     query: `query TodosLosPlatos {
-  todosPlatos {
+  platos {
     id
     nombre
+    descripcion
     precio
     categoria
   }
@@ -24,9 +25,10 @@ export const queryExamples = [
   {
     name: 'Obtener plato por ID',
     query: `query PlatoPorId {
-  plato(id: "p1") {
+  plato(id: "1") {
     id
     nombre
+    descripcion
     precio
     categoria
   }
@@ -35,42 +37,72 @@ export const queryExamples = [
   {
     name: 'Buscar platos por categoría (bebidas)',
     query: `query PlatosPorCategoriaBebidas {
-  platosPorCategoria(categoria: "bebidas") {
+  platosByCategoria(categoria: "bebidas") {
     id
     nombre
+    descripcion
     precio
+    categoria
   }
 }`,
   },
   {
     name: 'Buscar platos por categoría (postres)',
     query: `query PlatosPorCategoriaPostres {
-  platosPorCategoria(categoria: "postres") {
+  platosByCategoria(categoria: "postres") {
     id
     nombre
+    descripcion
     precio
+    categoria
   }
 }`,
   },
   {
     name: 'Obtener todos los pedidos del día',
     query: `query PedidosDelDia {
-  pedidosDelDia {
+  pedidos {
     id
     fecha
     total
-    platos { nombre precio }
+    items {
+      cantidad
+      plato {
+        id
+        nombre
+        precio
+        categoria
+      }
+    }
   }
 }`,
   },
   {
     name: 'Obtener pedido por ID',
     query: `query PedidoPorId {
-  pedido(id: "o1") {
+  pedido(id: "1") {
     id
     fecha
     total
-    platos { nombre precio }
+    items {
+      cantidad
+      plato {
+        id
+        nombre
+        precio
+      }
+    }
+  }
+}`,
+  },
+  {
+    name: 'Obtener todas las mesas',
+    query: `query TodasLasMesas {
+  mesas {
+    id_mesa
+    numero
+    capacidad
+    estado
   }
 }`,
   },
@@ -78,43 +110,42 @@ export const queryExamples = [
     name: 'Obtener mesas disponibles',
     query: `query MesasDisponibles {
   mesasDisponibles {
-    id
+    id_mesa
     numero
-    disponible
+    capacidad
+    estado
   }
 }`,
   },
   {
-    name: 'Obtener reservas del día',
-    query: `query ReservasDelDia {
-  reservasDelDia {
+    name: 'Obtener reservas',
+    query: `query Reservas {
+  reservas {
     id
-    fecha
-    hora
-    mesaId
-    nombreCliente
-    personas
+    id_cliente
+    mesa_id
+    fecha_hora
   }
 }`,
   },
   {
     name: 'Obtener información del restaurante',
     query: `query InfoRestaurante {
-  restauranteInfo {
+  restaurante {
+    id
     nombre
-    ubicacion
-    horarios
+    direccion
+    telefono
   }
 }`,
   },
   {
     name: 'Obtener estadísticas de ventas',
     query: `query EstadisticasVentas {
-  estadisticasVentas {
-    totalPedidos
-    totalIngresos
-    platosMasVendidos { nombre precio }
-    ventasPorCategoria { categoria cantidad ingresos }
+  estadisticasVentas(periodo: "hoy") {
+    periodo
+    totalVentas
+    pedidos
   }
 }`,
   },
@@ -122,7 +153,7 @@ export const queryExamples = [
     name: 'Obtener todos los precios y platos',
     query: `query PreciosYPlatos {
   preciosYPlatos {
-    id
+    id_plato
     nombre
     precio
   }
@@ -131,10 +162,21 @@ export const queryExamples = [
   {
     name: 'Buscar platos por categoría (entradas)',
     query: `query PlatosPorCategoriaEntradas {
-  platosPorCategoria(categoria: "entradas") {
+  platosByCategoria(categoria: "entradas") {
     id
     nombre
+    descripcion
     precio
+    categoria
+  }
+}`,
+  },
+  {
+    name: 'Obtener analíticas',
+    query: `query Analiticas {
+  analytics {
+    totalUsers
+    activeUsers
   }
 }`,
   },

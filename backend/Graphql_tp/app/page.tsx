@@ -68,8 +68,19 @@ export default function Home() {
         const analyticsData = await analyticsRes.json()
         const usersData = await usersRes.json()
 
-        setAnalytics(analyticsData.data.analytics)
-        setUsers(usersData.data.users)
+        if (analyticsData.errors) {
+          console.error('Error en analytics:', analyticsData.errors)
+        }
+        if (usersData.errors) {
+          console.error('Error en users:', usersData.errors)
+        }
+
+        if (analyticsData.data?.analytics) {
+          setAnalytics(analyticsData.data.analytics)
+        }
+        if (usersData.data?.users) {
+          setUsers(usersData.data.users)
+        }
       } catch (error) {
         console.error("Error fetching data:", error)
       } finally {
