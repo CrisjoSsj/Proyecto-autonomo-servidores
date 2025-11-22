@@ -10,14 +10,7 @@ from typing import Dict, Any
 WEBSOCKET_BROADCAST_URL = "http://localhost:8081/broadcast"
 
 async def send_websocket_broadcast(channel: str, event: str, data: Dict[str, Any]):
-    """
-    Enviar una notificación al servidor WebSocket
-    
-    Args:
-        channel: Canal del WebSocket ('fila_virtual', 'mesas', 'reservas')
-        event: Tipo de evento ('update', 'create', 'delete', etc.)
-        data: Datos del evento
-    """
+   
     try:
         message = {
             "channel": channel,

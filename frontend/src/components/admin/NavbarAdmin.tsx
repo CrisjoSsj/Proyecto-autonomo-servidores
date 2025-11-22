@@ -1,4 +1,6 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { authService, User } from "../../services/AuthService";
 import "../../css/admin/NavbarAdmin.css";
 
 const elementosNavegacionAdmin = [
@@ -10,6 +12,19 @@ const elementosNavegacionAdmin = [
 ];
 
 export default function NavbarAdmin() {
+  const navigate = useNavigate();
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const currentUser = authService.getUser();
+    setUser(currentUser);
+  }, []);
+
+  const handleLogout = () => {
+    authService.logout();
+    navigate('/admin/login');
+  };
+
   return (
     <nav className="barra-navegacion-admin">
       <div className="contenedor-navegacion-admin">
@@ -36,8 +51,8 @@ export default function NavbarAdmin() {
         {/* Información del admin y acciones */}
         <div className="seccion-admin-info">
           <div className="info-sesion">
-            <span className="nombre-admin">Admin</span>
-            <span className="rol-admin">Administrador</span>
+            <span className="nombre-admin">{user?.name || 'Admin'}</span>
+            <span className="rol-admin">{user?.email || 'Administrador'}</span>
           </div>
           <div className="botones-admin">
             <button className="boton-notificaciones" title="Notificaciones">
@@ -48,7 +63,11 @@ export default function NavbarAdmin() {
               <span className="material-symbols-outlined">visibility</span>
               Ver Sitio
             </Link>
-            <button className="boton-logout" title="Cerrar sesión">
+            <button 
+              className="boton-logout" 
+              title="Cerrar sesión"
+              onClick={handleLogout}
+            >
               <span className="material-symbols-outlined">logout</span>
               Salir
             </button>

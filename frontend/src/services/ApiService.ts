@@ -279,21 +279,22 @@ class ApiService {
   }
 
   // Autenticación
-  async login(username: string, password: string) {
+  async login(email: string, password: string, isAdmin: boolean = true) {
     const response = await this.request('/auth/login', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        username: username,
+      body: JSON.stringify({
+        email: email,
         password: password,
+        is_admin: isAdmin
       }),
     });
     
-    // Guardar token en localStorage
+    // Guardar token y datos del usuario en localStorage
     if (response.access_token) {
       localStorage.setItem('authToken', response.access_token);
+      if (response.user) {
+        localStorage.setItem('user', JSON.stringify(response.user));
+      }
     }
     
     return response;

@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 // Páginas de usuario
 import Home from "./pages/user/Home";
@@ -6,11 +6,14 @@ import Menu from "./pages/user/Menu";
 import Reservas from "./pages/user/Reservas";
 import FilaVirtual from "./pages/user/FilaVirtual";
 // Páginas de administración
+import Login from "./pages/admin/Login";
 import Dashboard from "./pages/admin/Dashboard";
 import GestionMesas from "./pages/admin/GestionMesas";
 import GestionReservas from "./pages/admin/GestionReservas";
 import GestionMenu from "./pages/admin/GestionMenu";
 import Reportes from "./pages/admin/Reportes";
+// Componentes
+import ProtectedRoute from "./components/admin/ProtectedRoute";
 
 
 function App() {
@@ -24,11 +27,50 @@ function App() {
         <Route path="/filavirtual" element={<FilaVirtual />} />
         
         {/* Rutas de administración */}
-        <Route path="/admin" element={<Dashboard />} />
-        <Route path="/admin/mesas" element={<GestionMesas />} />
-        <Route path="/admin/reservas" element={<GestionReservas />} />
-        <Route path="/admin/menu" element={<GestionMenu />} />
-        <Route path="/admin/reportes" element={<Reportes />} />
+        <Route path="/admin/login" element={<Login />} />
+        <Route 
+          path="/admin" 
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/mesas" 
+          element={
+            <ProtectedRoute>
+              <GestionMesas />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/reservas" 
+          element={
+            <ProtectedRoute>
+              <GestionReservas />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/menu" 
+          element={
+            <ProtectedRoute>
+              <GestionMenu />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/reportes" 
+          element={
+            <ProtectedRoute>
+              <Reportes />
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* Redirigir /admin a /admin/login si no está autenticado */}
+        <Route path="/admin/*" element={<Navigate to="/admin/login" replace />} />
       </Routes>
     </Router>
   );

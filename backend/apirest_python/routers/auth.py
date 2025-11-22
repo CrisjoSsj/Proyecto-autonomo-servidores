@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import jwt, JWTError
 from passlib.context import CryptContext
+import bcrypt
 from datetime import datetime, timedelta, timezone
 
 # Configuración JWT
@@ -20,6 +21,25 @@ router = APIRouter(
 
 oauth2 = OAuth2PasswordBearer(tokenUrl="auth/login")
 crypt = CryptContext(schemes=["bcrypt"])
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verifica una contraseña usando bcrypt directamente"""
+    try:
+        # Intentar con passlib primero
+        return crypt.verify(plain_password, hashed_password)
+    except Exception as e:
+        try:
+            # Si falla, intentar con bcrypt directamente
+            # Los hashes de bcrypt deben ser bytes
+            if isinstance(hashed_password, str):
+                hashed_password = hashed_password.encode('utf-8')
+            if isinstance(plain_password, str):
+                plain_password = plain_password.encode('utf-8')
+            return bcrypt.checkpw(plain_password, hashed_password)
+        except Exception as e2:
+            print(f"Error verificando contraseña (passlib): {e}")
+            print(f"Error verificando contraseña (bcrypt): {e2}")
+            return False
 
 # Modelos de usuario para autenticación
 class UserAuth(BaseModel):
@@ -48,7 +68,7 @@ users_auth_db = {
         "email": "admin@restaurante.com",
         "telefono": "123456789",
         "disabled": False,
-        "password": "$2a$12$R9h7cIPz0gi.URNNX3kh2OPST9/PgBkqquzi.Ss7KKUgO2BJqKovm"  # admin123
+        "password": "$2b$12$1Wi.3K3b6xeTBqpOJh4lvO8db7waHsw.BJNL2ypGDtOf1/gVkafGu"  # admin123
     },
     "crisjo": {
         "username": "crisjo",
@@ -56,7 +76,7 @@ users_auth_db = {
         "email": "crisjo@restaurante.com",
         "telefono": "123456789",
         "disabled": False,
-        "password": "$2a$12$B2Gq.Dps1WYf2t57eiIKjO4DXC3IUMUXISJF62bSRiFfqMdOI2Xa6"  # secret
+        "password": "$2b$12$LltIUinFKGS.GqB1zuBMCenFWMsPYLmNQMrWG.THlalEWetUca5WO"  # secret
     },
     "victoria": {
         "username": "victoria",
@@ -64,7 +84,7 @@ users_auth_db = {
         "email": "victoria@restaurante.com",
         "telefono": "987654321",
         "disabled": False,
-        "password": "$2a$12$SduE7dE.i3/ygwd0Kol8bOFvEABaoOOlC8JsCSr6wpwB4zl5STU4S"  # mysecretpassword
+        "password": "$2b$12$i/2CZcTltIFilNSZ7L9bVOaCXSJfBqDXym4AZ23irbr/t9BXi57VG"  # mysecretpassword
     },
     "kilian": {
         "username": "kilian",
@@ -72,7 +92,7 @@ users_auth_db = {
         "email": "kilian@restaurante.com",
         "telefono": "555666777",
         "disabled": False,
-        "password": "$2a$12$B2Gq.Dps1WYf2t57eiIKjO4DXC3IUMUXISJF62bSRiFfqMdOI2Xa6"  # secret
+        "password": "$2b$12$LltIUinFKGS.GqB1zuBMCenFWMsPYLmNQMrWG.THlalEWetUca5WO"  # secret
     }
 }
 
@@ -137,8 +157,12 @@ class LoginResponse(BaseModel):
 async def login_json(credentials: LoginRequest):
     """Endpoint para iniciar sesión del admin desde frontend (JSON)"""
     
+    # Logging para debug
+    print(f"[LOGIN] Intento de login - Email: {credentials.email}, is_admin: {credentials.is_admin}")
+    
     # Si no es admin, rechazar
     if not credentials.is_admin:
+        print(f"[LOGIN] Rechazado: is_admin es False")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 
             detail="Solo administradores pueden acceder"
@@ -151,9 +175,11 @@ async def login_json(credentials: LoginRequest):
         if user_data.get("email") == credentials.email:
             user_db = user_data
             username_found = username
+            print(f"[LOGIN] Usuario encontrado: {username_found}")
             break
     
     if not user_db:
+        print(f"[LOGIN] Usuario no encontrado para email: {credentials.email}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 
             detail="Credenciales incorrectas"
@@ -161,19 +187,27 @@ async def login_json(credentials: LoginRequest):
 
     # Verificar la contraseña usando bcrypt
     try:
-        password_correct = crypt.verify(credentials.password, user_db["password"])
+        print(f"[LOGIN] Verificando contraseña para usuario: {username_found}")
+        print(f"[LOGIN] Hash almacenado: {user_db['password'][:30]}...")
+        password_correct = verify_password(credentials.password, user_db["password"])
+        print(f"[LOGIN] Resultado verificación: {password_correct}")
     except Exception as e:
-        print(f"Error verificando contraseña: {e}")
+        print(f"[LOGIN] Error verificando contraseña: {e}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 
             detail="Credenciales incorrectas"
         )
     
     if not password_correct:
+        print(f"[LOGIN] Contraseña incorrecta para usuario: {username_found}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 
             detail="Credenciales incorrectas"
         )
+    
+    print(f"[LOGIN] Login exitoso para usuario: {username_found}")
 
     # Crear token de acceso
     access_token = {
@@ -215,7 +249,7 @@ async def login_form(form: OAuth2PasswordRequestForm = Depends()):
         )
 
     # Verificar la contraseña
-    if not crypt.verify(form.password, user.password):
+    if not verify_password(form.password, user.password):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, 
             detail="La contraseña no es correcta"
