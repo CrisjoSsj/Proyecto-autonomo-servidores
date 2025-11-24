@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Test Notificaciones - GraphQL Backend</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .button-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            font-size: 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(102, 126, 234, 0.6);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button.success {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            box-shadow: 0 4px 16px rgba(76, 175, 80, 0.4);
+        }
+        
+        button.success:hover {
+            box-shadow: 0 6px 24px rgba(76, 175, 80, 0.6);
+        }
+        
+        .status {
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .status.connected {
+            background: #D4EDDA;
+            color: #155724;
+            border: 2px solid #C3E6CB;
+        }
+        
+        .status.disconnected {
+            background: #F8D7DA;
+            color: #721C24;
+            border: 2px solid #F5C6CB;
+        }
+        
+        .log {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        
+        .log-entry {
+            margin: 4px 0;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .log-entry.info {
+            color: #4FC3F7;
+        }
+        
+        .log-entry.success {
+            color: #66BB6A;
+        }
+        
+        .log-entry.error {
+            color: #EF5350;
+            background: rgba(239, 83, 80, 0.1);
+        }
+        
+        .log-entry.notification {
+            color: #FFA726;
+            background: rgba(255, 167, 38, 0.1);
+            font-weight: bold;
+        }
+        
+        .instructions {
+            background: #FFF3CD;
+            border: 2px solid #FFE69C;
+            color: #856404;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        
+        .instructions h3 {
+            margin-bottom: 12px;
+            color: #856404;
+        }
+        
+        .instructions ol {
+            margin-left: 20px;
+        }
+        
+        .instructions li {
+            margin: 8px 0;
+        }
+        
+        .instructions code {
+            background: rgba(0,0,0,0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Test de Notificaciones Backend → Frontend</h1>
+            <p class="subtitle">Simula la generación de reportes desde GraphQL Playground</p>
+        </div>
+        
+        <div class="grid">
+            <div class="card">
+                <h2>🔌 Estado WebSocket</h2>
+                <div id="status" class="status disconnected">
+                    🔄 Conectando...
+                </div>
+                
+                <h2>📊 Simular Generación de Reportes</h2>
+                <div class="button-grid">
+                    <button onclick="generarReporte('pdf', 'platosBasico')">
+                        📄 PDF Platos
+                    </button>
+                    <button onclick="generarReporte('excel', 'platosBasico')">
+                        📊 Excel Platos
+                    </button>
+                    <button onclick="generarReporte('pdf', 'ventasResumen')">
+                        📈 PDF Ventas
+                    </button>
+                    <button onclick="generarReporte('excel', 'ventasResumen')">
+                        📉 Excel Ventas
+                    </button>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <button class="success" onclick="abrirFrontend()">
+                        🌐 Abrir Frontend (Ver Notificaciones)
+                    </button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>📝 Log de Eventos</h2>
+                <div id="log" class="log"></div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>📋 Instrucciones de Prueba:</h3>
+            <ol>
+                <li>✅ <strong>WebSocket conectado</strong> - Verifica el estado arriba</li>
+                <li>🌐 <strong>Abre el frontend</strong> - Haz clic en "Abrir Frontend" o ve a <code>http://localhost:5173</code></li>
+                <li>📊 <strong>Genera un reporte</strong> - Haz clic en cualquier botón de reporte aquí</li>
+                <li>🔔 <strong>Observa la notificación</strong> - Debería aparecer en la esquina superior derecha del frontend</li>
+                <li>⬇️ <strong>Descarga desde la notificación</strong> - Haz clic en "Descargar" en la notificación flotante</li>
+            </ol>
+            <p style="margin-top: 12px;">
+                <strong>💡 Tip:</strong> También puedes generar reportes desde GraphQL Playground en 
+                <code>http://localhost:3000/graphql-playground</code> y las notificaciones aparecerán igual.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let ws = null;
+        const statusEl = document.getElementById('status');
+        const logEl = document.getElementById('log');
+
+        function addLog(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logEl.insertBefore(entry, logEl.firstChild);
+            
+            // Mantener solo últimas 50 entradas
+            while (logEl.children.length > 50) {
+                logEl.removeChild(logEl.lastChild);
+            }
+        }
+
+        function conectarWebSocket() {
+            addLog('🔄 Conectando a ws://localhost:8080...', 'info');
+            ws = new WebSocket('ws://localhost:8080');
+
+            ws.onopen = () => {
+                statusEl.className = 'status connected';
+                statusEl.textContent = '✅ Conectado al WebSocket';
+                addLog('✅ Conexión WebSocket establecida', 'success');
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const msg = JSON.parse(event.data);
+                    addLog(`📨 Mensaje recibido: ${JSON.stringify(msg)}`, 'info');
+
+                    if (msg.channel === 'reportes' && msg.event === 'reporte_generado') {
+                        addLog(`🎉 NOTIFICACIÓN: Reporte ${msg.data.formato.toUpperCase()} generado - ${msg.data.filename}`, 'notification');
+                    }
+                } catch (e) {
+                    addLog(`❌ Error al parsear mensaje: ${e.message}`, 'error');
+                }
+            };
+
+            ws.onerror = (error) => {
+                statusEl.className = 'status disconnected';
+                statusEl.textContent = '❌ Error de conexión';
+                addLog(`❌ Error de WebSocket`, 'error');
+            };
+
+            ws.onclose = () => {
+                statusEl.className = 'status disconnected';
+                statusEl.textContent = '🔌 Desconectado - Reconectando...';
+                addLog('🔌 Conexión cerrada. Reconectando en 3s...', 'info');
+                setTimeout(conectarWebSocket, 3000);
+            };
+        }
+
+        async function generarReporte(formato, recurso) {
+            addLog(`📊 Solicitando reporte: ${formato.toUpperCase()} - ${recurso}`, 'info');
+            
+            try {
+                const url = `http://localhost:3000/api/report/${formato}/${recurso}`;
+                const response = await fetch(url);
+                
+                if (response.ok) {
+                    addLog(`✅ Reporte generado exitosamente`, 'success');
+                    addLog(`🔔 La notificación debería aparecer en el frontend ahora`, 'notification');
+                    
+                    // Descargar el archivo también aquí
+                    const blob = await response.blob();
+                    const downloadUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    a.download = `reporte_${recurso}.${formato}`;
+                    a.click();
+                    window.URL.revokeObjectURL(downloadUrl);
+                    
+                    addLog(`⬇️ Archivo descargado localmente también`, 'success');
+                } else {
+                    addLog(`❌ Error al generar reporte: ${response.status} ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                addLog(`❌ Error en la solicitud: ${error.message}`, 'error');
+            }
+        }
+
+        function abrirFrontend() {
+            addLog('🌐 Abriendo frontend en nueva pestaña...', 'info');
+            window.open('http://localhost:5173', '_blank');
+        }
+
+        // Conectar al iniciar
+        conectarWebSocket();
+        addLog('🚀 Aplicación iniciada', 'success');
+    </script>
+</body>
+</html>

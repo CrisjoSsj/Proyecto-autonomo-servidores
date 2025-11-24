@@ -329,6 +329,26 @@ class ApiService {
   async buscarUsers(query: string) {
     return this.request(`/users/buscar?query=${query}`);
   }
+
+  // ==== REPORTES PDF ====
+  async getReportePdf(recurso: string): Promise<Blob> {
+    const url = `${this.baseURL}/reportes/${recurso}.pdf`;
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(url, {
+      headers: token ? { 'Authorization': `Bearer ${token}` } : undefined
+    });
+    if (!response.ok) {
+      throw new Error(`Error al generar PDF (${response.status})`);
+    }
+    return await response.blob();
+  }
+
+  async abrirReportePdf(recurso: string) {
+    const blob = await this.getReportePdf(recurso);
+    const objectUrl = URL.createObjectURL(blob);
+    window.open(objectUrl, '_blank');
+    setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
+  }
 }
 
 // Instancia global del servicio API

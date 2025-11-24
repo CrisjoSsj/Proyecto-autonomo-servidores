@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import user, Restaurante, Reserva, Menu, Plato, Mesa, FilaVirtual, Cliente, CategoriaMenu, auth
+from routers import user, Restaurante, Reserva, Menu, Plato, Mesa, FilaVirtual, Cliente, CategoriaMenu, auth, Reporte
 
 
 app = FastAPI()
@@ -24,6 +24,7 @@ app.include_router(Mesa.router)
 app.include_router(FilaVirtual.router)
 app.include_router(Cliente.router)
 app.include_router(CategoriaMenu.router)
+app.include_router(Reporte.router)
 
 @app.get("/")
 def root():

@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { apiService } from "../../services/ApiService";
+import { wsService } from "../../services/WebSocketService";
 import NavbarAdmin from "../../components/admin/NavbarAdmin";
 import "../../css/admin/Reportes.css";
 
@@ -86,9 +88,24 @@ export default function Reportes() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [periodo, setPeriodo] = useState('hoy');
+  const [notificacionReporte, setNotificacionReporte] = useState<string | null>(null);
+  const [generando, setGenerando] = useState(false);
 
   useEffect(() => {
     cargarDatosReportes();
+    // Conectar WebSocket y suscribirse a reportes
+    wsService.connect();
+    const unsubscribe = wsService.subscribe('reportes', (msg) => {
+      const evento = msg.event || msg.action;
+      if (evento === 'reporte_generado') {
+        setNotificacionReporte(`Reporte '${msg.data?.recurso}' generado (${msg.data?.registros} registros)`);
+        // ocultar después de 6s
+        setTimeout(() => setNotificacionReporte(null), 6000);
+      }
+    });
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
@@ -223,6 +240,18 @@ export default function Reportes() {
     }).format(valor);
   };
 
+  const generarReportePdf = async (recurso: string) => {
+    try {
+      setGenerando(true);
+      await apiService.abrirReportePdf(recurso);
+    } catch (e: any) {
+      setNotificacionReporte(`Error al generar reporte: ${e.message}`);
+      setTimeout(() => setNotificacionReporte(null), 6000);
+    } finally {
+      setGenerando(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="reportes-admin">
@@ -269,10 +298,20 @@ export default function Reportes() {
               <option value="semana">Esta Semana</option>
               <option value="mes">Este Mes</option>
             </select>
-            <button className="boton-exportar-reporte">📊 Exportar Reporte</button>
+            <button className="boton-exportar-reporte" disabled={generando} onClick={() => generarReportePdf('clientes')}>
+              {generando ? 'Generando...' : '📊 PDF Clientes'}
+            </button>
+            <button className="boton-exportar-reporte" disabled={generando} onClick={() => generarReportePdf('platos')}>
+              {generando ? 'Generando...' : '📊 PDF Platos'}
+            </button>
             <button className="boton-imprimir">🖨️ Imprimir</button>
           </div>
         </div>
+        {notificacionReporte && (
+          <div className="toast-reporte">
+            {notificacionReporte}
+          </div>
+        )}
       </section>
 
       {/* Resumen ejecutivo */}

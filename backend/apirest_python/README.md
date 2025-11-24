@@ -341,3 +341,46 @@ uvicorn main:app --host 0.0.0.0 --port 443 --ssl-keyfile key.pem --ssl-certfile 
 3. **Commit** tus cambios (`git commit -am 'Agregar nueva funcionalidad'`)
 4. **Push** a la rama (`git push origin feature/nueva-funcionalidad`)
 5. **Crear** un Pull Request
+
+## 🧾 Reportes PDF
+
+Se puede generar un PDF de los recursos actuales en memoria y notificar al frontend (canal WebSocket `reportes`).
+
+### Endpoints
+Listado de recursos disponibles:
+```http
+GET /reportes/recursos
+```
+Generar PDF (ejemplo clientes):
+```http
+GET /reportes/clientes.pdf
+```
+Cabecera de respuesta: `Content-Type: application/pdf`.
+
+### Recursos soportados
+`restaurantes, clientes, mesas, reservas, platos, categorias, menus`
+
+### Evento WebSocket
+Al generarse el PDF se emite:
+```json
+{
+    "channel": "reportes",
+    "event": "reporte_generado",
+    "data": {
+        "recurso": "clientes",
+        "registros": 3,
+        "timestamp": "2025-11-23T12:00:00Z"
+    }
+}
+```
+
+### Uso rápido en frontend (React)
+Botón para abrir PDF de clientes y escuchar notificación ya implementado en `Reportes.tsx`:
+```tsx
+<button onClick={() => apiService.abrirReportePdf('clientes')}>PDF Clientes</button>
+```
+
+### Notas
+- Motor: `fpdf2`. Para PDF más complejos (gráficos, estilos avanzados) considerar HTML+WeasyPrint o ReportLab.
+- Actualmente los datos provienen de listas en memoria; integrar con base de datos para información real persistente.
+- El archivo se abre en una nueva pestaña y se libera el ObjectURL pasado 60s.

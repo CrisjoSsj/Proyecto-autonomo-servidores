@@ -33,6 +33,31 @@ export async function GET(request: NextRequest, { params }: { params: Params }) 
       format as 'pdf' | 'excel',
       fecha,
     )
+    
+    // 🔔 Enviar notificación WebSocket después de generar el reporte
+    try {
+      const registros = resource === 'platosBasico' ? 'varios' : 'resumen'
+      await fetch('http://localhost:8081/broadcast', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          channel: 'reportes',
+          event: 'reporte_generado',
+          data: {
+            recurso: resource,
+            formato: format,
+            filename: filename,
+            registros: registros,
+            timestamp: new Date().toISOString()
+          }
+        })
+      })
+      console.log('✅ Notificación de reporte enviada al WebSocket')
+    } catch (wsError) {
+      console.warn('⚠️ No se pudo enviar notificación WebSocket:', wsError)
+      // No fallar la generación del reporte por error de notificación
+    }
+    
     if (modoMeta) {
       return new Response(
         JSON.stringify({ recurso: resource, formato: format, bytes: data.length, fecha }),

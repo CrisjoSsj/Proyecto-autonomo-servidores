@@ -84,16 +84,24 @@ export default function GraphQLPlayground() {
                       <Button
                         variant="secondary"
                         size="sm"
-                        onClick={() => exportPdfFromResult(result)}
-                        title="Exportar PDF del resultado"
+                        onClick={() => {
+                          const opNameMatch = /\b(query|mutation)\s+(\w+)/.exec(query)
+                          const opName = opNameMatch ? opNameMatch[2] : undefined
+                          exportPdfFromResult(result, opName)
+                        }}
+                        title="Exportar PDF del resultado y notificar"
                       >
                         <Download className="mr-1 h-4 w-4" /> PDF
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => exportExcelFromResult(result)}
-                        title="Exportar Excel del resultado"
+                        onClick={() => {
+                          const opNameMatch = /\b(query|mutation)\s+(\w+)/.exec(query)
+                          const opName = opNameMatch ? opNameMatch[2] : undefined
+                          exportExcelFromResult(result, opName)
+                        }}
+                        title="Exportar Excel del resultado y notificar"
                       >
                         <Download className="mr-1 h-4 w-4" /> Excel
                       </Button>

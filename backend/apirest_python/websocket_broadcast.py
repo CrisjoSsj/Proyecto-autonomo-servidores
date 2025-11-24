@@ -58,3 +58,7 @@ async def broadcast_mesas(event: str, data: Dict[str, Any]):
 async def broadcast_reservas(event: str, data: Dict[str, Any]):
     """Enviar notificación al canal de reservas"""
     await send_websocket_broadcast("reservas", event, data)
+
+async def broadcast_reportes(event: str, data: Dict[str, Any]):
+    """Enviar notificación al canal de reportes (generación de PDFs, etc.)"""
+    await send_websocket_broadcast("reportes", event, data)

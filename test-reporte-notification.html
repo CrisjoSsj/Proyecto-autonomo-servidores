@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Notificación Reportes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .status {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .status.connecting {
+            background: #FFF3CD;
+            color: #856404;
+        }
+        .status.connected {
+            background: #D4EDDA;
+            color: #155724;
+        }
+        .status.disconnected {
+            background: #F8D7DA;
+            color: #721C24;
+        }
+        .notification {
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            background: #E3F2FD;
+            border-left: 5px solid #2196F3;
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button.secondary {
+            background: #2196F3;
+        }
+        button.secondary:hover {
+            background: #0b7dda;
+        }
+        .log {
+            background: #f9f9f9;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+        }
+        .log-entry.message {
+            color: #2196F3;
+        }
+        .log-entry.error {
+            color: #f44336;
+        }
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔔 Test de Notificaciones de Reportes</h1>
+        
+        <div id="status" class="status connecting">
+            🔄 Conectando al WebSocket...
+        </div>
+
+        <div class="buttons">
+            <button onclick="descargarPDF()">📄 Descargar PDF Platos</button>
+            <button onclick="descargarExcel()">📊 Descargar Excel Platos</button>
+            <button onclick="descargarVentasPDF()" class="secondary">📈 PDF Ventas</button>
+            <button onclick="descargarVentasExcel()" class="secondary">📉 Excel Ventas</button>
+        </div>
+
+        <div id="notifications"></div>
+
+        <h3>Log de Eventos</h3>
+        <div id="log" class="log"></div>
+    </div>
+
+    <script>
+        let ws = null;
+        const statusEl = document.getElementById('status');
+        const notifEl = document.getElementById('notifications');
+        const logEl = document.getElementById('log');
+
+        function addLog(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logEl.appendChild(entry);
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        function conectarWebSocket() {
+            addLog('Intentando conectar a ws://localhost:8080...');
+            ws = new WebSocket('ws://localhost:8080');
+
+            ws.onopen = () => {
+                statusEl.className = 'status connected';
+                statusEl.textContent = '✅ Conectado al WebSocket';
+                addLog('✅ Conexión establecida');
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const msg = JSON.parse(event.data);
+                    addLog(`📨 Mensaje recibido: ${JSON.stringify(msg)}`, 'message');
+
+                    if (msg.channel === 'reportes' && msg.event === 'reporte_generado') {
+                        mostrarNotificacion(msg.data);
+                    }
+                } catch (e) {
+                    addLog(`❌ Error al parsear mensaje: ${e.message}`, 'error');
+                }
+            };
+
+            ws.onerror = (error) => {
+                statusEl.className = 'status disconnected';
+                statusEl.textContent = '❌ Error de conexión';
+                addLog(`❌ Error de WebSocket: ${error}`, 'error');
+            };
+
+            ws.onclose = () => {
+                statusEl.className = 'status disconnected';
+                statusEl.textContent = '🔌 Desconectado';
+                addLog('🔌 Conexión cerrada. Reconectando en 3s...');
+                setTimeout(conectarWebSocket, 3000);
+            };
+        }
+
+        function mostrarNotificacion(data) {
+            const notif = document.createElement('div');
+            notif.className = 'notification';
+            notif.innerHTML = `
+                <strong>🎉 ¡Reporte Generado!</strong><br>
+                📁 Recurso: ${data.recurso}<br>
+                📄 Formato: ${data.formato}<br>
+                📝 Archivo: ${data.filename}<br>
+                📊 Registros: ${data.registros}<br>
+                ⏰ ${new Date(data.timestamp).toLocaleString('es-ES')}
+            `;
+            notifEl.appendChild(notif);
+            addLog(`🎉 Notificación mostrada: ${data.filename}`, 'message');
+
+            // Remover después de 8 segundos
+            setTimeout(() => {
+                notif.style.opacity = '0';
+                notif.style.transform = 'translateX(100%)';
+                setTimeout(() => notif.remove(), 300);
+            }, 8000);
+        }
+
+        async function descargarPDF() {
+            addLog('Descargando PDF Platos...');
+            try {
+                const response = await fetch('http://localhost:3000/api/report/pdf/platosBasico');
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'platos_basico.pdf';
+                    a.click();
+                    addLog('✅ PDF descargado exitosamente');
+                } else {
+                    addLog(`❌ Error al descargar: ${response.status}`, 'error');
+                }
+            } catch (e) {
+                addLog(`❌ Error: ${e.message}`, 'error');
+            }
+        }
+
+        async function descargarExcel() {
+            addLog('Descargando Excel Platos...');
+            try {
+                const response = await fetch('http://localhost:3000/api/report/excel/platosBasico');
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'platos_basico.xlsx';
+                    a.click();
+                    addLog('✅ Excel descargado exitosamente');
+                } else {
+                    addLog(`❌ Error al descargar: ${response.status}`, 'error');
+                }
+            } catch (e) {
+                addLog(`❌ Error: ${e.message}`, 'error');
+            }
+        }
+
+        async function descargarVentasPDF() {
+            addLog('Descargando PDF Ventas...');
+            try {
+                const response = await fetch('http://localhost:3000/api/report/pdf/ventasResumen');
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'ventas_resumen.pdf';
+                    a.click();
+                    addLog('✅ PDF Ventas descargado exitosamente');
+                } else {
+                    addLog(`❌ Error al descargar: ${response.status}`, 'error');
+                }
+            } catch (e) {
+                addLog(`❌ Error: ${e.message}`, 'error');
+            }
+        }
+
+        async function descargarVentasExcel() {
+            addLog('Descargando Excel Ventas...');
+            try {
+                const response = await fetch('http://localhost:3000/api/report/excel/ventasResumen');
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'ventas_resumen.xlsx';
+                    a.click();
+                    addLog('✅ Excel Ventas descargado exitosamente');
+                } else {
+                    addLog(`❌ Error al descargar: ${response.status}`, 'error');
+                }
+            } catch (e) {
+                addLog(`❌ Error: ${e.message}`, 'error');
+            }
+        }
+
+        // Conectar al iniciar
+        conectarWebSocket();
+    </script>
+</body>
+</html>

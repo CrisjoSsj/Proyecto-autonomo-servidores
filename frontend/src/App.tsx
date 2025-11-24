@@ -11,11 +11,14 @@ import GestionMesas from "./pages/admin/GestionMesas";
 import GestionReservas from "./pages/admin/GestionReservas";
 import GestionMenu from "./pages/admin/GestionMenu";
 import Reportes from "./pages/admin/Reportes";
+// Componentes globales
+import GlobalNotifications from "./components/GlobalNotifications";
 
 
 function App() {
   return (
     <Router>
+      <GlobalNotifications />
       <Routes>
         {/* Rutas de usuario */}
         <Route path="/" element={<Home />} />

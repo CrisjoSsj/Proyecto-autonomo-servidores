@@ -7,8 +7,9 @@
 type MessageCallback = (message: any) => void;
 
 interface WebSocketMessage {
-  channel: 'fila_virtual' | 'mesas' | 'reservas';
-  action: string;
+  channel: 'fila_virtual' | 'mesas' | 'reservas' | 'reportes';
+  action?: string;
+  event?: string; // algunos mensajes vienen con 'event'
   data: any;
 }
 
@@ -250,6 +251,8 @@ class WebSocketService {
       }
     });
   }
+
+  // REPORTES - no enviamos desde frontend, sólo escuchamos broadcast
 }
 
 // Exportar instancia singleton
