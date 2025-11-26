@@ -13,6 +13,9 @@ interface Mesa {
 
 export default function ReservaFormConAPI() {
   const [formData, setFormData] = useState({
+    nombre: '',
+    telefono: '',
+    email: '',
     id_cliente: 1, // Por ahora hardcodeado, después lo obtienes del usuario logueado
     id_mesa: '' as number | string,    // Lo seleccionará el usuario de una lista
     fecha: '',
@@ -67,6 +70,25 @@ export default function ReservaFormConAPI() {
     setMensaje('');
 
     try {
+      // Validar campos requeridos
+      if (!formData.nombre || formData.nombre.trim() === '') {
+        setMensaje('Error: El nombre es requerido');
+        setLoading(false);
+        return;
+      }
+
+      if (!formData.telefono || formData.telefono.trim() === '') {
+        setMensaje('Error: El teléfono es requerido');
+        setLoading(false);
+        return;
+      }
+
+      if (!formData.email || formData.email.trim() === '') {
+        setMensaje('Error: El email es requerido');
+        setLoading(false);
+        return;
+      }
+
       // Validar que haya una mesa seleccionada
       if (!formData.id_mesa || formData.id_mesa === '') {
         setMensaje('Error: Debes seleccionar una mesa disponible');
@@ -81,6 +103,20 @@ export default function ReservaFormConAPI() {
       
       if (fechaSeleccionada < hoy) {
         setMensaje('Error: No puedes hacer reservas para fechas pasadas');
+        setLoading(false);
+        return;
+      }
+
+      // Validar que la hora inicio no esté vacía
+      if (!formData.hora_inicio || formData.hora_inicio.trim() === '') {
+        setMensaje('Error: Debes especificar la hora de inicio');
+        setLoading(false);
+        return;
+      }
+
+      // Validar que la hora fin no esté vacía
+      if (!formData.hora_fin || formData.hora_fin.trim() === '') {
+        setMensaje('Error: Debes especificar la hora de fin');
         setLoading(false);
         return;
       }
@@ -103,7 +139,13 @@ export default function ReservaFormConAPI() {
         fecha: formData.fecha,
         hora_inicio: formData.hora_inicio,
         hora_fin: formData.hora_fin,
-        estado: 'pendiente'
+        estado: 'pendiente',
+        nombre: formData.nombre,
+        telefono: formData.telefono,
+        email: formData.email,
+        numero_personas: formData.numero_personas,
+        ocasion_especial: formData.ocasion_especial,
+        comentarios: formData.comentarios
       };
 
       console.log('Enviando reserva:', reservaData);
@@ -116,6 +158,9 @@ export default function ReservaFormConAPI() {
       // Limpiar formulario
       const primeraMesaDisponible = mesas.find((mesa: any) => mesa.estado === 'disponible' || mesa.estado === 'libre');
       setFormData({
+        nombre: '',
+        telefono: '',
+        email: '',
         id_cliente: 1,
         id_mesa: primeraMesaDisponible?.id || primeraMesaDisponible?.id_mesa || '',
         fecha: '',
@@ -149,6 +194,50 @@ export default function ReservaFormConAPI() {
       )}
 
       <form className="formulario-reserva" onSubmit={handleSubmit}>
+        <div className="grupo-campo">
+          <label className="etiqueta-campo" htmlFor="nombre">Nombre Completo *</label>
+          <input 
+            type="text" 
+            id="nombre"
+            name="nombre"
+            className="campo-entrada" 
+            value={formData.nombre}
+            onChange={handleChange}
+            placeholder="Tu nombre completo"
+            required
+          />
+        </div>
+
+        <div className="fila-campos">
+          <div className="grupo-campo">
+            <label className="etiqueta-campo" htmlFor="telefono">Teléfono *</label>
+            <input 
+              type="tel" 
+              id="telefono"
+              name="telefono"
+              className="campo-entrada"
+              value={formData.telefono}
+              onChange={handleChange}
+              placeholder="099-123-4567"
+              required
+            />
+          </div>
+
+          <div className="grupo-campo">
+            <label className="etiqueta-campo" htmlFor="email">Email *</label>
+            <input 
+              type="email" 
+              id="email"
+              name="email"
+              className="campo-entrada"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="tu@email.com"
+              required
+            />
+          </div>
+        </div>
+
         <div className="grupo-campo">
           <label className="etiqueta-campo" htmlFor="fecha">Fecha</label>
           <input 

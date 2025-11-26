@@ -3,68 +3,6 @@
    Sistema de reportes y análisis con diseño moderno y profesional
    =================================== */
 
-/* Variables CSS */
-:root {
-  /* Colores principales */
-  --color-primary: #a39274;
-  --color-primary-light: #c7bca9;
-  --color-primary-dark: #6b6150;
-  --color-primary-alpha: rgba(163, 146, 116, 0.1);
-  
-  /* Colores de estado */
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-error: #ef4444;
-  --color-info: #3b82f6;
-  --color-purple: #8b5cf6;
-  
-  /* Colores de fondo */
-  --color-background-main: #f8fafc;
-  --color-background-card: #ffffff;
-  --color-surface-elevated: #ffffff;
-  --color-surface-muted: #f1f5f9;
-  
-  /* Colores de texto */
-  --color-text-primary: #1e293b;
-  --color-text-secondary: #475569; /* Aumentado contraste */
-  --color-text-muted: #64748b; /* Aumentado contraste */
-  
-  /* Colores de borde */
-  --color-border-light: #e2e8f0;
-  --color-border-medium: #cbd5e1;
-  
-  /* Espaciado */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 0.75rem;
-  --spacing-lg: 1rem;
-  --spacing-xl: 1.5rem;
-  --spacing-2xl: 2rem;
-  
-  /* Tipografía */
-  --font-family-primary: 'Inter', 'Segoe UI', system-ui, sans-serif;
-  --font-family-heading: 'Inter', 'Segoe UI', system-ui, sans-serif;
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-3xl: 1.875rem;
-  
-  /* Efectos */
-  --border-radius-sm: 0.375rem;
-  --border-radius-md: 0.5rem;
-  --border-radius-lg: 0.75rem;
-  --border-radius-full: 9999px;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-  --transition-normal: all 0.2s ease-in-out;
-  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
 /* Página Principal */
 .reportes-admin {
   background: var(--color-background-main);
@@ -234,7 +172,7 @@
 }
 
 .tarjeta-metrica.ventas-totales {
-  border-left-color: var(--color-success);
+  border-left-color: var(--color-primary);
 }
 
 .tarjeta-metrica.ordenes-completadas {
@@ -246,7 +184,7 @@
 }
 
 .tarjeta-metrica.clientes-atendidos {
-  border-left-color: var(--color-warning);
+  border-left-color: var(--color-primary);
 }
 
 .tarjeta-metrica:hover {
@@ -838,13 +776,13 @@
 }
 
 .comparacion-metrica.positiva {
-  color: #10b981;
-  background: rgba(16, 185, 129, 0.1);
+  color: var(--color-primary);
+  background: rgba(163, 146, 116, 0.1);
 }
 
 .comparacion-metrica.negativa {
-  color: #ef4444;
-  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-primary);
+  background: rgba(163, 146, 116, 0.1);
 }
 
 .comparacion-metrica.neutra {
@@ -1019,8 +957,8 @@
 }
 
 .estado-orden.completada {
-  background: rgba(16, 185, 129, 0.2);
-  color: #10b981;
+  background: rgba(163, 146, 116, 0.2);
+  color: var(--color-primary);
 }
 
 .estado-orden.pendiente {
@@ -1029,8 +967,8 @@
 }
 
 .estado-orden.cancelada {
-  background: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
+  background: rgba(163, 146, 116, 0.2);
+  color: var(--color-primary);
 }
 
 /* Rankings y Top Lists */
@@ -1272,18 +1210,18 @@
 }
 
 .estado-mesa.disponible {
-  background-color: rgba(34, 197, 94, 0.1);
-  border-left: 4px solid #22c55e;
+  background-color: rgba(163, 146, 116, 0.1);
+  border-left: 4px solid var(--color-primary);
 }
 
 .estado-mesa.ocupada {
-  background-color: rgba(239, 68, 68, 0.1);
-  border-left: 4px solid #ef4444;
+  background-color: rgba(163, 146, 116, 0.1);
+  border-left: 4px solid var(--color-primary);
 }
 
 .estado-mesa.reservada {
-  background-color: rgba(245, 158, 11, 0.1);
-  border-left: 4px solid #f59e0b;
+  background-color: rgba(163, 146, 116, 0.1);
+  border-left: 4px solid var(--color-primary);
 }
 
 .numero-estado {
@@ -1521,6 +1459,31 @@
   transform: translateY(0);
 }
 
+.boton-descargar-pdf {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, var(--color-primary), #937e5e);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-family-primary);
+}
+
+.boton-descargar-pdf:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(163, 146, 116, 0.3);
+  background: linear-gradient(135deg, #937e5e, #7d6847);
+}
+
+.boton-descargar-pdf:active {
+  transform: translateY(0);
+}
+
 /* Resumen ejecutivo */
 .contenedor-resumen-ejecutivo {
   margin-bottom: var(--spacing-xl);
@@ -1648,13 +1611,13 @@
 }
 
 .cambio.positivo {
-  color: #059669;
-  background: rgba(16, 185, 129, 0.1);
+  color: var(--color-primary);
+  background: rgba(163, 146, 116, 0.1);
 }
 
 .cambio.negativo {
-  color: #dc2626;
-  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-primary);
+  background: rgba(163, 146, 116, 0.1);
 }
 
 .referencia {
@@ -1788,8 +1751,8 @@
 }
 
 .badge-destacado {
-  background: linear-gradient(135deg, #ffd700, #ffed4a);
-  color: #92400e;
+  background: linear-gradient(135deg, var(--color-primary), #937e5e);
+  color: #f5f3f0;
   padding: 0.25rem 0.5rem;
   border-radius: var(--border-radius-sm);
   font-size: var(--font-size-xs);
@@ -1924,18 +1887,18 @@
 }
 
 .estado-mesa.disponible {
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.2);
+  background: rgba(163, 146, 116, 0.1);
+  border: 1px solid rgba(163, 146, 116, 0.2);
 }
 
 .estado-mesa.ocupada {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  background: rgba(163, 146, 116, 0.1);
+  border: 1px solid rgba(163, 146, 116, 0.2);
 }
 
 .estado-mesa.reservada {
-  background: rgba(245, 158, 11, 0.1);
-  border: 1px solid rgba(245, 158, 11, 0.2);
+  background: rgba(163, 146, 116, 0.1);
+  border: 1px solid rgba(163, 146, 116, 0.2);
 }
 
 .numero-estado {
@@ -2138,8 +2101,8 @@
 }
 
 .badge-destacado-margen {
-  background: linear-gradient(135deg, #ffd700, #ffed4a);
-  color: #92400e;
+  background: linear-gradient(135deg, var(--color-primary), #937e5e);
+  color: #f5f3f0;
   padding: 0.25rem 0.5rem;
   border-radius: var(--border-radius-sm);
   font-size: var(--font-size-xs);
@@ -2253,18 +2216,165 @@
 }
 
 .prioridad.alta {
-  background: rgba(239, 68, 68, 0.1);
-  color: #dc2626;
+  background: rgba(163, 146, 116, 0.1);
+  color: var(--color-primary);
 }
 
 .prioridad.media {
-  background: rgba(245, 158, 11, 0.1);
-  color: #d97706;
+  background: rgba(163, 146, 116, 0.1);
+  color: var(--color-primary);
 }
 
 .prioridad.baja {
-  background: rgba(59, 130, 246, 0.1);
-  color: #2563eb;
+  background: rgba(163, 146, 116, 0.1);
+  color: var(--color-primary);
+}
+
+/* ===================================
+   ESTILOS ESPECÍFICOS PARA ESTADO DE MESAS
+   =================================== */
+
+/* Contenedor de Estado de Mesas */
+.seccion-resumen-ejecutivo {
+  padding: var(--spacing-xl) var(--spacing-md);
+  background: linear-gradient(135deg, var(--color-background-main) 0%, #f5f3f0 100%);
+}
+
+/* Tarjetas de estado con colores específicos */
+.tarjeta-metrica {
+  background: var(--color-surface-muted);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border-light);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.tarjeta-metrica::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 0px;
+  background: linear-gradient(90deg, rgba(163, 146, 116, 0.05), transparent);
+  transition: height 0.3s ease;
+}
+
+.tarjeta-metrica:hover::before {
+  height: 100%;
+}
+
+.tarjeta-metrica:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(163, 146, 116, 0.2);
+}
+
+/* Variantes de estado */
+.tarjeta-metrica.disponibles {
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.tarjeta-metrica.ocupadas {
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.tarjeta-metrica.reservadas {
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+.tarjeta-metrica.ocupacion {
+  border-color: rgba(163, 146, 116, 0.2);
+}
+
+/* Estilos internos de las tarjetas */
+.icono-metrica {
+  display: none;
+}
+
+.contenido-metrica {
+  width: 100%;
+}
+
+.titulo-metrica {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-family-primary);
+}
+
+.valor-metrica {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+  line-height: 1;
+  font-family: var(--font-family-heading);
+}
+
+.referencia {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-family: var(--font-family-primary);
+}
+
+/* Responsive para ESTADO DE MESAS */
+@media (max-width: 1024px) {
+  .grilla-metricas-principales {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+  }
+  
+  .tarjeta-metrica {
+    padding: var(--spacing-md);
+  }
+  
+  .valor-metrica {
+    font-size: var(--font-size-2xl);
+  }
+}
+
+@media (max-width: 768px) {
+  .grilla-metricas-principales {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+  
+  .tarjeta-metrica {
+    padding: var(--spacing-md);
+  }
+  
+  .valor-metrica {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .titulo-metrica {
+    font-size: var(--font-size-xs);
+  }
+}
+
+@media (max-width: 480px) {
+  .grilla-metricas-principales {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+  
+  .tarjeta-metrica {
+    padding: var(--spacing-sm);
+  }
+  
+  .valor-metrica {
+    font-size: var(--font-size-xl);
+  }
+  
+  .titulo-metrica,
+  .referencia {
+    font-size: var(--font-size-xs);
+  }
 }
 
 /* Responsive para nuevas clases */
@@ -2294,5 +2404,730 @@
   
   .metricas-plato-top {
     align-items: center;
+  }
+}
+
+/* ===================================
+   ESTILOS PARA FILA VIRTUAL
+   =================================== */
+
+.seccion-fila-virtual {
+  padding: var(--spacing-xl) var(--spacing-md);
+  background: linear-gradient(135deg, var(--color-background-main) 0%, #f0f7ff 100%);
+}
+
+.contenedor-fila-virtual {
+  background: var(--color-background-card);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.grilla-fila-virtual {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--spacing-lg);
+}
+
+/* Tarjeta principal de Fila Virtual */
+.tarjeta-fila-principal {
+  background: var(--color-surface-muted);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  border: 2px solid rgba(59, 130, 246, 0.2);
+  text-align: center;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.tarjeta-fila-principal:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+.titulo-fila {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-family-primary);
+}
+
+.valor-fila {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  margin: var(--spacing-sm) 0;
+  line-height: 1;
+  font-family: var(--font-family-heading);
+}
+
+.detalle-fila {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  font-family: var(--font-family-primary);
+}
+
+/* Lista de Fila Virtual */
+.lista-fila-virtual {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.titulo-lista-fila {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-sm) 0;
+  font-family: var(--font-family-heading);
+}
+
+.items-fila {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.item-fila {
+  background: var(--color-surface-muted);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  border-left: 4px solid var(--color-primary);
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: var(--spacing-md);
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.item-fila:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-sm);
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.05), transparent);
+}
+
+.posicion-fila {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-primary);
+  min-width: 40px;
+  text-align: center;
+  font-family: var(--font-family-heading);
+}
+
+.nombre-fila {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-family: var(--font-family-primary);
+}
+
+.personas-fila {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family-primary);
+}
+
+.tiempo-fila {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  font-family: var(--font-family-primary);
+  text-align: right;
+}
+
+.mas-personas {
+  background: var(--color-surface-muted);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  border-left: 4px solid var(--color-border-light);
+  font-family: var(--font-family-primary);
+}
+
+/* Responsive para FILA VIRTUAL */
+@media (max-width: 1024px) {
+  .grilla-fila-virtual {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+  
+  .valor-fila {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .contenedor-fila-virtual {
+    padding: var(--spacing-md);
+  }
+  
+  .grilla-fila-virtual {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+  
+  .valor-fila {
+    font-size: 2rem;
+  }
+  
+  .item-fila {
+    grid-template-columns: auto 1fr;
+    gap: var(--spacing-sm);
+  }
+  
+  .personas-fila,
+  .tiempo-fila {
+    grid-column: 2;
+    font-size: var(--font-size-xs);
+  }
+}
+
+@media (max-width: 480px) {
+  .valor-fila {
+    font-size: 1.5rem;
+  }
+  
+  .item-fila {
+    grid-template-columns: 1fr;
+    padding: var(--spacing-sm);
+  }
+  
+  .posicion-fila {
+    font-size: var(--font-size-base);
+  }
+  
+  .nombre-fila {
+    font-size: var(--font-size-sm);
+  }
+  
+  .titulo-fila,
+  .titulo-lista-fila {
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* ===================================
+   ESTILOS PARA DISPONIBILIDAD DE PLATOS
+   =================================== */
+
+.seccion-platos-disponibles {
+  padding: var(--spacing-xl) var(--spacing-md);
+  background: linear-gradient(135deg, var(--color-background-main) 0%, #fef3f2 100%);
+}
+
+.contenedor-platos-disponibles {
+  background: var(--color-background-card);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.grilla-platos-status {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Tarjetas de estado de platos */
+.tarjeta-platos-status {
+  background: var(--color-surface-muted);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  border: 2px solid var(--color-border-light);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.tarjeta-platos-status:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.tarjeta-platos-status.disponibles {
+  border-color: rgba(16, 185, 129, 0.2);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), transparent);
+}
+
+.tarjeta-platos-status.disponibles:hover {
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.tarjeta-platos-status.no-disponibles {
+  border-color: rgba(239, 68, 68, 0.2);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), transparent);
+}
+
+.tarjeta-platos-status.no-disponibles:hover {
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.titulo-platos-status {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-family-primary);
+}
+
+.valor-platos-status {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin: var(--spacing-sm) 0;
+  line-height: 1;
+  font-family: var(--font-family-heading);
+  color: var(--color-text-primary);
+}
+
+.detalle-platos-status {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-family: var(--font-family-primary);
+}
+
+/* Lista de platos no disponibles */
+.lista-platos-no-disponibles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.titulo-lista-platos {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+  font-family: var(--font-family-heading);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.titulo-lista-platos::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 20px;
+  background: var(--color-primary);
+  border-radius: var(--border-radius-sm);
+}
+
+.items-platos-no-disponibles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.item-plato-no-disponible {
+  background: var(--color-surface-muted);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  border: 1px solid rgba(163, 146, 116, 0.1);
+  border-left: 4px solid var(--color-primary);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.item-plato-no-disponible:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-sm);
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.05), transparent);
+}
+
+.nombre-plato-nd {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-family: var(--font-family-primary);
+}
+
+.descripcion-plato-nd {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-family: var(--font-family-primary);
+  line-height: 1.4;
+}
+
+/* Responsive para DISPONIBILIDAD DE PLATOS */
+@media (max-width: 1024px) {
+  .grilla-platos-status {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+  }
+  
+  .items-platos-no-disponibles {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .contenedor-platos-disponibles {
+    padding: var(--spacing-md);
+  }
+  
+  .grilla-platos-status {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+  
+  .valor-platos-status {
+    font-size: 2rem;
+  }
+  
+  .items-platos-no-disponibles {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: var(--spacing-sm);
+  }
+  
+  .item-plato-no-disponible {
+    padding: var(--spacing-sm);
+  }
+}
+
+@media (max-width: 480px) {
+  .grilla-platos-status {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
+  
+  .valor-platos-status {
+    font-size: 1.5rem;
+  }
+  
+  .items-platos-no-disponibles {
+    grid-template-columns: 1fr;
+  }
+  
+  .titulo-platos-status,
+  .titulo-lista-platos {
+    font-size: var(--font-size-sm);
+  }
+  
+  .nombre-plato-nd {
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* ===================================
+   ESTILOS PARA RESERVAS DETALLADAS (TABLA)
+   =================================== */
+
+.seccion-lista-reservas-detalle {
+  padding: var(--spacing-xl) var(--spacing-md);
+  background: linear-gradient(135deg, var(--color-background-main) 0%, #f5f3f0 100%);
+}
+
+.contenedor-lista-reservas-detalle {
+  background: var(--color-background-card);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+}
+
+.tabla-reservas {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-reservas-detalle {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-background-card);
+}
+
+/* Estilos de encabezado */
+.tabla-reservas-detalle thead {
+  background: linear-gradient(90deg, var(--color-primary-alpha) 0%, rgba(163, 146, 116, 0.03) 100%);
+  border-bottom: 2px solid var(--color-border-light);
+}
+
+.tabla-reservas-detalle thead tr {
+  height: auto;
+}
+
+.tabla-reservas-detalle thead th {
+  padding: var(--spacing-md);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-family-primary);
+  border-right: 1px solid var(--color-border-light);
+}
+
+.tabla-reservas-detalle thead th:last-child {
+  border-right: none;
+}
+
+/* Estilos de cuerpo */
+.tabla-reservas-detalle tbody tr {
+  border-bottom: 1px solid var(--color-border-light);
+  transition: all 0.3s ease;
+}
+
+.tabla-reservas-detalle tbody tr:hover {
+  background: var(--color-surface-muted);
+  box-shadow: inset 4px 0 0 var(--color-primary);
+}
+
+.tabla-reservas-detalle tbody td {
+  padding: var(--spacing-md);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-primary);
+  border-right: 1px solid var(--color-border-light);
+}
+
+.tabla-reservas-detalle tbody td:last-child {
+  border-right: none;
+}
+
+/* Estilos específicos de celdas */
+.celda-hora {
+  font-weight: 600;
+  color: var(--color-primary);
+  font-family: var(--font-family-heading);
+}
+
+.celda-cliente {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.celda-personas {
+  text-align: center;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.celda-mesa {
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.celda-fecha {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.celda-estado {
+  text-align: center;
+}
+
+/* Badges de estado */
+.badge-estado {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-family-primary);
+  transition: all 0.3s ease;
+}
+
+.badge-estado:hover {
+  transform: scale(1.05);
+}
+
+.badge-estado.confirmada {
+  background: rgba(163, 146, 116, 0.15);
+  color: var(--color-primary);
+  border: 1px solid rgba(163, 146, 116, 0.3);
+}
+
+.badge-estado.pendiente {
+  background: rgba(163, 146, 116, 0.15);
+  color: var(--color-primary);
+  border: 1px solid rgba(163, 146, 116, 0.3);
+}
+
+.badge-estado.rechazada {
+  background: rgba(163, 146, 116, 0.15);
+  color: var(--color-primary);
+  border: 1px solid rgba(163, 146, 116, 0.3);
+}
+
+.badge-estado.cancelada {
+  background: rgba(163, 146, 116, 0.15);
+  color: var(--color-primary);
+  border: 1px solid rgba(163, 146, 116, 0.3);
+}
+
+/* Estilos para estados de fila */
+.reserva-confirmada {
+  border-left: 4px solid var(--color-primary);
+}
+
+.reserva-pendiente {
+  border-left: 4px solid var(--color-primary);
+}
+
+.reserva-rechazada {
+  border-left: 4px solid var(--color-primary);
+}
+
+.reserva-cancelada {
+  border-left: 4px solid var(--color-primary);
+}
+
+/* Mensaje de más registros */
+.mas-registros {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-md);
+  font-style: italic;
+  font-family: var(--font-family-primary);
+}
+
+/* Responsive para RESERVAS DETALLADAS */
+@media (max-width: 1024px) {
+  .tabla-reservas-detalle thead th,
+  .tabla-reservas-detalle tbody td {
+    padding: var(--spacing-sm);
+    font-size: var(--font-size-xs);
+  }
+  
+  .celda-fecha {
+    font-size: var(--font-size-xs);
+  }
+}
+
+@media (max-width: 768px) {
+  .contenedor-lista-reservas-detalle {
+    padding: var(--spacing-md);
+    overflow-x: auto;
+  }
+  
+  .tabla-reservas-detalle {
+    font-size: var(--font-size-xs);
+  }
+  
+  .tabla-reservas-detalle thead th,
+  .tabla-reservas-detalle tbody td {
+    padding: var(--spacing-sm);
+    font-size: var(--font-size-xs);
+  }
+  
+  .tabla-reservas-detalle thead th {
+    background: linear-gradient(90deg, rgba(163, 146, 116, 0.1) 0%, rgba(163, 146, 116, 0.02) 100%);
+  }
+  
+  /* Ocultar columnas menos importantes en tablet */
+  .celda-fecha,
+  .tabla-reservas-detalle tbody th:nth-child(5) {
+    display: none;
+  }
+  
+  .tabla-reservas-detalle thead th:nth-child(5) {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .contenedor-lista-reservas-detalle {
+    padding: var(--spacing-sm);
+  }
+  
+  /* Tabla mobile - cards en lugar de tabla */
+  .tabla-reservas-detalle {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
+  .tabla-reservas-detalle thead {
+    display: none;
+  }
+  
+  .tabla-reservas-detalle tbody {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
+  .tabla-reservas-detalle tbody tr {
+    display: flex;
+    flex-direction: column;
+    border: none;
+    border-left: 4px solid var(--color-primary);
+    background: var(--color-surface-muted);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+    gap: var(--spacing-sm);
+  }
+  
+  .tabla-reservas-detalle tbody tr:hover {
+    box-shadow: var(--shadow-md);
+    background: linear-gradient(135deg, var(--color-surface-muted) 0%, rgba(163, 146, 116, 0.05) 100%);
+  }
+  
+  .tabla-reservas-detalle tbody td {
+    border: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0;
+    font-size: var(--font-size-xs);
+  }
+  
+  .tabla-reservas-detalle tbody td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: var(--font-size-xs);
+    min-width: 70px;
+  }
+  
+  .celda-hora::before { content: 'Hora'; }
+  .celda-cliente::before { content: 'Cliente'; }
+  .celda-personas::before { content: 'Personas'; text-align: left; }
+  .celda-mesa::before { content: 'Mesa'; }
+  .celda-fecha::before { content: 'Fecha'; }
+  .celda-estado::before { content: 'Estado'; }
+  
+  .celda-hora,
+  .celda-cliente {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .celda-personas,
+  .celda-mesa {
+    text-align: right;
+  }
+  
+  .badge-estado {
+    padding: 0.2rem 0.5rem;
+    font-size: var(--font-size-xs);
+  }
+  
+  .mas-registros {
+    padding: var(--spacing-sm);
   }
 }

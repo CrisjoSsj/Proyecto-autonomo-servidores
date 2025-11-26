@@ -14,7 +14,7 @@ async def send_websocket_broadcast(channel: str, event: str, data: Dict[str, Any
     try:
         message = {
             "channel": channel,
-            "event": event,
+            "action": event,  # Cambiar "event" a "action" para coincidir con el servidor Ruby
             "data": data
         }
         

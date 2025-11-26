@@ -1,15 +1,38 @@
 /**
  * GraphQLService.ts
  * Servicio para comunicación con el servidor GraphQL
- * Conecta a http://localhost:3000/api/graphql
  */
 
 import { ApolloClient, InMemoryCache, gql, HttpLink } from '@apollo/client';
 
+// Determinar la URL del servidor GraphQL dinámicamente
+const getGraphQLUri = () => {
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    const protocol = window.location.protocol;
+    
+    // En desarrollo: intentar con los puertos comunes (3000, 3001, 3002)
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      // Usar el puerto que viene en la variable de entorno o intentar los puertos estándar
+      const port = (import.meta.env.VITE_GRAPHQL_PORT as string) || '3000';
+      return `${protocol}//localhost:${port}/api/graphql`;
+    }
+    
+    // En producción: usar la misma origen
+    return `${protocol}//${hostname}${window.location.port ? `:${window.location.port}` : ''}/api/graphql`;
+  }
+  
+  return 'http://localhost:3000/api/graphql';
+};
+
+const graphqlUri = getGraphQLUri();
+console.log('🔌 GraphQL conectado en:', graphqlUri);
+
 // Configurar Apollo Client
 const client = new ApolloClient({
   link: new HttpLink({
-    uri: 'http://localhost:3000/api/graphql',
+    uri: graphqlUri,
+    credentials: 'include', // Incluir cookies en las peticiones
   }),
   cache: new InMemoryCache(),
   defaultOptions: {
@@ -190,10 +213,6 @@ export const CREATE_RESTAURANTE = gql`
     }
   }
 `;
-
-/**
- * Actualizar un restaurante
- */
 export const UPDATE_RESTAURANTE = gql`
   mutation UpdateRestaurante($id: ID!, $input: RestauranteInput!) {
     updateRestaurante(id: $id, input: $input) {
@@ -455,6 +474,316 @@ export async function createRestaurante(input: any): Promise<Restaurante> {
     return (data as any).createRestaurante;
   } catch (error) {
     console.error('Error al crear restaurante:', error);
+    throw error;
+  }
+}
+
+/**
+ * Descargar reporte operacional en PDF (generado en el frontend con jsPDF)
+ * Incluye estadísticas detalladas de mesas, menús, reservas y fila virtual
+ */
+export async function downloadReportePDF(data: any): Promise<void> {
+  try {
+    console.log('📥 Iniciando generación de PDF enriquecido...');
+    
+    const { metricas, periodo, mesas, platos, reservas, filaVirtual, categorias } = data;
+    
+    // Importar jsPDF dinámicamente
+    const { jsPDF } = await import('jspdf');
+    
+    // Crear documento PDF
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4',
+    });
+
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    let yPosition = 15;
+    const margin = 15;
+
+    // ========== FUNCIONES AUXILIARES ==========
+    const addNewPage = () => {
+      doc.addPage();
+      yPosition = 15;
+    };
+
+    const addTitle = (text: string) => {
+      if (yPosition > pageHeight - 30) addNewPage();
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(163, 146, 116); // Goldifox
+      doc.text(text, margin, yPosition);
+      doc.setDrawColor(163, 146, 116);
+      doc.line(margin, yPosition + 2, pageWidth - margin, yPosition + 2);
+      yPosition += 10;
+      doc.setTextColor(0, 0, 0);
+    };
+
+    const addSubtitle = (text: string) => {
+      if (yPosition > pageHeight - 20) addNewPage();
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.text(text, margin, yPosition);
+      yPosition += 6;
+    };
+
+    const addText = (text: string, fontSize = 10, bold = false) => {
+      if (yPosition > pageHeight - 15) addNewPage();
+      doc.setFontSize(fontSize);
+      doc.setFont('helvetica', bold ? 'bold' : 'normal');
+      doc.text(text, margin, yPosition);
+      yPosition += 5;
+    };
+
+    const addLineSpacing = (space = 2) => {
+      yPosition += space;
+    };
+
+    const addMetricRow = (label: string, value: string, isHighlight = false) => {
+      if (yPosition > pageHeight - 15) addNewPage();
+      doc.setFontSize(10);
+      doc.setFont('helvetica', isHighlight ? 'bold' : 'normal');
+      doc.text(label, margin + 2, yPosition);
+      doc.text(value, pageWidth - margin - 2, yPosition, { align: 'right' });
+      yPosition += 5;
+    };
+
+    // ========== PORTADA ==========
+    doc.setFontSize(28);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(163, 146, 116);
+    doc.text('REPORTE OPERACIONAL', pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 15;
+
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100, 100, 100);
+    doc.text('Del Restaurante', pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 20;
+
+    doc.setDrawColor(163, 146, 116);
+    doc.line(margin, yPosition, pageWidth - margin, yPosition);
+    yPosition += 10;
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(80, 80, 80);
+    doc.text(`Período: ${periodo.charAt(0).toUpperCase() + periodo.slice(1)}`, pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 5;
+    doc.text(`Fecha: ${new Date().toLocaleString('es-ES')}`, pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 10;
+
+    // ========== RESUMEN EJECUTIVO ==========
+    doc.setTextColor(0, 0, 0);
+    addTitle('1. RESUMEN EJECUTIVO');
+
+    addMetricRow('Tasa de Ocupación', `${Math.round(metricas.tasaOcupacion)}%`, true);
+    addMetricRow('Mesas Disponibles', `${metricas.mesasDisponibles} de ${metricas.totalMesas}`);
+    addMetricRow('Mesas Ocupadas', metricas.mesasOcupadas.toString());
+    addMetricRow('Mesas Reservadas', metricas.mesasReservadas.toString());
+    addMetricRow('Total Reservas', metricas.totalReservas.toString());
+    addMetricRow('Personas en Fila', metricas.personasEnCola.toString());
+    addLineSpacing(3);
+
+    // ========== ANÁLISIS DE MESAS ==========
+    addTitle('2. ANÁLISIS DE MESAS');
+    
+    // Estadísticas por estado
+    const mesasPorEstado: Record<string, number> = {};
+    mesas.forEach((mesa: any) => {
+      const estado = mesa.estado?.toLowerCase() || 'desconocido';
+      mesasPorEstado[estado] = (mesasPorEstado[estado] || 0) + 1;
+    });
+
+    Object.entries(mesasPorEstado).forEach(([estado, count]: any) => {
+      const porcentaje = ((count / mesas.length) * 100).toFixed(1);
+      addMetricRow(
+        `Mesas ${estado.charAt(0).toUpperCase() + estado.slice(1)}`,
+        `${count} (${porcentaje}%)`
+      );
+    });
+
+    // Mesas por capacidad
+    addLineSpacing(3);
+    addSubtitle('Distribución por Capacidad');
+    const mesasPorCapacidad: Record<string, number> = {};
+    mesas.forEach((mesa: any) => {
+      const capacidad = mesa.capacidad || 'N/A';
+      mesasPorCapacidad[capacidad] = (mesasPorCapacidad[capacidad] || 0) + 1;
+    });
+
+    Object.entries(mesasPorCapacidad)
+      .sort()
+      .forEach(([capacidad, count]: any) => {
+        addMetricRow(`Capacidad ${capacidad} personas`, count.toString());
+      });
+
+    addLineSpacing(3);
+
+    // ========== ANÁLISIS DE RESERVAS ==========
+    addTitle('3. ANÁLISIS DE RESERVAS');
+
+    const reservasPorEstado: Record<string, number> = {};
+    reservas.forEach((r: any) => {
+      const estado = r.estado?.toLowerCase() || 'pendiente';
+      reservasPorEstado[estado] = (reservasPorEstado[estado] || 0) + 1;
+    });
+
+    Object.entries(reservasPorEstado).forEach(([estado, count]: any) => {
+      const porcentaje = metricas.totalReservas > 0 
+        ? ((count / metricas.totalReservas) * 100).toFixed(1)
+        : '0';
+      addMetricRow(
+        `Reservas ${estado.charAt(0).toUpperCase() + estado.slice(1)}`,
+        `${count} (${porcentaje}%)`
+      );
+    });
+
+    // Análisis de personas
+    addLineSpacing(3);
+    addSubtitle('Análisis de Personas');
+    
+    const totalPersonas = reservas.reduce((sum: number, r: any) => sum + (r.numero_personas || 0), 0);
+    const promedioPersonas = reservas.length > 0 ? (totalPersonas / reservas.length).toFixed(1) : '0';
+    
+    addMetricRow('Total de Personas Reservadas', totalPersonas.toString());
+    addMetricRow('Promedio por Reserva', `${promedioPersonas} personas`);
+    
+    if (reservas.length > 0) {
+      const maxPersonas = Math.max(...reservas.map((r: any) => r.numero_personas || 0));
+      const minPersonas = Math.min(...reservas.map((r: any) => r.numero_personas || 0));
+      addMetricRow('Máximo por Reserva', `${maxPersonas} personas`);
+      addMetricRow('Mínimo por Reserva', `${minPersonas} personas`);
+    }
+
+    addLineSpacing(3);
+
+    // ========== ANÁLISIS DE MENÚ Y PLATOS ==========
+    addTitle('4. ANÁLISIS DE MENÚ Y PLATOS');
+
+    const platosDisp = platos.filter((p: any) => p.disponible).length;
+    const platosNoDisp = platos.filter((p: any) => !p.disponible).length;
+    const dispPorcentaje = platos.length > 0 ? ((platosDisp / platos.length) * 100).toFixed(1) : '0';
+
+    addMetricRow('Total de Platos', platos.length.toString());
+    addMetricRow('Platos Disponibles', `${platosDisp} (${dispPorcentaje}%)`);
+    addMetricRow('Platos No Disponibles', platosNoDisp.toString());
+
+    // Por categoría
+    if (categorias && categorias.length > 0) {
+      addLineSpacing(3);
+      addSubtitle('Platos por Categoría');
+
+      categorias.forEach((cat: any) => {
+        const catId = cat.id || cat.id_categoria;
+        const platosCat = platos.filter((p: any) => 
+          (p.categoria_id === catId || p.id_categoria === catId || p.categoria === cat.nombre)
+        ).length;
+        
+        const dispCat = platos.filter((p: any) => 
+          (p.categoria_id === catId || p.id_categoria === catId || p.categoria === cat.nombre) && p.disponible
+        ).length;
+
+        if (platosCat > 0) {
+          addMetricRow(
+            `${cat.nombre}`,
+            `${dispCat}/${platosCat} disponibles`
+          );
+        }
+      });
+    }
+
+    addLineSpacing(3);
+
+    // ========== ANÁLISIS DE FILA VIRTUAL ==========
+    if (filaVirtual && filaVirtual.length > 0) {
+      addTitle('5. ANÁLISIS DE FILA VIRTUAL');
+
+      const totalEnCola = filaVirtual.reduce((sum: number, p: any) => sum + (p.numeroPersonas || 0), 0);
+      const tiempoPromedio = filaVirtual.length > 0
+        ? (filaVirtual.reduce((sum: number, p: any) => sum + (p.tiempoEstimado || 0), 0) / filaVirtual.length).toFixed(1)
+        : '0';
+
+      addMetricRow('Personas en Fila', filaVirtual.length.toString());
+      addMetricRow('Total de Personas', totalEnCola.toString());
+      addMetricRow('Tiempo Promedio de Espera', `${tiempoPromedio} minutos`, true);
+
+      // Primeros 5 en fila
+      if (filaVirtual.length > 0) {
+        addLineSpacing(2);
+        addSubtitle('Próximos en Llegar');
+
+        filaVirtual.slice(0, 5).forEach((persona: any, index: number) => {
+          const nombre = persona.nombre || `Cliente #${index + 1}`;
+          const personas = persona.numeroPersonas || 0;
+          const tiempo = persona.tiempoEstimado || 'N/A';
+          
+          addMetricRow(
+            `${index + 1}. ${nombre}`,
+            `${personas} pers. - ${tiempo} min`
+          );
+        });
+
+        if (filaVirtual.length > 5) {
+          addText(`... y ${filaVirtual.length - 5} más en la fila`);
+        }
+      }
+
+      addLineSpacing(3);
+    }
+
+    // ========== CONCLUSIONES Y RECOMENDACIONES ==========
+    addTitle('6. CONCLUSIONES Y RECOMENDACIONES');
+
+    const recomendaciones = [];
+
+    if (metricas.tasaOcupacion > 80) {
+      recomendaciones.push('• Alta ocupación: Considerar aumentar personal o capacidad.');
+    } else if (metricas.tasaOcupacion < 30) {
+      recomendaciones.push('• Baja ocupación: Realizar promociones para atraer clientes.');
+    }
+
+    if (metricas.personasEnCola > 5) {
+      recomendaciones.push('• Fila virtual extensa: Priorizar asientos disponibles.');
+    }
+
+    if (platosNoDisp > 0) {
+      recomendaciones.push(`• ${platosNoDisp} platos sin disponibilidad: Revisar stock.`);
+    }
+
+    if (metricas.reservasPendientes > 0) {
+      recomendaciones.push(`• ${metricas.reservasPendientes} reservas pendientes: Confirmar o rechazar.`);
+    }
+
+    if (recomendaciones.length === 0) {
+      recomendaciones.push('• Operación normal: Continuar monitoreando.');
+      recomendaciones.push('• Todas las métricas dentro de rangos óptimos.');
+    }
+
+    recomendaciones.forEach((rec: string) => {
+      if (yPosition > pageHeight - 20) addNewPage();
+      addText(rec, 9);
+    });
+
+    // ========== PIE DE PÁGINA ==========
+    doc.setFontSize(7);
+    doc.setTextColor(150, 150, 150);
+    doc.text(
+      'Este reporte fue generado automáticamente por el Sistema de Gestión del Restaurante',
+      pageWidth / 2,
+      pageHeight - 8,
+      { align: 'center' }
+    );
+
+    // Guardar el PDF
+    doc.save(`reporte-operacional-${new Date().toISOString().split('T')[0]}.pdf`);
+    
+    console.log('✅ PDF enriquecido generado y descargado exitosamente');
+  } catch (error) {
+    console.error('❌ Error al generar PDF:', error);
+    alert(`Error al generar el PDF: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     throw error;
   }
 }

@@ -199,7 +199,7 @@
 }
 
 .tarjeta-informacion-reservas {
-  background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-card) 100%);
+  background: #dfd8c8;
   border: 2px solid var(--color-primary);
   border-radius: 12px;
   padding: 1.5rem;
@@ -261,7 +261,7 @@
 }
 
 .contenedor-formulario {
-  background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-card) 100%);
+  background: #dfd8c8;
   border-radius: 12px;
   padding: 2rem;
   box-shadow: 0 15px 50px rgba(45, 27, 19, 0.1);
@@ -475,7 +475,7 @@
 }
 
 .tarjeta-ocasion {
-  background: linear-gradient(135deg, var(--color-background-main) 0%, var(--color-background-card) 100%);
+  background: #dfd8c8;
   border-radius: 12px;
   padding: 1.5rem;
   text-align: center;
@@ -485,7 +485,7 @@
 }
 
 .tarjeta-ocasion:hover {
-  background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-card) 100%);
+  background: #dfd8c8;
   transform: translateY(-8px);
   box-shadow: 0 20px 50px rgba(45, 27, 19, 0.15);
   border-color: var(--color-primary);
@@ -540,7 +540,7 @@
 }
 
 .contenedor-horarios-reservas {
-  background: linear-gradient(135deg, var(--color-background-main) 0%, var(--color-background-main) 100%);
+  background: #dfd8c8;
   border-radius: 12px;
   padding: 2.5rem;
   border: 1px solid rgba(218, 165, 32, 0.2);
@@ -563,7 +563,7 @@
 }
 
 .bloque-horario {
-  background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-card) 100%);
+  background: #dfd8c8;
   border-radius: 12px;
   padding: 1.5rem;
   box-shadow: 0 8px 24px rgba(45, 27, 19, 0.1);
@@ -587,7 +587,7 @@
 }
 
 .horario-item {
-  background: linear-gradient(135deg, var(--color-background-main) 0%, var(--color-background-main) 100%);
+  background: #dfd8c8;
   color: var(--color-text-secondary);
   padding: 0.6rem 1rem;
   border-radius: 6px;
@@ -605,10 +605,11 @@
 }
 
 .horario-item.premium {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-  color: var(--color-text-primary);
+  background: #a39274;
+  color: #f5f5f5;
   font-weight: 700;
-  border-color: var(--color-primary-dark);
+  border-color: #8b7b5f;
+  box-shadow: 0 4px 12px rgba(163, 146, 116, 0.4);
 }
 
 .nota-horario {
@@ -767,7 +768,7 @@
 }
 
 .tarjeta-contacto {
-  background: linear-gradient(135deg, rgba(244, 228, 188, 0.1) 0%, rgba(218, 165, 32, 0.08) 100%);
+  background: #dfd8c8;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(244, 228, 188, 0.2);
   border-radius: 16px;
@@ -776,7 +777,7 @@
 }
 
 .tarjeta-contacto:hover {
-  background: linear-gradient(135deg, rgba(244, 228, 188, 0.15) 0%, rgba(218, 165, 32, 0.12) 100%);
+  background: #dfd8c8;
   transform: translateY(-8px);
   border-color: rgba(218, 165, 32, 0.4);
   box-shadow: 0 20px 50px rgba(218, 165, 32, 0.1);

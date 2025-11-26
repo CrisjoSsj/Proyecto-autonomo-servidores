@@ -41,7 +41,21 @@ class FilaVirtualChannel
     def handle_join(ws, payload)
       persona_payload = build_persona_payload(payload)
       persona = ApiClient.create_fila_virtual(persona_payload)
+      
+      # Notificar al cliente que envió la solicitud
       ws.send(MessageBuilder.build("fila_virtual", "solicitud_enviada", { action: "join", persona: persona }).to_json)
+      
+      # Hacer broadcast a todos los clientes de la nueva entrada en fila
+      require_relative '../connections/connection_manager'
+      broadcast_message = {
+        "channel" => "fila_virtual",
+        "action" => "nueva_entrada",
+        "data" => {
+          "persona" => persona,
+          "timestamp" => Time.now.iso8601
+        }
+      }
+      ConnectionManager.broadcast(broadcast_message)
     end
 
     def handle_leave(ws, payload)
@@ -52,7 +66,21 @@ class FilaVirtualChannel
       end
 
       ApiClient.delete_fila_virtual(id)
+      
+      # Notificar al cliente que envió la solicitud
       ws.send(MessageBuilder.build("fila_virtual", "solicitud_enviada", { action: "leave", id: id }).to_json)
+      
+      # Hacer broadcast a todos los clientes de la salida de fila
+      require_relative '../connections/connection_manager'
+      broadcast_message = {
+        "channel" => "fila_virtual",
+        "action" => "salida_fila",
+        "data" => {
+          "id" => id,
+          "timestamp" => Time.now.iso8601
+        }
+      }
+      ConnectionManager.broadcast(broadcast_message)
     end
 
     def handle_next(ws, payload)

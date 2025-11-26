@@ -50,15 +50,17 @@ async def crear_mesa(mesa: Mesa):
             raise e
     
     mesas_list.append(mesa)
+    # Enviar notificación al WebSocket (no-bloqueante)
+    import asyncio
     try:
-        await broadcast_mesas("mesa_creada", {
+        asyncio.create_task(broadcast_mesas("mesa_creada", {
             "id_mesa": mesa.id_mesa,
             "numero": mesa.numero,
             "capacidad": mesa.capacidad,
             "estado": mesa.estado
-        })
-    except Exception as ws_error:
-        print(f"Warning: WebSocket broadcast failed: {ws_error}")
+        }))
+    except Exception as e:
+        print(f"⚠️ Error en WebSocket broadcast: {str(e)}")
     return mesa
 
 #PUT
@@ -69,16 +71,17 @@ async def actualizar_mesa(mesa: Mesa):
         if guardar_mesa.id_mesa == mesa.id_mesa:
             mesas_list[index] = mesa
             found = True
-            # Enviar notificación al WebSocket
+            # Enviar notificación al WebSocket (no-bloqueante)
+            import asyncio
             try:
-                await broadcast_mesas("update_status", {
+                asyncio.create_task(broadcast_mesas("update_status", {
                     "mesa_id": mesa.id_mesa,
                     "numero": mesa.numero,
                     "capacidad": mesa.capacidad,
                     "estado": mesa.estado
-                })
-            except Exception as ws_error:
-                print(f"Warning: WebSocket broadcast failed: {ws_error}")
+                }))
+            except Exception as e:
+                print(f"⚠️ Error en WebSocket broadcast: {str(e)}")
             return {"message": "Mesa actualizada exitosamente", "mesa": mesa}
     
     if not found:
@@ -93,15 +96,17 @@ async def eliminar_mesa(id: int):
             mesa_eliminada = mesas_list[index]
             del mesas_list[index]
             found = True
+            # Enviar notificación al WebSocket (no-bloqueante)
+            import asyncio
             try:
-                await broadcast_mesas("mesa_eliminada", {
+                asyncio.create_task(broadcast_mesas("mesa_eliminada", {
                     "id_mesa": mesa_eliminada.id_mesa,
                     "numero": mesa_eliminada.numero,
                     "capacidad": mesa_eliminada.capacidad,
                     "estado": mesa_eliminada.estado
-                })
-            except Exception as ws_error:
-                print(f"Warning: WebSocket broadcast failed: {ws_error}")
+                }))
+            except Exception as e:
+                print(f"⚠️ Error en WebSocket broadcast: {str(e)}")
             return {
                 "message": "Mesa eliminada exitosamente",
                 "mesa_eliminada": {

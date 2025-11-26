@@ -1,7 +1,286 @@
+import { useCallback, useState, useEffect } from "react";
+import { apiService } from "../../services/ApiService";
 import NavbarAdmin from "../../components/admin/NavbarAdmin";
+import TarjetaReservaAdmin from "../../components/admin/TarjetaReservaAdmin";
 import "../../css/admin/GestionReservas.css";
 
+interface Reserva {
+  id_reserva?: number;
+  id?: number;
+  id_cliente?: number;
+  id_mesa: number;
+  fecha: string;
+  hora_inicio: string;
+  hora_fin: string;
+  estado: string;
+  numero_personas?: number;
+  ocasion_especial?: string;
+  comentarios?: string;
+  nombre?: string;
+  telefono?: string;
+  email?: string;
+}
+
 export default function GestionReservas() {
+  const [reservas, setReservas] = useState<Reserva[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [mesas, setMesas] = useState<any[]>([]);
+  const [mostrarModalEditar, setMostrarModalEditar] = useState(false);
+  const [reservaEnEdicion, setReservaEnEdicion] = useState<Reserva | null>(null);
+  const [formEdicion, setFormEdicion] = useState({
+    numero_personas: 2,
+    fecha: '',
+    hora_inicio: '',
+    hora_fin: '',
+    id_mesa: 0,
+    estado: 'pendiente'
+  });
+
+  // Función para cargar reservas
+  const cargarReservas = useCallback(async () => {
+    try {
+      setLoading(true);
+      const reservasData = await apiService.getReservas();
+      console.log('Reservas cargadas:', reservasData);
+      console.log('Tipo de datos:', typeof reservasData);
+      console.log('Es array?:', Array.isArray(reservasData));
+      if (reservasData && reservasData.length > 0) {
+        console.log('Primera reserva:', JSON.stringify(reservasData[0], null, 2));
+      }
+      setReservas(reservasData || []);
+      setError(null);
+    } catch (err) {
+      console.error('Error cargando reservas:', err);
+      setError('Error al cargar las reservas');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Función para cargar mesas
+  const cargarMesas = useCallback(async () => {
+    try {
+      const mesasData = await apiService.getMesas();
+      setMesas(mesasData || []);
+    } catch (err) {
+      console.error('Error cargando mesas:', err);
+    }
+  }, []);
+
+  // Función para cargar reservas sin mostrar loading
+  const cargarReservasSilenciosamente = useCallback(async () => {
+    try {
+      const reservasData = await apiService.getReservas();
+      setReservas(reservasData || []);
+      setError(null);
+    } catch (err) {
+      console.error('Error cargando reservas:', err);
+      // No mostrar error en silent mode
+    }
+  }, []);
+
+  // Cargar reservas al montar y configurar refresco automático
+  useEffect(() => {
+    cargarReservas();
+    
+    // Cargar mesas en background (sin bloquear)
+    const timeoutMesas = setTimeout(() => {
+      cargarMesas();
+    }, 500);
+    
+    // Recargar reservas cada 10 segundos (sin loading indicator)
+    const intervalo = setInterval(() => {
+      cargarReservasSilenciosamente();
+    }, 10000);
+
+    // Intervalo para actualizar automáticamente reservas que han llegado su hora
+    const intervaloAutoActualizar = setInterval(async () => {
+      try {
+        const ahora = new Date();
+        const horaActual = `${String(ahora.getHours()).padStart(2, '0')}:${String(ahora.getMinutes()).padStart(2, '0')}`;
+        const fechaHoy = ahora.toISOString().split('T')[0];
+
+        // Obtener reservas actuales para verificar cuáles cambiar
+        const reservasActuales = await apiService.getReservas();
+        
+        // Buscar reservas que deben cambiarse a "activa" (han llegado su hora)
+        const reservasParaActualizar = (reservasActuales || []).filter((r: any) => 
+          r.estado === 'confirmada' && 
+          r.fecha === fechaHoy &&
+          r.hora_inicio <= horaActual
+        );
+
+        // Actualizar cada una
+        for (const reserva of reservasParaActualizar) {
+          if ((reserva.id || reserva.id_reserva) && reserva.hora_fin > horaActual) {
+            // Solo marcar como activa si aún no ha pasado la hora de fin
+            const reservaActualizada = { ...reserva, estado: 'activa' };
+            await apiService.actualizarReserva(reservaActualizada);
+          }
+        }
+      } catch (error) {
+        console.error('Error actualizando automáticamente reservas:', error);
+      }
+    }, 60000); // Cada minuto
+
+    return () => {
+      clearTimeout(timeoutMesas);
+      clearInterval(intervalo);
+      clearInterval(intervaloAutoActualizar);
+    };
+  }, [cargarReservas, cargarReservasSilenciosamente]);
+
+  // Handlers para botones de acciones
+  const handleNuevaReserva = useCallback(() => {
+    // Abrir modal o formulario para nueva reserva
+    alert("Abrir formulario de nueva reserva");
+  }, []);
+
+  const handleActualizarReservas = useCallback(() => {
+    cargarReservas();
+  }, [cargarReservas]);
+
+  const handleEditarReserva = useCallback((reservaId: number) => {
+    const reserva = reservas.find(r => (r.id || r.id_reserva) === reservaId);
+    if (!reserva) {
+      alert('Reserva no encontrada');
+      return;
+    }
+    
+    setReservaEnEdicion(reserva);
+    setFormEdicion({
+      numero_personas: reserva.numero_personas || 2,
+      fecha: reserva.fecha,
+      hora_inicio: reserva.hora_inicio,
+      hora_fin: reserva.hora_fin,
+      id_mesa: reserva.id_mesa,
+      estado: reserva.estado || 'pendiente'
+    });
+    setMostrarModalEditar(true);
+  }, [reservas]);
+
+  const handleChangeFormEdicion = (e: any) => {
+    const { name, value } = e.target;
+    setFormEdicion(prev => ({
+      ...prev,
+      [name]: name === 'numero_personas' || name === 'id_mesa' ? parseInt(value) : value
+    }));
+  };
+
+  const handleGuardarEdicion = async () => {
+    try {
+      if (!reservaEnEdicion) return;
+
+      // Validar que haya una mesa seleccionada
+      if (!formEdicion.id_mesa || formEdicion.id_mesa === 0) {
+        alert('Por favor selecciona una mesa');
+        return;
+      }
+
+      // Validar que la fecha no sea en el pasado
+      const fechaSeleccionada = new Date(formEdicion.fecha);
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      
+      if (fechaSeleccionada < hoy) {
+        alert('No puedes cambiar a una fecha en el pasado');
+        return;
+      }
+
+      // Crear la reserva actualizada
+      const reservaActualizada = {
+        ...reservaEnEdicion,
+        ...formEdicion
+      };
+
+      // Hacer PUT al backend
+      await apiService.actualizarReserva(reservaActualizada);
+
+      alert('Reserva actualizada exitosamente');
+      setMostrarModalEditar(false);
+      setReservaEnEdicion(null);
+      cargarReservas(); // Recargar la lista
+    } catch (error) {
+      console.error('Error guardando cambios:', error);
+      alert('Error al guardar los cambios');
+    }
+  };
+
+  const handleDeshacerConfirmacion = async () => {
+    try {
+      if (!reservaEnEdicion) return;
+
+      const confirmDeshacer = window.confirm('¿Desea deshacer la confirmación y volver a pendiente?');
+      if (!confirmDeshacer) return;
+
+      // Cambiar estado a pendiente
+      const reservaActualizada = {
+        ...reservaEnEdicion,
+        estado: 'pendiente'
+      };
+
+      await apiService.actualizarReserva(reservaActualizada);
+
+      alert('Confirmación deshecha. La reserva volvió a estado pendiente');
+      setMostrarModalEditar(false);
+      setReservaEnEdicion(null);
+      cargarReservas();
+    } catch (error) {
+      console.error('Error deshaciendo confirmación:', error);
+      alert('Error al deshacer la confirmación');
+    }
+  };
+
+  const handleConfirmarReserva = useCallback(async (reservaId: number) => {
+    try {
+      // Buscar la reserva en la lista
+      const reserva = reservas.find(r => (r.id || r.id_reserva) === reservaId);
+      if (!reserva) {
+        alert('Reserva no encontrada');
+        return;
+      }
+
+      // Actualizar estado a confirmada
+      const reservaActualizada = { ...reserva, estado: 'confirmada' };
+      
+      // Hacer PUT al backend
+      await apiService.actualizarReserva(reservaActualizada);
+
+      alert('Reserva confirmada exitosamente');
+      cargarReservas(); // Recargar la lista
+    } catch (error) {
+      console.error('Error confirmando reserva:', error);
+      alert('Error al confirmar la reserva');
+    }
+  }, [reservas, cargarReservas]);
+
+  const handleRechazarReserva = useCallback(async (reservaId: number) => {
+    try {
+      const confirmRechazar = window.confirm('¿Está seguro de que desea rechazar esta reserva?');
+      if (!confirmRechazar) return;
+
+      // Buscar la reserva en la lista
+      const reserva = reservas.find(r => (r.id || r.id_reserva) === reservaId);
+      if (!reserva) {
+        alert('Reserva no encontrada');
+        return;
+      }
+
+      // Actualizar estado a rechazada
+      const reservaActualizada = { ...reserva, estado: 'rechazada' };
+      
+      // Hacer PUT al backend
+      await apiService.actualizarReserva(reservaActualizada);
+
+      alert('Reserva rechazada');
+      cargarReservas(); // Recargar la lista
+    } catch (error) {
+      console.error('Error rechazando reserva:', error);
+      alert('Error al rechazar la reserva');
+    }
+  }, [reservas, cargarReservas]);
+
   return (
     <div className="gestion-reservas-admin">
       <NavbarAdmin />
@@ -18,7 +297,8 @@ export default function GestionReservas() {
               <option value="semana">Esta Semana</option>
               <option value="mes">Este Mes</option>
             </select>
-            <button className="boton-nueva-reserva">+ Nueva Reserva</button>
+            <button className="boton-nueva-reserva" onClick={handleNuevaReserva}>+ Nueva Reserva</button>
+            <button className="boton-actualizar-reservas" onClick={handleActualizarReservas} style={{ marginLeft: '10px', padding: '8px 16px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>🔄 Actualizar</button>
           </div>
         </div>
       </section>
@@ -54,209 +334,188 @@ export default function GestionReservas() {
       {/* Lista de reservas del día */}
       <section className="seccion-reservas-dia">
         <div className="contenedor-reservas-dia">
-          <h2 className="titulo-seccion-reservas">Reservas de Hoy - 22 Septiembre 2025</h2>
+          <h2 className="titulo-seccion-reservas">Reservas - Sistema en Tiempo Real</h2>
+          
+          {loading && <p>Cargando reservas...</p>}
+          {error && <p style={{ color: 'red' }}>{error}</p>}
+          
+          {!loading && reservas.length === 0 && (
+            <p>No hay reservas disponibles</p>
+          )}
           
           <div className="lista-reservas-admin">
-            
-            {/* Reserva completada */}
-            <div className="tarjeta-reserva-admin completada">
-              <div className="header-reserva-admin">
-                <div className="info-basica-reserva">
-                  <span className="hora-reserva">12:00 PM</span>
-                  <span className="nombre-cliente-reserva">Laura Martínez</span>
-                  <span className="personas-reserva">2 personas</span>
-                  <span className="mesa-asignada">Mesa 2</span>
-                </div>
-                <div className="estado-reserva">
-                  <span className="badge-estado completada">Completada</span>
-                </div>
-              </div>
-              <div className="detalles-reserva">
-                <p className="telefono-reserva">📞 099-111-2222</p>
-                <p className="ocasion-reserva">💕 Aniversario</p>
-                <p className="comentarios-reserva">Solicitó mesa junto a la ventana</p>
-                <p className="hora-llegada">✅ Llegó: 12:05 PM | Salió: 1:45 PM</p>
-              </div>
-              <div className="acciones-reserva-admin">
-                <button className="boton-ver-cuenta">Ver Cuenta</button>
-                <button className="boton-historial">Historial</button>
-              </div>
-            </div>
-
-            {/* Reserva en curso */}
-            <div className="tarjeta-reserva-admin en-curso">
-              <div className="header-reserva-admin">
-                <div className="info-basica-reserva">
-                  <span className="hora-reserva">2:30 PM</span>
-                  <span className="nombre-cliente-reserva">Familia Rodríguez</span>
-                  <span className="personas-reserva">6 personas</span>
-                  <span className="mesa-asignada">Mesa 8</span>
-                </div>
-                <div className="estado-reserva">
-                  <span className="badge-estado en-curso">En Curso</span>
-                </div>
-              </div>
-              <div className="detalles-reserva">
-                <p className="telefono-reserva">📞 099-333-4444</p>
-                <p className="ocasion-reserva">🎂 Cumpleaños infantil</p>
-                <p className="comentarios-reserva">Niño de 8 años - Decoración especial solicitada</p>
-                <p className="hora-llegada">✅ Llegó: 2:25 PM | Tiempo en mesa: 20 min</p>
-              </div>
-              <div className="acciones-reserva-admin">
-                <button className="boton-ver-mesa">Ver Mesa</button>
-                <button className="boton-generar-cuenta">Generar Cuenta</button>
-                <button className="boton-agregar-nota">Agregar Nota</button>
-              </div>
-            </div>
-
-            {/* Reserva próxima */}
-            <div className="tarjeta-reserva-admin proxima">
-              <div className="header-reserva-admin">
-                <div className="info-basica-reserva">
-                  <span className="hora-reserva">3:30 PM</span>
-                  <span className="nombre-cliente-reserva">Carlos Mendoza</span>
-                  <span className="personas-reserva">4 personas</span>
-                  <span className="mesa-asignada">Mesa 5</span>
-                </div>
-                <div className="estado-reserva">
-                  <span className="badge-estado proxima">Próxima (45 min)</span>
-                </div>
-              </div>
-              <div className="detalles-reserva">
-                <p className="telefono-reserva">📞 099-555-6666</p>
-                <p className="ocasion-reserva">🍽️ Cena de negocios</p>
-                <p className="comentarios-reserva">Cliente VIP - Solicita atención preferencial</p>
-                <p className="confirmacion">✅ Confirmado vía SMS hace 1 hora</p>
-              </div>
-              <div className="acciones-reserva-admin">
-                <button className="boton-preparar-mesa">Preparar Mesa</button>
-                <button className="boton-llamar-cliente">📞 Llamar</button>
-                <button className="boton-editar-reserva">Editar</button>
-              </div>
-            </div>
-
-            {/* Reserva pendiente de confirmación */}
-            <div className="tarjeta-reserva-admin pendiente">
-              <div className="header-reserva-admin">
-                <div className="info-basica-reserva">
-                  <span className="hora-reserva">6:00 PM</span>
-                  <span className="nombre-cliente-reserva">Ana González</span>
-                  <span className="personas-reserva">3 personas</span>
-                  <span className="mesa-asignada">Sin asignar</span>
-                </div>
-                <div className="estado-reserva">
-                  <span className="badge-estado pendiente">Pendiente Confirmación</span>
-                </div>
-              </div>
-              <div className="detalles-reserva">
-                <p className="telefono-reserva">📞 099-777-8888</p>
-                <p className="ocasion-reserva">🎉 Celebración</p>
-                <p className="comentarios-reserva">Primera vez en el restaurante</p>
-                <p className="tiempo-creacion">⏰ Creada hace 2 horas - Sin confirmar</p>
-              </div>
-              <div className="acciones-reserva-admin">
-                <button className="boton-confirmar-reserva">Confirmar</button>
-                <button className="boton-asignar-mesa">Asignar Mesa</button>
-                <button className="boton-cancelar-reserva">Cancelar</button>
-              </div>
-            </div>
-
-            {/* Reserva para más tarde */}
-            <div className="tarjeta-reserva-admin futura">
-              <div className="header-reserva-admin">
-                <div className="info-basica-reserva">
-                  <span className="hora-reserva">7:30 PM</span>
-                  <span className="nombre-cliente-reserva">Miguel Torres</span>
-                  <span className="personas-reserva">2 personas</span>
-                  <span className="mesa-asignada">Mesa 3</span>
-                </div>
-                <div className="estado-reserva">
-                  <span className="badge-estado futura">Confirmada (4h 45min)</span>
-                </div>
-              </div>
-              <div className="detalles-reserva">
-                <p className="telefono-reserva">📞 099-999-0000</p>
-                <p className="ocasion-reserva">💑 Cita romántica</p>
-                <p className="comentarios-reserva">Solicita mesa íntima, velas, música suave</p>
-                <p className="confirmacion">✅ Confirmado | Recordatorio enviado</p>
-              </div>
-              <div className="acciones-reserva-admin">
-                <button className="boton-preparar-ambiente">Preparar Ambiente</button>
-                <button className="boton-ver-detalles">Ver Detalles</button>
-                <button className="boton-editar-reserva">Editar</button>
-              </div>
-            </div>
-
-            {/* Reserva de evento especial */}
-            <div className="tarjeta-reserva-admin evento-especial">
-              <div className="header-reserva-admin">
-                <div className="info-basica-reserva">
-                  <span className="hora-reserva">8:00 PM</span>
-                  <span className="nombre-cliente-reserva">Empresa XYZ</span>
-                  <span className="personas-reserva">8 personas</span>
-                  <span className="mesa-asignada">Mesa 9</span>
-                </div>
-                <div className="estado-reserva">
-                  <span className="badge-estado evento">Evento Corporativo</span>
-                </div>
-              </div>
-              <div className="detalles-reserva">
-                <p className="telefono-reserva">📞 099-123-4567</p>
-                <p className="contacto-reserva">👤 Contacto: Roberto Silva (Gerente RRHH)</p>
-                <p className="ocasion-reserva">🏢 Celebración de ventas trimestrales</p>
-                <p className="comentarios-reserva">Menú preestablecido, facturación empresarial, decoración corporativa</p>
-                <p className="confirmacion">✅ Evento confirmado | Todo preparado</p>
-              </div>
-              <div className="acciones-reserva-admin">
-                <button className="boton-ver-menu-evento">Ver Menú Evento</button>
-                <button className="boton-checklist-evento">Checklist</button>
-                <button className="boton-contactar-empresa">Contactar</button>
-              </div>
-            </div>
+            {!loading && reservas.map((reserva) => (
+              <TarjetaReservaAdmin
+                key={reserva.id || reserva.id_reserva}
+                reserva={reserva}
+                onConfirmar={handleConfirmarReserva}
+                onRechazar={handleRechazarReserva}
+                onEditar={handleEditarReserva}
+              />
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Reservas futuras (próximos días) */}
-      <section className="seccion-reservas-futuras">
-        <div className="contenedor-reservas-futuras">
-          <h2 className="titulo-seccion-reservas">Próximas Reservas (Siguientes 7 días)</h2>
-          
-          <div className="calendario-reservas">
-            <div className="dia-calendario">
-              <h3 className="fecha-calendario">Mañana - 23 Sept</h3>
-              <div className="resumen-dia">
-                <span className="total-reservas-dia">6 reservas</span>
-                <span className="horario-pico">Pico: 7-9 PM</span>
+      {/* Modal de Edición */}
+      {mostrarModalEditar && reservaEnEdicion && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            padding: '30px',
+            borderRadius: '8px',
+            maxWidth: '500px',
+            width: '90%',
+            maxHeight: '80vh',
+            overflowY: 'auto'
+          }}>
+            <h2>Editar Reserva #{reservaEnEdicion.id_reserva}</h2>
+            
+            <div style={{ marginTop: '20px' }}>
+              <label style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold' }}>
+                Mesa:
+              </label>
+              <select 
+                name="id_mesa"
+                value={formEdicion.id_mesa}
+                onChange={handleChangeFormEdicion}
+                style={{ width: '100%', padding: '8px', marginBottom: '15px' }}
+              >
+                <option value={0}>Selecciona una mesa</option>
+                {mesas.map((mesa: any) => (
+                  <option key={mesa.id || mesa.id_mesa} value={mesa.id || mesa.id_mesa}>
+                    Mesa {mesa.numero} ({mesa.capacidad} personas) - {mesa.estado}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div style={{ marginTop: '15px' }}>
+              <label style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold' }}>
+                Número de Personas:
+              </label>
+              <select 
+                name="numero_personas"
+                value={formEdicion.numero_personas}
+                onChange={handleChangeFormEdicion}
+                style={{ width: '100%', padding: '8px', marginBottom: '15px' }}
+              >
+                {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
+                  <option key={num} value={num}>{num} {num === 1 ? 'persona' : 'personas'}</option>
+                ))}
+              </select>
+            </div>
+
+            <div style={{ marginTop: '15px' }}>
+              <label style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold' }}>
+                Fecha:
+              </label>
+              <input 
+                type="date"
+                name="fecha"
+                value={formEdicion.fecha}
+                onChange={handleChangeFormEdicion}
+                style={{ width: '100%', padding: '8px', marginBottom: '15px' }}
+              />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '15px' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                  Hora Inicio:
+                </label>
+                <input 
+                  type="time"
+                  name="hora_inicio"
+                  value={formEdicion.hora_inicio}
+                  onChange={handleChangeFormEdicion}
+                  style={{ width: '100%', padding: '8px' }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                  Hora Fin:
+                </label>
+                <input 
+                  type="time"
+                  name="hora_fin"
+                  value={formEdicion.hora_fin}
+                  onChange={handleChangeFormEdicion}
+                  style={{ width: '100%', padding: '8px' }}
+                />
               </div>
             </div>
-            
-            <div className="dia-calendario">
-              <h3 className="fecha-calendario">Martes - 24 Sept</h3>
-              <div className="resumen-dia">
-                <span className="total-reservas-dia">4 reservas</span>
-                <span className="horario-pico">Normal</span>
+
+            {reservaEnEdicion.estado === 'confirmada' && (
+              <div style={{ marginTop: '15px', padding: '10px', backgroundColor: '#fff3cd', borderRadius: '4px' }}>
+                <p style={{ margin: '0 0 10px 0', fontWeight: 'bold' }}>Esta reserva está confirmada</p>
+                <button 
+                  onClick={handleDeshacerConfirmacion}
+                  style={{
+                    width: '100%',
+                    padding: '10px',
+                    backgroundColor: '#ff9800',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '14px'
+                  }}
+                >
+                  ↩️ Deshacer Confirmación
+                </button>
               </div>
-            </div>
-            
-            <div className="dia-calendario fin-semana">
-              <h3 className="fecha-calendario">Viernes - 27 Sept</h3>
-              <div className="resumen-dia">
-                <span className="total-reservas-dia">15 reservas</span>
-                <span className="horario-pico alerta">¡Lleno!</span>
-              </div>
-            </div>
-            
-            <div className="dia-calendario fin-semana">
-              <h3 className="fecha-calendario">Sábado - 28 Sept</h3>
-              <div className="resumen-dia">
-                <span className="total-reservas-dia">18 reservas</span>
-                <span className="horario-pico alerta">¡Lleno!</span>
-              </div>
+            )}
+
+            <div style={{ marginTop: '20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+              <button 
+                onClick={handleGuardarEdicion}
+                style={{
+                  padding: '12px',
+                  backgroundColor: '#4CAF50',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  fontWeight: 'bold'
+                }}
+              >
+                💾 Guardar
+              </button>
+              <button 
+                onClick={() => {
+                  setMostrarModalEditar(false);
+                  setReservaEnEdicion(null);
+                }}
+                style={{
+                  padding: '12px',
+                  backgroundColor: '#757575',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  fontWeight: 'bold'
+                }}
+              >
+                Cancelar
+              </button>
             </div>
           </div>
         </div>
-      </section>
+      )}
     </div>
   );
 }

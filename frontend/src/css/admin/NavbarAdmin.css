@@ -369,3 +369,172 @@
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* Contenedor y Dropdown de Notificaciones */
+.contenedor-notificaciones {
+  position: relative;
+}
+
+.dropdown-notificaciones {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 360px;
+  max-height: 500px;
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-lg);
+  margin-top: var(--spacing-sm);
+  overflow: hidden;
+  z-index: 1001;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header-notificaciones {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border-dark);
+  background: var(--color-surface-dark);
+}
+
+.header-notificaciones h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-light);
+}
+
+.boton-limpiar {
+  background: transparent;
+  border: none;
+  color: var(--color-text-light);
+  cursor: pointer;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.6;
+  transition: var(--transition-normal);
+  padding: var(--spacing-xs) var(--spacing-sm);
+}
+
+.boton-limpiar:hover {
+  opacity: 1;
+  color: #ef4444;
+}
+
+.lista-notificaciones {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.item-notificacion {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border-dark);
+  cursor: pointer;
+  transition: var(--transition-normal);
+}
+
+.item-notificacion:hover {
+  background: var(--color-surface-dark);
+}
+
+.item-notificacion.no-leida {
+  background: rgba(163, 146, 116, 0.05);
+  font-weight: 500;
+}
+
+.icono-notif {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.icono-notif .material-symbols-outlined {
+  font-size: 1.25rem;
+}
+
+.contenido-notif {
+  flex: 1;
+  min-width: 0;
+}
+
+.mensaje-notif {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-text-light);
+  word-break: break-word;
+}
+
+.timestamp-notif {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-text-light);
+  opacity: 0.6;
+  margin-top: 2px;
+}
+
+.sin-notificaciones {
+  padding: var(--spacing-lg);
+  text-align: center;
+  color: var(--color-text-light);
+  opacity: 0.6;
+  font-size: 0.9rem;
+}
+
+/* Estilos por tipo de notificación */
+.item-notificacion.reserva_confirmada .icono-notif {
+  color: #4caf50;
+}
+
+.item-notificacion.reserva_rechazada .icono-notif {
+  color: #f44336;
+}
+
+.item-notificacion.reserva_pendiente .icono-notif {
+  color: #ff9800;
+}
+
+.item-notificacion.fila_virtual .icono-notif {
+  color: #2196f3;
+}
+
+.item-notificacion.mesa_actualizada .icono-notif {
+  color: #9c27b0;
+}
+
+/* Scroll suave en notificaciones */
+.lista-notificaciones::-webkit-scrollbar {
+  width: 6px;
+}
+
+.lista-notificaciones::-webkit-scrollbar-track {
+  background: var(--color-surface-dark);
+}
+
+.lista-notificaciones::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: var(--border-radius-full);
+}
+
+.lista-notificaciones::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-dark);
+}

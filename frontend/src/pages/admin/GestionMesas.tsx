@@ -88,6 +88,9 @@ export default function GestionMesas() {
   const [ultimaActualizacion, setUltimaActualizacion] = useState<Date | null>(null);
   const [newMesa, setNewMesa] = useState({ numero: "", capacidad: "2", estado: "libre" });
   const [creandoMesa, setCreandoMesa] = useState(false);
+  // Estado para el modal de selección de mesas
+  const [mostrarModalMesas, setMostrarModalMesas] = useState(false);
+  const [clienteSeleccionado, setClienteSeleccionado] = useState<PersonaEnCola | null>(null);
 
   const cargarMesas = useCallback(async (showSpinner = false) => {
     if (showSpinner) {
@@ -95,7 +98,32 @@ export default function GestionMesas() {
     }
     try {
       const data = await apiService.getMesas();
-      setMesas(ordenarPorNumero(data || []));
+      
+      // Cargar reservas para actualizar el estado de las mesas
+      try {
+        const reservas = await apiService.getReservas();
+        const hoy = new Date();
+        const mesaConReserva = new Set<number>();
+        
+        // Marcar mesas que tienen reservas confirmadas para hoy
+        reservas.forEach((res: any) => {
+          if (res.estado === 'confirmada' && res.fecha === hoy.toISOString().split('T')[0]) {
+            mesaConReserva.add(res.id_mesa);
+          }
+        });
+        
+        // Actualizar estado de mesas con reservas
+        const mesasActualizadas = (data || []).map((mesa: any) => ({
+          ...mesa,
+          estado: mesaConReserva.has(mesa.numero || mesa.id_mesa) ? 'reservada' : mesa.estado
+        }));
+        
+        setMesas(ordenarPorNumero(mesasActualizadas));
+      } catch (err) {
+        console.error('Error cargando reservas para actualizar mesas:', err);
+        setMesas(ordenarPorNumero(data || []));
+      }
+      
       setUltimaActualizacion(new Date());
       setErrorMesas(null);
     } catch (error) {
@@ -298,6 +326,75 @@ export default function GestionMesas() {
     cargarMesas(true);
     cargarCola(true);
   };
+
+  const handleAsignarMesa = useCallback(
+    (cliente: PersonaEnCola) => {
+      // Abrir modal para seleccionar mesa
+      setClienteSeleccionado(cliente);
+      setMostrarModalMesas(true);
+    },
+    []
+  );
+
+  const handleConfirmarAsignacion = useCallback(
+    async (mesaId: number) => {
+      if (!clienteSeleccionado) return;
+      
+      setAccionesEnProceso((prev) => ({ ...prev, [mesaId]: true }));
+      try {
+        const mesa = mesas.find((m) => m.id === mesaId);
+        if (!mesa) return;
+
+        await apiService.actualizarMesa({
+          id: mesa.id,
+          numero: mesa.numero,
+          capacidad: mesa.capacidad,
+          estado: "ocupada",
+          ubicacion: mesa.ubicacion ?? "",
+        });
+        
+        // Eliminar cliente de la cola
+        if (clienteSeleccionado.id) {
+          await apiService.eliminarFilaVirtual(clienteSeleccionado.id);
+        }
+        
+        setFeedback(
+          `Mesa ${mesa.numero} asignada a ${clienteSeleccionado.nombre || `Cliente ${clienteSeleccionado.id}`}`
+        );
+        setMostrarModalMesas(false);
+        setClienteSeleccionado(null);
+        await cargarMesas();
+        await cargarCola();
+      } catch (error) {
+        console.error("Error al asignar mesa:", error);
+        setErrorMesas("No se pudo asignar la mesa al cliente.");
+      } finally {
+        setAccionesEnProceso((prev) => {
+          const { [mesaId]: _, ...rest } = prev;
+          return rest;
+        });
+      }
+    },
+    [clienteSeleccionado, mesas]
+  );
+
+  const handleEliminarDesCola = useCallback(async (clienteId: number | undefined) => {
+    if (!clienteId) return;
+
+    const confirmado = window.confirm(
+      "¿Deseas eliminar este cliente de la fila virtual?"
+    );
+    if (!confirmado) return;
+
+    try {
+      await apiService.eliminarFilaVirtual(clienteId);
+      setFeedback("Cliente eliminado de la fila virtual.");
+      await cargarCola(true);
+    } catch (error) {
+      console.error("Error al eliminar de cola:", error);
+      setErrorCola("No se pudo eliminar el cliente de la fila.");
+    }
+  }, []);
 
   return (
     <div className="gestion-mesas-admin">
@@ -561,13 +658,18 @@ export default function GestionMesas() {
                     </span>
                   </div>
                   <div className="acciones-cliente-cola">
-                    <button className="boton-asignar-mesa" type="button" disabled>
-                      Asignar mesa
+                    <button
+                      className="boton-asignar-mesa"
+                      type="button"
+                      onClick={() => handleAsignarMesa(cliente)}
+                    >
+                      ✓ Asignar mesa
                     </button>
-                    <button className="boton-llamar-cliente" type="button" disabled>
-                      📞 Llamar
-                    </button>
-                    <button className="boton-eliminar-cola" type="button" disabled>
+                    <button
+                      className="boton-eliminar-cola"
+                      type="button"
+                      onClick={() => handleEliminarDesCola(cliente.id)}
+                    >
                       ❌ Eliminar
                     </button>
                   </div>
@@ -577,6 +679,59 @@ export default function GestionMesas() {
           )}
         </div>
       </section>
+
+      {/* Modal para seleccionar mesa */}
+      {mostrarModalMesas && clienteSeleccionado && (
+        <div className="modal-overlay" onClick={() => {
+          setMostrarModalMesas(false);
+          setClienteSeleccionado(null);
+        }}>
+          <div className="modal-contenedor" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="modal-titulo">Seleccionar Mesa para {clienteSeleccionado.nombre || `Cliente ${clienteSeleccionado.id}`}</h2>
+              <button 
+                className="modal-cerrar" 
+                onClick={() => {
+                  setMostrarModalMesas(false);
+                  setClienteSeleccionado(null);
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            <div className="modal-contenido">
+              <p className="info-cliente">
+                <strong>Clientes:</strong> {clienteSeleccionado.numeroPersonas || 2} personas
+              </p>
+              <div className="grilla-mesas-modal">
+                {mesas
+                  .filter((m) => estadoToClase(m.estado) === "disponible")
+                  .map((mesa) => (
+                    <div key={mesa.id} className="tarjeta-mesa-modal">
+                      <div className="numero-mesa-modal">{mesa.numero}</div>
+                      <div className="detalles-mesa-modal">
+                        <p className="capacidad-mesa">Capacidad: {mesa.capacidad}</p>
+                        <p className="ubicacion-mesa">{mesa.ubicacion || "Sin ubicación"}</p>
+                      </div>
+                      <button
+                        className="boton-seleccionar-mesa"
+                        onClick={() => handleConfirmarAsignacion(mesa.id)}
+                        disabled={accionesEnProceso[mesa.id]}
+                      >
+                        {accionesEnProceso[mesa.id] ? "Asignando..." : "Seleccionar"}
+                      </button>
+                    </div>
+                  ))}
+              </div>
+              {mesas.filter((m) => estadoToClase(m.estado) === "disponible").length === 0 && (
+                <div className="mensaje-sin-mesas">
+                  <p>No hay mesas disponibles en este momento.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

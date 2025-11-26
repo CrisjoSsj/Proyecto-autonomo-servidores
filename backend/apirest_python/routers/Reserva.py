@@ -15,12 +15,16 @@ class Reserva(BaseModel):
     hora_inicio: Optional[str] = None
     hora_fin: Optional[str] = None
     estado: Optional[str] = 'pendiente'
+    nombre: Optional[str] = None
+    telefono: Optional[str] = None
+    email: Optional[str] = None
+    numero_personas: Optional[int] = None
+    ocasion_especial: Optional[str] = None
+    comentarios: Optional[str] = None
 '''    cliente: Cliente'''
 '''    mesa: Mesa'''   
 
-reservas_list = [Reserva(id_reserva=1, id_cliente=1, id_mesa=1, fecha="2024-10-05", hora_inicio="19:00", hora_fin="21:00", estado="confirmada"),
-                 Reserva(id_reserva=2, id_cliente=2, id_mesa=2, fecha="2024-10-06", hora_inicio="20:00", hora_fin="22:00", estado="pendiente"),
-                 Reserva(id_reserva=3, id_cliente=3, id_mesa=3, fecha="2024-10-07", hora_inicio="18:30", hora_fin="20:30", estado="cancelada")]
+reservas_list = []
 
 @router.get("/reserva/")
 async def reserva_status():
@@ -78,15 +82,19 @@ async def reserva(reserva: Reserva):
         reserva.estado = 'pendiente'
 
     reservas_list.append(reserva)
-    # Enviar notificación al WebSocket
-    await broadcast_reservas("new_reservation", {
-        "reserva_id": reserva.id_reserva,
-        "cliente_id": reserva.id_cliente,
-        "mesa_id": reserva.id_mesa,
-        "fecha": reserva.fecha,
-        "hora_inicio": reserva.hora_inicio,
-        "estado": reserva.estado
-    })
+    # Enviar notificación al WebSocket (no-bloqueante)
+    import asyncio
+    try:
+        asyncio.create_task(broadcast_reservas("nueva_reserva", {
+            "reserva_id": reserva.id_reserva,
+            "cliente_id": reserva.id_cliente,
+            "mesa_id": reserva.id_mesa,
+            "fecha": reserva.fecha,
+            "hora_inicio": reserva.hora_inicio,
+            "estado": reserva.estado
+        }))
+    except Exception as e:
+        print(f"⚠️ Error en WebSocket broadcast: {str(e)}")
     return reserva
 
 #PUT
@@ -97,16 +105,17 @@ async def actualizar_reserva(reserva: Reserva):
         if guardar_reserva.id_reserva == reserva.id_reserva:
             reservas_list[index] = reserva
             found = True
-            # Enviar notificación al WebSocket
+            # Enviar notificación al WebSocket (no-bloqueante)
+            import asyncio
             try:
-                await broadcast_reservas("update_reservation", {
+                asyncio.create_task(broadcast_reservas("update_reservation", {
                     "reserva_id": reserva.id_reserva,
                     "estado": reserva.estado,
                     "fecha": reserva.fecha,
                     "hora_inicio": reserva.hora_inicio
-                })
-            except Exception as ws_error:
-                print(f"Warning: WebSocket broadcast failed: {ws_error}")
+                }))
+            except Exception as e:
+                print(f"⚠️ Error en WebSocket broadcast: {str(e)}")
             return {"message": "Reserva actualizada exitosamente", "reserva": reserva}
     
     if not found:
@@ -121,15 +130,16 @@ async def eliminar_reserva(id: int):
             reserva_eliminada = reservas_list[index]
             del reservas_list[index]
             found = True
-            # Enviar notificación al WebSocket
+            # Enviar notificación al WebSocket (no-bloqueante)
+            import asyncio
             try:
-                await broadcast_reservas("reserva_eliminada", {
+                asyncio.create_task(broadcast_reservas("reserva_eliminada", {
                     "reserva_id": reserva_eliminada.id_reserva,
                     "fecha": reserva_eliminada.fecha,
                     "hora_inicio": reserva_eliminada.hora_inicio
-                })
-            except Exception as ws_error:
-                print(f"Warning: WebSocket broadcast failed: {ws_error}")
+                }))
+            except Exception as e:
+                print(f"⚠️ Error en WebSocket broadcast: {str(e)}")
             return {
                 "message": "Reserva eliminada exitosamente", 
                 "reserva_eliminada": {

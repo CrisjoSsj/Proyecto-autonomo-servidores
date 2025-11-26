@@ -70,7 +70,31 @@ export default function FilaVirtual() {
                 estado: m.estado,
                 ubicacion: m.ubicacion ?? ''
             }));
-            setMesas(mapped);
+            
+            // Cargar reservas para actualizar el estado de las mesas
+            try {
+                const reservas = await apiService.getReservas();
+                const hoy = new Date();
+                const mesaConReserva = new Set<number>();
+                
+                // Marcar mesas que tienen reservas confirmadas para hoy
+                reservas.forEach((res: any) => {
+                    if (res.estado === 'confirmada' && res.fecha === hoy.toISOString().split('T')[0]) {
+                        mesaConReserva.add(res.id_mesa);
+                    }
+                });
+                
+                // Actualizar estado de mesas con reservas
+                const mesasActualizadas = mapped.map((mesa: Mesa) => ({
+                    ...mesa,
+                    estado: mesaConReserva.has(mesa.numero) ? 'reservada' : mesa.estado
+                }));
+                
+                setMesas(mesasActualizadas);
+            } catch (err) {
+                console.error('Error cargando reservas para actualizar mesas:', err);
+                setMesas(mapped);
+            }
         } catch (error) {
             console.error('Error al cargar mesas:', error);
         }

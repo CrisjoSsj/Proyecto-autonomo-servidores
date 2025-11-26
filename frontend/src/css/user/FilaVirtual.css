@@ -61,7 +61,7 @@
 /* Estado del Restaurante - Estilo Goldifox */
 .seccion-estado-restaurante {
   padding: 2rem 1rem;
-  background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-main) 50%, var(--color-background-main) 100%);
+  background: #dfd8c8;
 }
 
 .contenedor-estado {
@@ -70,7 +70,7 @@
 }
 
 .tarjeta-estado-principal {
-  background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-card) 100%);
+  background: #dfd8c8;
   border-radius: 12px;
   padding: 2rem;
   text-align: center;
@@ -135,7 +135,7 @@
 /* Disponibilidad de Mesas - Premium */
 .seccion-disponibilidad-mesas {
   padding: 2rem 1rem;
-  background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-card) 100%);
+  background: #dfd8c8;
 }
 
 .contenedor-disponibilidad {
@@ -182,7 +182,7 @@
 }
 
 .grupo-mesas {
-  background: linear-gradient(135deg, var(--color-background-main) 0%, var(--color-background-main) 100%);
+  background: #dfd8c8;
   border-radius: 12px;
   padding: 2rem;
   border: 1px solid rgba(218, 165, 32, 0.2);
@@ -207,7 +207,7 @@
 }
 
 .tarjeta-mesa {
-  background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-card) 100%);
+  background: #dfd8c8;
   border-radius: 16px;
   padding: 1.5rem;
   box-shadow: 0 8px 32px rgba(45, 27, 19, 0.1);
@@ -257,22 +257,22 @@
 }
 
 .tarjeta-mesa.disponible .estado-mesa {
-  background: linear-gradient(135deg, var(--color-text-light) 0%, var(--color-background-card) 100%);
+  background: #dfd8c8;
   border: 1px solid var(--color-primary);
 }
 
 .tarjeta-mesa.ocupada .estado-mesa {
-  background: linear-gradient(135deg, rgba(139, 90, 66, 0.1) 0%, rgba(107, 62, 42, 0.1) 100%);
+  background: #dfd8c8;
   border: 1px solid var(--color-text-secondary);
 }
 
 .tarjeta-mesa.reservada .estado-mesa {
-  background: linear-gradient(135deg, rgba(184, 134, 11, 0.1) 0%, rgba(218, 165, 32, 0.1) 100%);
+  background: #dfd8c8;
   border: 1px solid var(--color-primary-dark);
 }
 
 .tarjeta-mesa.limpieza .estado-mesa {
-  background: linear-gradient(135deg, rgba(160, 145, 122, 0.1) 0%, rgba(139, 115, 85, 0.1) 100%);
+  background: #dfd8c8;
   border: 1px solid var(--color-primary-light);
 }
 
@@ -309,7 +309,7 @@
 /* Cola de Espera - Premium */
 .seccion-cola-espera {
   padding: 2rem 1rem;
-  background: linear-gradient(135deg, var(--color-background-main) 0%, var(--color-background-main) 100%);
+  background: #dfd8c8;
 }
 
 .contenedor-cola {
@@ -352,7 +352,7 @@
 
 /* Formulario de Cola - Premium */
 .formulario-cola {
-  background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-card) 100%);
+  background: #dfd8c8;
   border-radius: 12px;
   padding: 2rem;
   box-shadow: 0 15px 50px rgba(45, 27, 19, 0.1);
@@ -431,7 +431,7 @@
 
 /* Estado de la Cola - Premium */
 .estado-cola-actual {
-  background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-card) 100%);
+  background: #dfd8c8;
   border-radius: 20px;
   padding: 3rem;
   box-shadow: 0 15px 50px rgba(45, 27, 19, 0.1);
@@ -452,7 +452,7 @@
   align-items: center;
   gap: 1.5rem;
   padding: 1.5rem;
-  background: linear-gradient(135deg, var(--color-background-main) 0%, var(--color-background-main) 100%);
+  background: #dfd8c8;
   border-radius: 16px;
   margin-bottom: 1.5rem;
   transition: all 0.3s ease;
@@ -460,7 +460,7 @@
 }
 
 .persona-en-cola:hover {
-  background: linear-gradient(135deg, var(--color-text-light) 0%, var(--color-background-main) 100%);
+  background: #dfd8c8;
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(45, 27, 19, 0.1);
 }
@@ -502,7 +502,7 @@
   text-align: center;
   margin-top: 1.5rem;
   padding: 1.25rem;
-  background: linear-gradient(135deg, var(--color-text-light) 0%, var(--color-background-card) 100%);
+  background: #dfd8c8;
   border-radius: 12px;
   color: var(--color-text-primary);
   font-size: 1.1rem;
@@ -513,7 +513,7 @@
 /* Notificaciones - Premium */
 .seccion-notificaciones {
   padding: 1.75rem 1rem;
-  background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-card) 100%);
+  background: #dfd8c8;
 }
 
 .contenedor-notificaciones {
@@ -522,7 +522,7 @@
 }
 
 .tarjeta-notificaciones {
-  background: linear-gradient(135deg, var(--color-text-light) 0%, var(--color-background-card) 100%);
+  background: #dfd8c8;
   border: 2px solid var(--color-primary);
   border-radius: 12px;
   padding: 1.75rem;
@@ -568,7 +568,7 @@
 /* Tiempos Estimados - Premium */
 .seccion-tiempos-estimados {
   padding: 1.5rem 1rem;
-  background: linear-gradient(135deg, var(--color-background-main) 0%, var(--color-background-main) 100%);
+  background: #dfd8c8;
 }
 
 .contenedor-tiempos {
@@ -606,7 +606,7 @@
 }
 
 .tarjeta-tiempo {
-  background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-card) 100%);
+  background: #dfd8c8;
   border-radius: 12px;
   padding: 1.25rem;
   text-align: center;
@@ -650,12 +650,12 @@
 }
 
 .estado-tiempo.disponible {
-  background: linear-gradient(135deg, var(--color-text-light) 0%, var(--color-background-card) 100%);
+  background: #dfd8c8;
   border: 1px solid var(--color-primary);
 }
 
 .estado-tiempo.espera {
-  background: linear-gradient(135deg, rgba(139, 90, 66, 0.1) 0%, rgba(184, 134, 11, 0.1) 100%);
+  background: #dfd8c8;
   border: 1px solid var(--color-primary-dark);
 }
 

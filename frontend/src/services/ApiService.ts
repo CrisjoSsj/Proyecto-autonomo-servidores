@@ -212,25 +212,28 @@ class ApiService {
     });
   }
 
+  async actualizarReserva(reservaData: any) {
+    return this.request('/reserva/', {
+      method: 'PUT',
+      body: JSON.stringify(reservaData),
+    });
+  }
+
   async buscarReservas(query: string) {
     return this.request(`/reservas/buscar?query=${query}`);
   }
 
   // Fila Virtual
   async getFilaVirtual() {
-    const data = await this.request('/filas/');
-    // Mapear la forma del backend a la forma que espera el frontend
+    const data = await this.request('/fila-virtual/');
+    // Mapear la respuesta del endpoint nuevo que ya tiene todos los campos
     return (data || []).map((f: any, idx: number) => ({
-      id: f.id_fila ?? f.id ?? idx,
-      nombre: f.nombre ?? `Cliente ${f.id_cliente ?? f.id_fila ?? idx}`,
+      id: f.id ?? idx,
+      nombre: f.nombre ?? `Cliente ${f.cliente_id ?? f.id ?? idx}`,
       telefono: f.telefono ?? '',
-      numeroPersonas: f.numero_personas ?? f.numeroPersonas ?? 2,
+      numeroPersonas: f.numeroPersonas ?? f.numero_personas ?? 2,
       posicion: f.posicion ?? (idx + 1),
-      tiempoEstimado: (() => {
-        const raw = f.tiempo_espera ?? f.tiempoEstimado ?? '15';
-        const n = String(raw).match(/\d+/)?.[0];
-        return n ? parseInt(n, 10) : 15;
-      })(),
+      tiempoEstimado: f.tiempoEstimado ?? 15,
     }));
   }
 
@@ -241,30 +244,29 @@ class ApiService {
   }
 
   async unirseFilaVirtual(filaData: any) {
-    // Dejar que el backend genere id_fila y posicion; enviar solo datos relevantes
+    // Usar el endpoint nuevo que soporta todos los campos
     const backendPayload = {
-      id_cliente: filaData.cliente_id ?? filaData.id_cliente ?? Math.floor(Math.random() * 1000000),
-      tiempo_espera: filaData.tiempo_espera ?? `${(filaData.numeroPersonas ?? filaData.numero_personas ?? 1) * 15} min`,
+      cliente_id: filaData.cliente_id ?? filaData.id_cliente ?? Math.floor(Math.random() * 1000000),
+      nombre: filaData.nombre ?? `Cliente ${filaData.cliente_id ?? Math.floor(Math.random() * 1000)}`,
+      telefono: filaData.telefono ?? '',
+      numeroPersonas: filaData.numeroPersonas ?? filaData.numero_personas ?? 1,
+      hora_llegada: filaData.hora_llegada ?? new Date().toISOString(),
       estado: filaData.estado ?? 'esperando'
     };
 
-    const created = await this.request('/fila/', {
+    const created = await this.request('/fila-virtual/', {
       method: 'POST',
       body: JSON.stringify(backendPayload),
     });
 
-    // Mapear la respuesta del backend a la forma del frontend
+    // La respuesta ya tiene todos los campos del modelo nuevo
     return {
-      id: created.id_fila ?? created.id,
-      nombre: filaData.nombre ?? `Cliente ${backendPayload.id_cliente}`,
-      telefono: filaData.telefono ?? '',
-      numeroPersonas: filaData.numeroPersonas ?? filaData.numero_personas ?? 2,
+      id: created.id,
+      nombre: created.nombre,
+      telefono: created.telefono,
+      numeroPersonas: created.numeroPersonas,
       posicion: created.posicion,
-      tiempoEstimado: (() => {
-        const raw = created.tiempo_espera ?? backendPayload.tiempo_espera ?? '15';
-        const n = String(raw).match(/\d+/)?.[0];
-        return n ? parseInt(n, 10) : 15;
-      })(),
+      tiempoEstimado: created.tiempoEstimado,
     };
   }
 
@@ -276,6 +278,12 @@ class ApiService {
 
   async buscarFilaVirtual(query: string) {
     return this.request(`/fila/buscar?query=${query}`);
+  }
+
+  async eliminarFilaVirtual(idFila: number) {
+    return this.request(`/fila-virtual/${idFila}`, {
+      method: 'DELETE',
+    });
   }
 
   // Autenticación

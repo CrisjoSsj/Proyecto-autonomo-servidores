@@ -43,7 +43,21 @@ module ReservasChannel
     reserva_payload = build_reserva_payload(payload)
     reserva = ApiClient.create_reserva(reserva_payload)
     reserva_normalizada = normalize_reserva(reserva)
+    
+    # Notificar al cliente que envió la solicitud
     ws.send(MessageBuilder.build('reservas', 'solicitud_enviada', { action: 'crear', reserva: reserva_normalizada }).to_json)
+    
+    # Hacer broadcast a todos los clientes de la nueva reserva
+    require_relative '../connections/connection_manager'
+    broadcast_message = {
+      'channel' => 'reservas',
+      'action' => 'nueva_reserva',
+      'data' => {
+        'reserva' => reserva_normalizada,
+        'timestamp' => Time.now.iso8601
+      }
+    }
+    ConnectionManager.broadcast(broadcast_message)
   end
 
   def self.handle_listar(ws)
@@ -68,7 +82,21 @@ module ReservasChannel
     reserva_normalizada = normalize_reserva(reserva_existente)
     reserva_actualizada = reserva_normalizada.merge('estado' => 'cancelada')
     ApiClient.update_reserva(reserva_actualizada)
+    
+    # Notificar al cliente que envió la solicitud
     ws.send(MessageBuilder.build('reservas', 'solicitud_enviada', { action: 'cancelar', id_reserva: id }).to_json)
+    
+    # Hacer broadcast a todos los clientes de la cancelación
+    require_relative '../connections/connection_manager'
+    broadcast_message = {
+      'channel' => 'reservas',
+      'action' => 'reserva_cancelada',
+      'data' => {
+        'id_reserva' => id,
+        'timestamp' => Time.now.iso8601
+      }
+    }
+    ConnectionManager.broadcast(broadcast_message)
   end
 
   def self.handle_actualizar(ws, payload)
@@ -82,7 +110,21 @@ module ReservasChannel
     reserva_payload['id_reserva'] = id
     reserva = ApiClient.update_reserva(reserva_payload)
     reserva_normalizada = normalize_reserva(reserva['reserva'] || reserva)
+    
+    # Notificar al cliente que envió la solicitud
     ws.send(MessageBuilder.build('reservas', 'solicitud_enviada', { action: 'actualizar', reserva: reserva_normalizada }).to_json)
+    
+    # Hacer broadcast a todos los clientes de la actualización
+    require_relative '../connections/connection_manager'
+    broadcast_message = {
+      'channel' => 'reservas',
+      'action' => 'reserva_actualizada',
+      'data' => {
+        'reserva' => reserva_normalizada,
+        'timestamp' => Time.now.iso8601
+      }
+    }
+    ConnectionManager.broadcast(broadcast_message)
   end
 
   def self.handle_eliminar(ws, payload)

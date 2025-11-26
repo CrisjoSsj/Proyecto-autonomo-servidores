@@ -68,6 +68,14 @@ function App() {
             </ProtectedRoute>
           } 
         />
+        <Route 
+          path="/admin/inventario" 
+          element={
+            <ProtectedRoute>
+              <GestionMenu />
+            </ProtectedRoute>
+          } 
+        />
         
         {/* Redirigir /admin a /admin/login si no está autenticado */}
         <Route path="/admin/*" element={<Navigate to="/admin/login" replace />} />

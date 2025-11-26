@@ -1,12 +1,59 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import NavbarAdmin from "../../components/admin/NavbarAdmin";
 import { fetchDashboardData } from "../../services/GraphQLService";
+import { wsService } from "../../services/WebSocketService";
 import "../../css/admin/Dashboard.css";
 
+interface Alerta {
+  id: string;
+  tipo: 'reserva' | 'fila' | 'mesa' | 'inventario';
+  titulo: string;
+  mensaje: string;
+  urgencia: 'urgente' | 'importante' | 'informativa';
+  timestamp: string; // Cambiar a string para JSON
+  datos?: any;
+  resuelta: boolean;
+}
+
+// Utilidades para localStorage
+const ALERTAS_STORAGE_KEY = 'alertas_dashboard';
+
+const guardarAlertasEnStorage = (alertas: Alerta[]) => {
+  try {
+    localStorage.setItem(ALERTAS_STORAGE_KEY, JSON.stringify(alertas));
+  } catch (error) {
+    console.error('Error al guardar alertas:', error);
+  }
+};
+
+const cargarAlertasDelStorage = (): Alerta[] => {
+  try {
+    const stored = localStorage.getItem(ALERTAS_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch (error) {
+    console.error('Error al cargar alertas:', error);
+    return [];
+  }
+};
+
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [alertas, setAlertas] = useState<Alerta[]>([]);
+
+  // Cargar alertas del localStorage al montar
+  useEffect(() => {
+    const alertasGuardadas = cargarAlertasDelStorage();
+    setAlertas(alertasGuardadas);
+  }, []);
+
+  // Guardar alertas en localStorage cuando cambien
+  useEffect(() => {
+    guardarAlertasEnStorage(alertas);
+  }, [alertas]);
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -23,6 +70,76 @@ export default function Dashboard() {
     };
 
     loadDashboardData();
+
+    // Conectar WebSocket para recibir alertas en tiempo real
+    wsService.connect();
+
+    // Escuchar nuevas reservas
+    const unsubscribeReservas = wsService.subscribe('reservas', (message) => {
+      if (message.action === 'nueva_reserva') {
+        const reserva = message.data?.reserva;
+        const alerta: Alerta = {
+          id: `alerta-${Date.now()}-${Math.random()}`,
+          tipo: 'reserva',
+          titulo: `Nueva Reserva`,
+          mensaje: `Reserva para ${reserva?.hora_inicio || ''} - ${reserva?.numero_personas || reserva?.numeroPersonas || 0} personas`,
+          urgencia: 'informativa',
+          timestamp: new Date().toISOString(),
+          datos: reserva,
+          resuelta: false
+        };
+        setAlertas(prev => [alerta, ...prev].slice(0, 10));
+      }
+    });
+
+    // Escuchar nuevas entradas en fila virtual
+    const unsubscribeFilaVirtual = wsService.subscribe('fila_virtual', (message) => {
+      if (message.action === 'nueva_entrada') {
+        const persona = message.data?.persona;
+        const alerta: Alerta = {
+          id: `alerta-${Date.now()}-${Math.random()}`,
+          tipo: 'fila',
+          titulo: `Nueva Entrada en Fila Virtual`,
+          mensaje: `${persona?.nombre || 'Cliente'} - ${persona?.numeroPersonas || 0} personas en fila`,
+          urgencia: 'importante',
+          timestamp: new Date().toISOString(),
+          datos: persona,
+          resuelta: false
+        };
+        setAlertas(prev => [alerta, ...prev].slice(0, 10));
+      }
+    });
+
+    return () => {
+      unsubscribeReservas();
+      unsubscribeFilaVirtual();
+    };
+  }, []);
+
+  // Handlers para acciones rápidas
+  const handleIrAMesas = useCallback(() => {
+    navigate("/admin/mesas");
+  }, [navigate]);
+
+  const handleVerReservas = useCallback(() => {
+    navigate("/admin/reservas");
+  }, [navigate]);
+
+  const handleEditarMenu = useCallback(() => {
+    navigate("/admin/menu");
+  }, [navigate]);
+
+  const handleVerReportes = useCallback(() => {
+    navigate("/admin/reportes");
+  }, [navigate]);
+
+  // Handlers para alertas
+  const handleResolverAlerta = useCallback((idAlerta: string) => {
+    setAlertas(prev => 
+      prev.map(alerta => 
+        alerta.id === idAlerta ? { ...alerta, resuelta: true } : alerta
+      )
+    );
   }, []);
 
   if (loading) {
@@ -63,29 +180,6 @@ export default function Dashboard() {
       <section className="seccion-estadisticas">
         <div className="contenedor-estadisticas">
           <h2 className="titulo-seccion-admin">Estadísticas de Hoy</h2>
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '10px',
-            marginBottom: '20px',
-            padding: '15px',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            borderRadius: '8px',
-            color: 'white',
-            fontWeight: 'bold'
-          }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>analytics</span>
-            <span>DATOS EN TIEMPO REAL VIA GRAPHQL</span>
-            <span style={{ 
-              marginLeft: 'auto',
-              padding: '5px 15px',
-              background: 'rgba(255,255,255,0.2)',
-              borderRadius: '20px',
-              fontSize: '12px'
-            }}>
-              � Conectado a http://localhost:3000/api/graphql
-            </span>
-          </div>
           <div className="grilla-estadisticas">
             
             <div className="tarjeta-estadistica ventas">
@@ -120,41 +214,6 @@ export default function Dashboard() {
                 <span className="comparacion neutra">Top platos</span>
               </div>
             </div>
-
-            <div className="tarjeta-estadistica tiempo-promedio">
-              <div className="icono-estadistica tiempo-icon">
-                <span className="material-symbols-outlined" style={{fontSize: '1.5rem', color: 'white'}}>calendar_month</span>
-              </div>
-              <div className="contenido-estadistica">
-                <h3 className="titulo-estadistica">Reservas este Mes</h3>
-                <p className="valor-estadistica">
-                  {dashboardData?.reservasPorMes?.reduce((acc: number, item: any) => acc + item.total, 0) || 0}
-                </p>
-                <span className="comparacion positiva">Tendencia mensual</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Gráfico de Reservas por Mes */}
-      <section className="seccion-estadisticas">
-        <div className="contenedor-estadisticas">
-          <h2 className="titulo-seccion-admin">Reservas por Mes</h2>
-          <div className="chart-container">
-            {dashboardData?.reservasPorMes?.map((item: any) => (
-              <div key={item.mes} className="bar-chart-item">
-                <div 
-                  className="bar" 
-                  style={{ 
-                    height: `${(item.total / Math.max(...(dashboardData.reservasPorMes?.map((x: any) => x.total) || [1]))) * 200}px`,
-                    background: '#4299e1'
-                  }}
-                />
-                <span className="mes-label">{item.mes}</span>
-                <span className="valor-label">{item.total}</span>
-              </div>
-            ))}
           </div>
         </div>
       </section>
@@ -177,21 +236,6 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* Platos más Pedidos */}
-      <section className="seccion-estado-actual">
-        <div className="contenedor-estado-actual">
-          <h2 className="titulo-seccion-admin">Platos más Pedidos</h2>
-          <div className="lista-platos-populares">
-            {dashboardData?.platosPopulares?.map((plato: any) => (
-              <div key={plato.platoId} className="item-plato-popular">
-                <span className="nombre-plato">{plato.nombre}</span>
-                <span className="pedidos-plato">{plato.pedidos} pedidos</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Acciones rápidas */}
       <section className="seccion-acciones-rapidas">
         <div className="contenedor-acciones">
@@ -204,7 +248,7 @@ export default function Dashboard() {
               </div>
               <h3 className="titulo-accion">Gestionar Mesas</h3>
               <p className="descripcion-accion">Ver estado y gestionar ocupación de mesas</p>
-              <button className="boton-accion">Ir a Mesas</button>
+              <button className="boton-accion" onClick={handleIrAMesas}>Ir a Mesas</button>
             </div>
 
             <div className="tarjeta-accion">
@@ -213,7 +257,7 @@ export default function Dashboard() {
               </div>
               <h3 className="titulo-accion">Ver Reservas</h3>
               <p className="descripcion-accion">Gestionar reservas de hoy y futuras</p>
-              <button className="boton-accion">Ver Reservas</button>
+              <button className="boton-accion" onClick={handleVerReservas}>Ver Reservas</button>
             </div>
 
             <div className="tarjeta-accion">
@@ -222,7 +266,7 @@ export default function Dashboard() {
               </div>
               <h3 className="titulo-accion">Editar Menú</h3>
               <p className="descripcion-accion">Actualizar platos, precios y disponibilidad</p>
-              <button className="boton-accion">Editar Menú</button>
+              <button className="boton-accion" onClick={handleEditarMenu}>Editar Menú</button>
             </div>
 
             <div className="tarjeta-accion">
@@ -231,7 +275,7 @@ export default function Dashboard() {
               </div>
               <h3 className="titulo-accion">Ver Reportes</h3>
               <p className="descripcion-accion">Análisis de ventas y estadísticas</p>
-              <button className="boton-accion">Ver Reportes</button>
+              <button className="boton-accion" onClick={handleVerReportes}>Ver Reportes</button>
             </div>
           </div>
         </div>
@@ -242,48 +286,47 @@ export default function Dashboard() {
         <div className="contenedor-alertas-admin">
           <h2 className="titulo-seccion-admin">Alertas y Notificaciones</h2>
           <div className="lista-alertas-admin">
-            
-            <div className="alerta-admin urgente">
-              <div className="icono-alerta-admin urgente-icon">
-                <span className="material-symbols-outlined" style={{fontSize: '1.5rem', color: 'white'}}>error</span>
+            {alertas.filter(a => !a.resuelta).length === 0 ? (
+              <div className="sin-alertas">
+                <p>No hay alertas en este momento</p>
               </div>
-              <div className="contenido-alerta-admin">
-                <h3 className="titulo-alerta-admin">Mesa 4 - Tiempo excedido</h3>
-                <p className="mensaje-alerta-admin">
-                  La mesa 4 lleva 2h 15min ocupada. Considerar consultar con el cliente.
-                </p>
-                <span className="tiempo-alerta">Hace 15 minutos</span>
-              </div>
-              <button className="boton-resolver-alerta">Resolver</button>
-            </div>
+            ) : (
+              alertas.map((alerta) => {
+                if (alerta.resuelta) return null;
 
-            <div className="alerta-admin importante">
-              <div className="icono-alerta-admin importante-icon">
-                <span className="material-symbols-outlined" style={{fontSize: '1.5rem', color: 'white'}}>inventory_2</span>
-              </div>
-              <div className="contenido-alerta-admin">
-                <h3 className="titulo-alerta-admin">Inventario Bajo</h3>
-                <p className="mensaje-alerta-admin">
-                  Alitas BBQ - Quedan solo 15 porciones. Considerar reabastecer.
-                </p>
-                <span className="tiempo-alerta">Hace 30 minutos</span>
-              </div>
-              <button className="boton-resolver-alerta">Ver Inventario</button>
-            </div>
+                const urgenciaClass = alerta.urgencia;
+                const iconoClass = alerta.urgencia === 'urgente' ? 'error' : 
+                                  alerta.urgencia === 'importante' ? 'warning' : 'info';
 
-            <div className="alerta-admin informativa">
-              <div className="icono-alerta-admin info-icon">
-                <span className="material-symbols-outlined" style={{fontSize: '1.5rem', color: 'white'}}>info</span>
-              </div>
-              <div className="contenido-alerta-admin">
-                <h3 className="titulo-alerta-admin">Nueva Reserva</h3>
-                <p className="mensaje-alerta-admin">
-                  Reserva para 6 personas confirmada para las 8:00 PM - Mesa 9.
-                </p>
-                <span className="tiempo-alerta">Hace 5 minutos</span>
-              </div>
-              <button className="boton-resolver-alerta">Ver Detalles</button>
-            </div>
+                return (
+                  <div key={alerta.id} className={`alerta-admin ${urgenciaClass}`}>
+                    <div className={`icono-alerta-admin ${urgenciaClass}-icon`}>
+                      <span className="material-symbols-outlined" style={{fontSize: '1.5rem', color: 'white'}}>
+                        {iconoClass === 'error' && 'error'}
+                        {iconoClass === 'warning' && 'warning'}
+                        {iconoClass === 'info' && 'info'}
+                      </span>
+                    </div>
+                    <div className="contenido-alerta-admin">
+                      <h3 className="titulo-alerta-admin">{alerta.titulo}</h3>
+                      <p className="mensaje-alerta-admin">{alerta.mensaje}</p>
+                      <span className="tiempo-alerta">
+                        Hace {Math.floor((Date.now() - new Date(alerta.timestamp).getTime()) / 1000 / 60)} minutos
+                      </span>
+                    </div>
+                    <button 
+                      className="boton-resolver-alerta" 
+                      onClick={() => handleResolverAlerta(alerta.id)}
+                    >
+                      {alerta.tipo === 'reserva' && 'Ver Detalles'}
+                      {alerta.tipo === 'fila' && 'Ver Fila'}
+                      {alerta.tipo === 'mesa' && 'Ver Mesas'}
+                      {alerta.tipo === 'inventario' && 'Ver Inventario'}
+                    </button>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
       </section>

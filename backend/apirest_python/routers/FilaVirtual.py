@@ -11,12 +11,16 @@ router = APIRouter(tags=["FilaVirtual"])
 
 # Modelos de datos
 class PersonaFilaVirtualCreate(BaseModel):
-    cliente_id: int
-    nombre: str
-    telefono: str
-    numeroPersonas: int
-    hora_llegada: str
-    estado: str = "esperando"
+    cliente_id: Optional[int] = None
+    nombre: Optional[str] = None
+    telefono: Optional[str] = None
+    numeroPersonas: Optional[int] = None
+    hora_llegada: Optional[str] = None
+    estado: Optional[str] = "esperando"
+    
+    class Config:
+        # Permitir valores None
+        validate_assignment = True
 
 class PersonaFilaVirtual(BaseModel):
     id: int
@@ -113,13 +117,17 @@ async def fila(fila: FilaVirtual):
         fila.tiempo_espera = "15 min"
 
     filas_list.append(fila)
-    # Enviar notificación al WebSocket
-    await broadcast_fila_virtual("join", {
-        "cliente_id": fila.id_cliente,
-        "posicion": fila.posicion,
-        "tiempo_espera": fila.tiempo_espera,
-        "estado": fila.estado
-    })
+    # Enviar notificación al WebSocket (no-bloqueante)
+    import asyncio
+    try:
+        asyncio.create_task(broadcast_fila_virtual("join", {
+            "cliente_id": fila.id_cliente,
+            "posicion": fila.posicion,
+            "tiempo_espera": fila.tiempo_espera,
+            "estado": fila.estado
+        }))
+    except Exception as e:
+        print(f"⚠️ Error en WebSocket broadcast: {str(e)}")
     return fila
 
 # ===== ENDPOINTS NUEVOS =====
@@ -142,41 +150,67 @@ async def agregar_a_fila_virtual(persona_data: PersonaFilaVirtualCreate):
     """Agregar una persona a la fila virtual"""
     global id_counter
     
-    # Verificar si la persona ya está en la fila
-    persona_existente = next(
-        (p for p in fila_virtual_db if p.telefono == persona_data.telefono and p.estado == "esperando"), 
-        None
-    )
-    if persona_existente:
-        raise HTTPException(status_code=400, detail="Ya tienes una posición activa en la fila virtual")
+    print(f"📥 Datos recibidos en POST /fila-virtual/: {persona_data.dict()}")
     
-    nueva_persona = PersonaFilaVirtual(
-        id=id_counter,
-        cliente_id=persona_data.cliente_id,
-        nombre=persona_data.nombre,
-        telefono=persona_data.telefono,
-        numeroPersonas=persona_data.numeroPersonas,
-        posicion=len(fila_virtual_db) + 1,
-        tiempoEstimado=calcular_tiempo_estimado(len(fila_virtual_db) + 1),
-        hora_llegada=persona_data.hora_llegada,
-        estado=persona_data.estado
-    )
-    
-    fila_virtual_db.append(nueva_persona)
-    id_counter += 1
-    
-    # Notificar via WebSocket (opcional, depende si broadcast está disponible)
     try:
-        await broadcast_fila_virtual("nueva_persona", {
-            "type": "nueva_persona",
-            "data": nueva_persona.dict(),
-            "mensaje": f"{nueva_persona.nombre} se unió a la fila virtual"
-        })
-    except:
-        pass  # Continuar sin WebSocket si no está disponible
-    
-    actualizar_posiciones()
-    return nueva_persona
+        # Validar y establecer valores por defecto
+        import random
+        cliente_id = persona_data.cliente_id or int(random.random() * 1000000)
+        nombre = persona_data.nombre or f"Cliente {cliente_id}"
+        telefono = persona_data.telefono or f"555{int(random.random() * 10000):04d}"
+        numero_personas = persona_data.numeroPersonas or 1
+        hora_llegada = persona_data.hora_llegada or datetime.now().isoformat()
+        estado = persona_data.estado or "esperando"
+        
+        print(f"✅ Valores procesados: cliente_id={cliente_id}, nombre={nombre}, telefono={telefono}, numeroPersonas={numero_personas}")
+        
+        # Verificar si la persona ya está en la fila
+        persona_existente = next(
+            (p for p in fila_virtual_db if p.telefono == telefono and p.estado == "esperando"), 
+            None
+        )
+        if persona_existente:
+            print(f"⚠️ Persona {telefono} ya existe en la fila")
+            raise HTTPException(status_code=400, detail="Ya tienes una posición activa en la fila virtual")
+        
+        nueva_persona = PersonaFilaVirtual(
+            id=id_counter,
+            cliente_id=cliente_id,
+            nombre=nombre,
+            telefono=telefono,
+            numeroPersonas=numero_personas,
+            posicion=len(fila_virtual_db) + 1,
+            tiempoEstimado=calcular_tiempo_estimado(len(fila_virtual_db) + 1),
+            hora_llegada=hora_llegada,
+            estado=estado
+        )
+        
+        fila_virtual_db.append(nueva_persona)
+        id_counter += 1
+        
+        print(f"✅ Persona {nueva_persona.id} agregada a la fila: {nueva_persona.nombre}")
+        
+        # Notificar via WebSocket (no-bloqueante)
+        import asyncio
+        try:
+            asyncio.create_task(broadcast_fila_virtual("nueva_entrada", {
+                "type": "nueva_entrada",
+                "data": nueva_persona.dict(),
+                "mensaje": f"{nueva_persona.nombre} se unió a la fila virtual"
+            }))
+        except Exception as e:
+            print(f"⚠️ Error en WebSocket broadcast: {str(e)}")
+        
+        actualizar_posiciones()
+        return nueva_persona
+        
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        print(f"❌ Error al procesar POST /fila-virtual/: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=400, detail=f"Error procesando solicitud: {str(e)}")
 
 @router.put("/fila-virtual/{fila_id}/siguiente")
 async def siguiente_en_fila(fila_id: int):
@@ -190,15 +224,16 @@ async def siguiente_en_fila(fila_id: int):
     
     persona.estado = "llamado"
     
-    # Notificar via WebSocket (opcional)
+    # Notificar via WebSocket (no-bloqueante)
+    import asyncio
     try:
-        await broadcast_fila_virtual("persona_llamada", {
+        asyncio.create_task(broadcast_fila_virtual("persona_llamada", {
             "type": "persona_llamada",
             "data": persona.dict(),
             "mensaje": f"Es el turno de {persona.nombre} - Mesa lista"
-        })
-    except:
-        pass
+        }))
+    except Exception as e:
+        print(f"⚠️ Error en WebSocket broadcast: {str(e)}")
     
     return {"mensaje": f"Se ha llamado a {persona.nombre}", "persona": persona}
 
@@ -217,15 +252,16 @@ async def confirmar_llegada(fila_id: int):
     # Remover de la fila virtual
     fila_virtual_db = [p for p in fila_virtual_db if p.id != fila_id]
     
-    # Notificar via WebSocket (opcional)
+    # Notificar via WebSocket (no-bloqueante)
+    import asyncio
     try:
-        await broadcast_fila_virtual("persona_confirmada", {
+        asyncio.create_task(broadcast_fila_virtual("persona_confirmada", {
             "type": "persona_confirmada",
             "data": persona.dict(),
             "mensaje": f"{persona.nombre} confirmó su llegada y fue asignado a una mesa"
-        })
-    except:
-        pass
+        }))
+    except Exception as e:
+        print(f"⚠️ Error en WebSocket broadcast: {str(e)}")
     
     actualizar_posiciones()
     return {"mensaje": f"{persona.nombre} confirmó su llegada", "persona": persona}
@@ -242,15 +278,16 @@ async def remover_de_fila(fila_id: int):
     # Remover de la fila
     fila_virtual_db = [p for p in fila_virtual_db if p.id != fila_id]
     
-    # Notificar via WebSocket (opcional)
+    # Notificar via WebSocket (no-bloqueante)
+    import asyncio
     try:
-        await broadcast_fila_virtual("persona_removida", {
-            "type": "persona_removida",
+        asyncio.create_task(broadcast_fila_virtual("salida_fila", {
+            "type": "salida_fila",
             "data": persona.dict(),
             "mensaje": f"{persona.nombre} fue removido de la fila virtual"
-        })
-    except:
-        pass
+        }))
+    except Exception as e:
+        print(f"⚠️ Error en WebSocket broadcast: {str(e)}")
     
     actualizar_posiciones()
     return {"mensaje": f"{persona.nombre} fue removido de la fila virtual"}
@@ -343,14 +380,16 @@ async def admin_limpiar_vencidos():
                 removidos.append(persona.nombre)
     
     if removidos:
+        # Notificar via WebSocket (no-bloqueante)
+        import asyncio
         try:
-            await broadcast_fila_virtual("limpieza_vencidos", {
+            asyncio.create_task(broadcast_fila_virtual("limpieza_vencidos", {
                 "type": "limpieza_vencidos",
                 "data": removidos,
                 "mensaje": f"Se removieron {len(removidos)} personas que no confirmaron su llegada"
-            })
-        except:
-            pass
+            }))
+        except Exception as e:
+            print(f"⚠️ Error en WebSocket broadcast: {str(e)}")
         actualizar_posiciones()
     
     return {"mensaje": f"Se removieron {len(removidos)} personas vencidas", "removidos": removidos}

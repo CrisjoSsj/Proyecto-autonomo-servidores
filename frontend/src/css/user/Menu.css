@@ -479,7 +479,7 @@
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 1rem;
   padding: 1.5rem;
-  background: linear-gradient(135deg, var(--color-background-card) 0%, var(--color-background-main) 100%);
+  background: #dfd8c8;
 }
 
 .menu-card {
