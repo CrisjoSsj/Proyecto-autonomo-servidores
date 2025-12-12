@@ -2,7 +2,7 @@
   "type": "module",
   "name": "restaurante-app",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
