@@ -1,6 +1,6 @@
 # 🎨 Frontend - Chuwue Grill
 
-Frontend de la aplicación web para el restaurante **Chuwue Grill**, desarrollado con **React 19**, **TypeScript**, **Vite** y **Tailwind CSS**.
+Frontend de la aplicación web para el restaurante **Chuwue Grill**, desarrollado con **React 19**, **TypeScript**, **Vite** y **Tailwind CSS 4.1**.
 
 ## 🚀 Tecnologías y Herramientas
 
@@ -8,7 +8,7 @@ Frontend de la aplicación web para el restaurante **Chuwue Grill**, desarrollad
 - **TypeScript 5.8.3** - Tipado estático para JavaScript
 - **Vite 7.1.2** - Build tool y servidor de desarrollo ultra-rápido
 - **React Router DOM 7.9.1** - Enrutamiento SPA para navegación
-- **Tailwind CSS 4.1.13** - Framework CSS utilitario responsive
+- **Tailwind CSS 4.1.13** - Framework CSS utilitario responsive con tema personalizado
 - **ESLint 9.33.0** - Linter para calidad de código
 - **PostCSS** - Procesador CSS para Tailwind
 
