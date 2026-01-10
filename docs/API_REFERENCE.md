@@ -198,6 +198,22 @@ Obtener información de un partner.
 ---
 
 #### POST /partners/{partner_id}/send-webhook
+
+---
+
+## Diagnóstico de Integración
+
+### Endpoints
+
+- GET /integracion/pilar1/status
+- GET /integracion/pilar2/status
+- GET /integracion/status
+
+### Headers estándar
+
+- X-API-Version: v1
+- X-Pilar1: enabled
+- X-Pilar2: enabled
 Enviar webhook de prueba a un partner.
 
 ---
