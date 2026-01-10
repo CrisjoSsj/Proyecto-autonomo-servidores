@@ -1,0 +1,123 @@
+{
+  "name": "WhatsApp Handler - Chuwue Grill",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "whatsapp",
+        "responseMode": "lastNode"
+      },
+      "id": "webhook-whatsapp",
+      "name": "WhatsApp Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extraer mensaje de Evolution API\nconst data = $input.all()[0].json;\n\n// Evolution API envía diferentes eventos\nif (data.event !== 'messages.upsert') {\n  return []; // Ignorar otros eventos\n}\n\nconst message = data.data;\nconst messageContent = message.message?.conversation || \n                       message.message?.extendedTextMessage?.text || \n                       '';\n\nconst sender = message.key?.remoteJid?.replace('@s.whatsapp.net', '') || 'unknown';\n\nreturn [{\n  json: {\n    sender: sender,\n    message: messageContent,\n    message_id: message.key?.id,\n    has_media: !!message.message?.imageMessage,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "extract-message",
+      "name": "Extraer Mensaje",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.message }}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "has-message",
+      "name": "¿Tiene Mensaje?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://ai_orchestrator:8003/chat/message",
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"message\": \"{{ $json.message }}\",\n  \"channel\": \"whatsapp\",\n  \"user_id\": null\n}"
+      },
+      "id": "call-ai",
+      "name": "Enviar a AI Orchestrator",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [850, 200]
+    },
+    {
+      "parameters": {
+        "url": "http://evolution-api:8080/message/sendText/chuwue-grill",
+        "method": "POST",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $env.EVOLUTION_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $('Extraer Mensaje').item.json.sender }}@s.whatsapp.net\",\n  \"text\": \"{{ $json.response }}\"\n}"
+      },
+      "id": "send-response",
+      "name": "Enviar Respuesta",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1050, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Log mensaje vacío\nreturn [{ json: { status: 'ignored', reason: 'empty_message' } }];"
+      },
+      "id": "ignore",
+      "name": "Ignorar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [850, 400]
+    }
+  ],
+  "connections": {
+    "WhatsApp Webhook": {
+      "main": [
+        [{ "node": "Extraer Mensaje", "type": "main", "index": 0 }]
+      ]
+    },
+    "Extraer Mensaje": {
+      "main": [
+        [{ "node": "¿Tiene Mensaje?", "type": "main", "index": 0 }]
+      ]
+    },
+    "¿Tiene Mensaje?": {
+      "main": [
+        [{ "node": "Enviar a AI Orchestrator", "type": "main", "index": 0 }],
+        [{ "node": "Ignorar", "type": "main", "index": 0 }]
+      ]
+    },
+    "Enviar a AI Orchestrator": {
+      "main": [
+        [{ "node": "Enviar Respuesta", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    { "name": "whatsapp" },
+    { "name": "mcp" }
+  ]
+}

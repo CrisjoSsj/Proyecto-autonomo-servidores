@@ -12,8 +12,13 @@ import GestionMesas from "./pages/admin/GestionMesas";
 import GestionReservas from "./pages/admin/GestionReservas";
 import GestionMenu from "./pages/admin/GestionMenu";
 import Reportes from "./pages/admin/Reportes";
+// Nuevas páginas del Segundo Parcial
+import AdminChat from "./pages/admin/Chat";
+import AdminPagos from "./pages/admin/Pagos";
+import AdminPartners from "./pages/admin/Partners";
 // Componentes
 import ProtectedRoute from "./components/admin/ProtectedRoute";
+import ChatBot from "./components/ChatBot";
 
 
 function App() {
@@ -77,9 +82,38 @@ function App() {
           } 
         />
         
+        {/* Nuevas rutas del Segundo Parcial */}
+        <Route 
+          path="/admin/chat" 
+          element={
+            <ProtectedRoute>
+              <AdminChat />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/pagos" 
+          element={
+            <ProtectedRoute>
+              <AdminPagos />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/partners" 
+          element={
+            <ProtectedRoute>
+              <AdminPartners />
+            </ProtectedRoute>
+          } 
+        />
+        
         {/* Redirigir /admin a /admin/login si no está autenticado */}
         <Route path="/admin/*" element={<Navigate to="/admin/login" replace />} />
       </Routes>
+      
+      {/* ChatBot flotante - visible en todas las páginas */}
+      <ChatBot apiUrl="http://localhost:8003" />
     </Router>
   );
 }

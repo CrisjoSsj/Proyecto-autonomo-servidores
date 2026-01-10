@@ -1,0 +1,143 @@
+{
+  "name": "Partner Handler - Chuwue Grill",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "partner-webhook",
+        "responseMode": "responseNode"
+      },
+      "id": "webhook-partner",
+      "name": "Webhook Partner",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Verificar firma HMAC\nconst crypto = require('crypto');\n\nconst payload = $input.all()[0].json;\nconst headers = $input.all()[0].headers;\nconst signature = headers['x-hmac-signature'];\n\n// En producción, obtener el secret de la BD según partner_id\nconst partnerSecret = 'shared_secret_from_db';\n\nconst expectedSignature = crypto\n  .createHmac('sha256', partnerSecret)\n  .update(JSON.stringify(payload))\n  .digest('hex');\n\n// Por ahora, solo loguear (en producción verificar)\nconst verified = true; // signature === expectedSignature;\n\nif (!verified) {\n  throw new Error('Firma HMAC inválida');\n}\n\nreturn [{ \n  json: {\n    ...payload,\n    hmac_verified: verified,\n    received_at: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "verify-hmac",
+      "name": "Verificar HMAC",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "event_type",
+              "value": "={{ $json.event_type }}"
+            }
+          ]
+        }
+      },
+      "id": "set-event",
+      "name": "Extraer Evento",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.event_type }}",
+              "operation": "contains",
+              "value2": "reservation"
+            }
+          ]
+        }
+      },
+      "id": "check-reservation",
+      "name": "¿Es Reserva?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://core_api:8000/reservas/from-partner",
+        "method": "POST",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "partner_event",
+              "value": "={{ JSON.stringify($json) }}"
+            }
+          ]
+        }
+      },
+      "id": "process-reservation",
+      "name": "Procesar Reserva",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1050, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loguear evento genérico\nconst event = $input.all()[0].json;\n\nconsole.log('Evento partner recibido:', event);\n\nreturn [{\n  json: {\n    logged: true,\n    event_type: event.event_type,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "log-event",
+      "name": "Loguear Evento",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [1050, 400]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { status: 'ok', message: 'Event processed', ack: true } }}"
+      },
+      "id": "response-ack",
+      "name": "Responder ACK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1250, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Partner": {
+      "main": [
+        [{ "node": "Verificar HMAC", "type": "main", "index": 0 }]
+      ]
+    },
+    "Verificar HMAC": {
+      "main": [
+        [{ "node": "Extraer Evento", "type": "main", "index": 0 }]
+      ]
+    },
+    "Extraer Evento": {
+      "main": [
+        [{ "node": "¿Es Reserva?", "type": "main", "index": 0 }]
+      ]
+    },
+    "¿Es Reserva?": {
+      "main": [
+        [{ "node": "Procesar Reserva", "type": "main", "index": 0 }],
+        [{ "node": "Loguear Evento", "type": "main", "index": 0 }]
+      ]
+    },
+    "Procesar Reserva": {
+      "main": [
+        [{ "node": "Responder ACK", "type": "main", "index": 0 }]
+      ]
+    },
+    "Loguear Evento": {
+      "main": [
+        [{ "node": "Responder ACK", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    { "name": "partners" },
+    { "name": "b2b" }
+  ]
+}

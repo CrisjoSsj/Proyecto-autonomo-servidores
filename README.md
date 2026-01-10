@@ -2,13 +2,23 @@
 
 ## 🏗️ Arquitectura de Microservicios
 
-Sistema completo de gestión para el restaurante **Chuwue Grill** implementado con arquitectura de microservicios y múltiples tecnologías modernas. Proyecto desarrollado como trabajo autónomo siguiendo los requisitos de distribución de lenguajes de programación.
+Sistema completo de gestión para el restaurante **Chuwue Grill** implementado con arquitectura de microservicios y múltiples tecnologías modernas. Proyecto desarrollado como trabajo autónomo siguiendo los requisitos del Segundo Parcial.
 
-### 🎯 Distribución de Componentes por Lenguaje
+### 🎯 Arquitectura de 4 Pilares (Segundo Parcial)
 
-- **🐍 Python (API REST)** - Servicio principal con CRUD completo y autenticación JWT
-- **💎 Ruby (WebSocket Server)** - Servidor de tiempo real para notificaciones y updates  
-- **⚡ TypeScript (Backend + Frontend)** - Servicios de dominio y interfaz de usuario React
+| Pilar | Servicio | Puerto | Tecnología |
+|-------|----------|--------|------------|
+| **1. Auth Service** | Autenticación JWT con refresh tokens | 8001 | Python/FastAPI |
+| **2. Payment Service** | Pasarela de pagos + Webhooks B2B | 8002 | Python/FastAPI |
+| **3. AI Orchestrator** | Chatbot MCP + Groq LLM | 8003 | Python/FastAPI |
+| **4. n8n Event Bus** | Orquestación de eventos | 5678 | n8n |
+
+### 🔧 Distribución de Componentes
+
+- **🐍 Python (API REST + Microservicios)** - Core API, Auth, Payments, AI
+- **💎 Ruby (WebSocket Server)** - Servidor de tiempo real para notificaciones
+- **⚡ TypeScript (GraphQL + Frontend)** - GraphQL y React UI con Chat IA
+- **🐳 Docker** - Orquestación de todos los servicios
 
 Aplicación web completa para la gestión integral del restaurante **Chuwue Grill**. Incluye interfaz de cliente para consultas y reservas, más un completo panel de administración para la gestión operativa del restaurante.
 
@@ -362,11 +372,185 @@ npm run dev
 - [x] **Tipado Compartido** - Interfaces consistentes entre servicios
 - [x] **Separación de Responsabilidades** - Cada lenguaje en su dominio
 
-### **🔄 Mejoras Futuras**
-- [ ] **Integración Completa** - Conectar todos los microservicios
-- [ ] **Base de Datos** - Persistencia con PostgreSQL/MongoDB
-- [ ] **Docker Compose** - Orquestación de contenedores
-- [ ] **Testing Integrado** - Pruebas end-to-end
-- [ ] **CI/CD Pipeline** - Deployment automatizado
-- [ ] **Monitoreo** - Logs y métricas centralizadas
+### **🔄 Segundo Parcial - Pilares Implementados**
+
+#### **Pilar 1: Auth Service (15%)**
+- [x] Microservicio independiente de autenticación
+- [x] JWT con access + refresh tokens
+- [x] Validación local de tokens (sin llamar al Auth Service)
+- [x] Base de datos SQLite propia
+- [x] Rate limiting en login
+- [x] Blacklist de tokens revocados
+
+#### **Pilar 2: Payment Service + Webhooks B2B (20%)**
+- [x] Patrón Adapter para pasarelas de pago
+- [x] MockAdapter (desarrollo) + StripeAdapter
+- [x] Registro de Partners B2B
+- [x] Webhooks bidireccionales con HMAC-SHA256
+- [x] Normalización de eventos
+
+#### **Pilar 3: MCP Chatbot Multimodal (20%)**
+- [x] AI Orchestrator con Groq LLM
+- [x] LLM Adapter abstracto (Strategy Pattern)
+- [x] 5 MCP Tools funcionales
+  - buscar_platos, ver_reserva (consulta)
+  - crear_reserva, registrar_cliente (acción)
+  - resumen_ventas (reporte)
+- [x] Chat UI en frontend
+- [x] Soporte multimodal (texto + imágenes)
+
+#### **Pilar 4: n8n Event Bus (15%)**
+- [x] Configuración Docker de n8n
+- [x] 4 Workflows obligatorios:
+  - Payment Handler
+  - Partner Handler
+  - WhatsApp Handler (Evolution API)
+  - Scheduled Tasks (cron diario)
+
+#### **Integración y Documentación**
+- [x] API Gateway con Nginx
+- [x] docker-compose.yml completo
+- [x] Estructura de errores estandarizada
+- [x] Dashboard con módulos de Chat, Pagos y Partners
+- [x] Documentación completa (PARTNER_INTEGRATION.md, MCP_TOOLS.md)
+
+---
+
+## 🚀 Quick Start con Docker
+
+```bash
+# Clonar repositorio
+git clone https://github.com/tu-usuario/Proyecto-autonomo-servidores.git
+cd Proyecto-autonomo-servidores
+
+# Copiar variables de entorno
+cp env.example .env
+
+# Configurar GROQ_API_KEY en .env (obtener en https://console.groq.com/)
+
+# Levantar todos los servicios
+docker-compose up -d
+
+# Acceder a:
+# - Frontend: http://localhost:5173
+# - API Gateway: http://localhost:80
+# - Auth Service: http://localhost:8001/auth/docs
+# - Payment Service: http://localhost:8002/docs
+# - AI Orchestrator: http://localhost:8003/chat/docs
+# - n8n: http://localhost:5678 (admin/admin123)
+```
+
+---
+
+## 📊 Diagrama de Arquitectura
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                        FRONTEND (React :5173)                     │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
+│  │ Chat UI     │ │ Dashboard   │ │ Pagos       │ │ Partners    │ │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
+└───────────────────────────┬──────────────────────────────────────┘
+                            │
+┌───────────────────────────▼──────────────────────────────────────┐
+│                    API GATEWAY (Nginx :80)                        │
+└───────────────────────────┬──────────────────────────────────────┘
+                            │
+    ┌───────────────────────┼───────────────────────┐
+    │                       │                       │
+┌───▼───┐ ┌─────────────────▼─────────────────┐ ┌───▼───┐
+│ Auth  │ │        Core Services              │ │  n8n  │
+│ :8001 │ │ ┌─────────┐ ┌─────────┐ ┌───────┐ │ │ :5678 │
+└───────┘ │ │Payment  │ │   AI    │ │ Core  │ │ └───────┘
+          │ │ :8002   │ │ :8003   │ │ :8000 │ │     │
+          │ └────┬────┘ └────┬────┘ └───────┘ │     │
+          └──────┼───────────┼────────────────┘     │
+                 │           │                      │
+            ┌────▼────┐ ┌────▼────┐           ┌────▼────┐
+            │ Stripe  │ │  Groq   │           │Evolution│
+            │  API    │ │   LLM   │           │   API   │
+            └─────────┘ └─────────┘           └────┬────┘
+                                                   │
+                                              ┌────▼────┐
+                                              │WhatsApp │
+                                              └─────────┘
+```
+
+---
+
+## 📁 Estructura del Proyecto (Actualizada)
+
+```
+Proyecto-autonomo-servidores/
+├── nginx/                    # API Gateway
+│   ├── nginx.conf
+│   └── Dockerfile
+├── backend/
+│   ├── auth_service/         # Pilar 1 - Auth
+│   │   ├── main.py
+│   │   ├── models/
+│   │   ├── routers/
+│   │   ├── utils/
+│   │   └── middleware/
+│   ├── payment_service/      # Pilar 2 - Payments
+│   │   ├── main.py
+│   │   ├── adapters/         # Mock, Stripe
+│   │   ├── models/
+│   │   ├── routers/
+│   │   └── utils/
+│   ├── ai_orchestrator/      # Pilar 3 - AI
+│   │   ├── main.py
+│   │   ├── adapters/         # Groq, Mock LLM
+│   │   ├── mcp/              # MCP Tools
+│   │   ├── models/
+│   │   └── routers/
+│   ├── apirest_python/       # Core API (P1)
+│   ├── Graphql_tp/           # GraphQL (P1)
+│   ├── websocket_ruby/       # WebSocket (P1)
+│   └── shared/               # Utilidades compartidas
+├── frontend/
+│   └── src/
+│       ├── components/
+│       │   └── ChatBot.tsx   # Chat IA Widget
+│       └── pages/admin/
+│           ├── Chat.tsx      # Panel de Chat
+│           ├── Pagos.tsx     # Gestión de Pagos
+│           └── Partners.tsx  # Partners B2B
+├── n8n/
+│   └── workflows/            # Pilar 4 - Workflows
+│       ├── payment_handler.json
+│       ├── partner_handler.json
+│       ├── whatsapp_handler.json
+│       └── scheduled_tasks.json
+├── docs/
+│   ├── PARTNER_INTEGRATION.md
+│   ├── MCP_TOOLS.md
+│   └── API_REFERENCE.md
+├── docker-compose.yml
+├── env.example
+└── README.md
+```
+
+---
+
+## 🔐 Webhooks Partner (Pendiente de Integración)
+
+Los webhooks bidireccionales están implementados como **PLACEHOLDER**.
+Para activar la integración con otro grupo:
+
+1. El partner registra su webhook:
+   ```bash
+   POST /partners/register
+   {
+     "partner_name": "Grupo-Tours",
+     "webhook_url": "https://partner.com/webhooks/chuwue",
+     "events": ["reservation.confirmed", "payment.success"]
+   }
+   ```
+
+2. Guardar el `shared_secret` retornado
+
+3. Verificar webhooks recibidos con HMAC-SHA256
+
+Ver documentación completa en `docs/PARTNER_INTEGRATION.md`
 

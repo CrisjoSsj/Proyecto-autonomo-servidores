@@ -1,0 +1,174 @@
+{
+  "name": "Payment Handler - Chuwue Grill",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "payment-webhook",
+        "responseMode": "responseNode"
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Validar payload del webhook\nconst payload = $input.all()[0].json;\n\nif (!payload.payment_id || !payload.event_type) {\n  throw new Error('Payload inválido: falta payment_id o event_type');\n}\n\n// Normalizar evento\nconst normalizedEvent = {\n  payment_id: payload.payment_id,\n  event_type: payload.event_type,\n  status: payload.status || 'unknown',\n  amount: payload.amount || 0,\n  currency: payload.currency || 'USD',\n  timestamp: new Date().toISOString(),\n  metadata: payload.metadata || {}\n};\n\nreturn [{ json: normalizedEvent }];"
+      },
+      "id": "validate-payload",
+      "name": "Validar Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.event_type }}",
+              "value2": "payment.success"
+            }
+          ]
+        }
+      },
+      "id": "check-success",
+      "name": "¿Pago Exitoso?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://core_api:8000/reservas/activate",
+        "method": "POST",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "payment_id",
+              "value": "={{ $json.payment_id }}"
+            }
+          ]
+        }
+      },
+      "id": "activate-service",
+      "name": "Activar Servicio",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [850, 200]
+    },
+    {
+      "parameters": {
+        "url": "http://websocket:3001/broadcast",
+        "method": "POST",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "event",
+              "value": "payment_confirmed"
+            },
+            {
+              "name": "data",
+              "value": "={{ JSON.stringify($json) }}"
+            }
+          ]
+        }
+      },
+      "id": "notify-websocket",
+      "name": "Notificar WebSocket",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1050, 200]
+    },
+    {
+      "parameters": {
+        "url": "http://payment_service:8002/partners/notify",
+        "method": "POST",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "event_type",
+              "value": "payment.success"
+            },
+            {
+              "name": "data",
+              "value": "={{ JSON.stringify($json) }}"
+            }
+          ]
+        }
+      },
+      "id": "notify-partner",
+      "name": "Webhook a Partner",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1250, 200]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { status: 'ok', message: 'Payment processed', payment_id: $json.payment_id } }}"
+      },
+      "id": "response-success",
+      "name": "Respuesta Exitosa",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1450, 200]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { status: 'logged', message: 'Non-success event logged' } }}"
+      },
+      "id": "response-logged",
+      "name": "Evento Registrado",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [850, 400]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [{ "node": "Validar Payload", "type": "main", "index": 0 }]
+      ]
+    },
+    "Validar Payload": {
+      "main": [
+        [{ "node": "¿Pago Exitoso?", "type": "main", "index": 0 }]
+      ]
+    },
+    "¿Pago Exitoso?": {
+      "main": [
+        [{ "node": "Activar Servicio", "type": "main", "index": 0 }],
+        [{ "node": "Evento Registrado", "type": "main", "index": 0 }]
+      ]
+    },
+    "Activar Servicio": {
+      "main": [
+        [{ "node": "Notificar WebSocket", "type": "main", "index": 0 }]
+      ]
+    },
+    "Notificar WebSocket": {
+      "main": [
+        [{ "node": "Webhook a Partner", "type": "main", "index": 0 }]
+      ]
+    },
+    "Webhook a Partner": {
+      "main": [
+        [{ "node": "Respuesta Exitosa", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    { "name": "payments" },
+    { "name": "webhooks" }
+  ]
+}

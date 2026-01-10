@@ -1,0 +1,112 @@
+{
+  "name": "Scheduled Tasks - Chuwue Grill",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 23 * * *"
+            }
+          ]
+        }
+      },
+      "id": "cron-daily",
+      "name": "Cron Diario 23:00",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://ai_orchestrator:8003/chat/message",
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"message\": \"resumen de ventas del día\",\n  \"channel\": \"system\",\n  \"user_id\": null\n}"
+      },
+      "id": "generate-report",
+      "name": "Generar Reporte Ventas",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Formatear reporte para email\nconst reportData = $input.all()[0].json;\n\nconst today = new Date().toLocaleDateString('es-EC', { \n  weekday: 'long', \n  year: 'numeric', \n  month: 'long', \n  day: 'numeric' \n});\n\nconst emailBody = `\n<h2>Reporte Diario - Chuwue Grill</h2>\n<p><strong>Fecha:</strong> ${today}</p>\n<hr>\n<p>${reportData.response || 'Sin datos disponibles'}</p>\n<hr>\n<p><em>Generado automáticamente por n8n</em></p>\n`;\n\nreturn [{\n  json: {\n    subject: `Reporte Diario Chuwue Grill - ${today}`,\n    body: emailBody,\n    generated_at: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "format-report",
+      "name": "Formatear Reporte",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Simular envío de email (en producción usar nodo de email)\nconst report = $input.all()[0].json;\n\nconsole.log('=== EMAIL ENVIADO ===');\nconsole.log('Subject:', report.subject);\nconsole.log('Body:', report.body);\nconsole.log('=====================');\n\nreturn [{\n  json: {\n    email_sent: true,\n    subject: report.subject,\n    sent_at: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "send-email",
+      "name": "Enviar Email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://auth_service:8001/cleanup/tokens",
+        "method": "DELETE"
+      },
+      "id": "cleanup-tokens",
+      "name": "Limpiar Tokens Expirados",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1050, 300],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Log final de tareas programadas\nconst now = new Date().toISOString();\n\nreturn [{\n  json: {\n    task: 'scheduled_daily',\n    completed_at: now,\n    steps: ['report_generated', 'email_sent', 'tokens_cleaned']\n  }\n}];"
+      },
+      "id": "log-complete",
+      "name": "Log Completado",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [1250, 300]
+    }
+  ],
+  "connections": {
+    "Cron Diario 23:00": {
+      "main": [
+        [{ "node": "Generar Reporte Ventas", "type": "main", "index": 0 }]
+      ]
+    },
+    "Generar Reporte Ventas": {
+      "main": [
+        [{ "node": "Formatear Reporte", "type": "main", "index": 0 }]
+      ]
+    },
+    "Formatear Reporte": {
+      "main": [
+        [{ "node": "Enviar Email", "type": "main", "index": 0 }]
+      ]
+    },
+    "Enviar Email": {
+      "main": [
+        [{ "node": "Limpiar Tokens Expirados", "type": "main", "index": 0 }]
+      ]
+    },
+    "Limpiar Tokens Expirados": {
+      "main": [
+        [{ "node": "Log Completado", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    { "name": "cron" },
+    { "name": "reports" }
+  ]
+}
