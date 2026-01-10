@@ -4,7 +4,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from routers import user, Restaurante, Reserva, Menu, Plato, Mesa, FilaVirtual, Cliente, CategoriaMenu, auth
 
 
-app = FastAPI()
+app = FastAPI(
+    title="Chuwue Grill API",
+    version="1.0.0",
+    description="API REST principal para operaciones del restaurante, reservas y menú."
+)
 
 # Configurar CORS para permitir peticiones desde el frontend
 app.add_middleware(
@@ -53,6 +57,17 @@ def pilar1_status(response: Response):
     response.headers["X-Pilar1"] = "enabled"
     response.headers["X-API-Version"] = "v1"
     return {"pilar": 1, "status": "ok", "api_rest": True, "version": "v1"}
+
+# Estado combinado de integración
+@app.get("/integracion/status")
+def integracion_status(response: Response):
+    response.headers["X-Pilar1"] = "enabled"
+    response.headers["X-Pilar2"] = "enabled"
+    response.headers["X-API-Version"] = "v1"
+    return {
+        "pilar1": {"status": "ok", "api_rest": True, "version": "v1"},
+        "pilar2": {"status": "ok", "b2b": True}
+    }
 
 if __name__ == "__main__":
     import uvicorn
