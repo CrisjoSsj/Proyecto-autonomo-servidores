@@ -1,15 +1,23 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chuwue Grill - Sabor que enamora</title>
+    <meta name="description" content="Chuwue Grill - Las mejores alitas y parrilladas premium de la ciudad. Reserva tu mesa y disfruta de una experiencia gastronómica única." />
+    <meta name="theme-color" content="#0a0a0a" />
+    <title>Chuwue Grill | Steakhouse Premium</title>
+    
+    <!-- Google Fonts - Premium Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+    
+    <!-- Material Symbols -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    
     <style>
+      /* Material Symbols Configuration */
       .material-symbols-outlined {
         font-family: 'Material Symbols Outlined';
         font-weight: normal;
@@ -24,6 +32,40 @@
         direction: ltr;
         -webkit-font-smoothing: antialiased;
         text-rendering: optimizeLegibility;
+        font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      }
+      
+      /* Prevent FOUC (Flash of Unstyled Content) */
+      html {
+        background-color: #0a0a0a;
+      }
+      
+      body {
+        opacity: 0;
+        animation: fadeInBody 0.3s ease-out 0.1s forwards;
+      }
+      
+      @keyframes fadeInBody {
+        to { opacity: 1; }
+      }
+      
+      /* Loading state */
+      #root:empty::before {
+        content: '';
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: 40px;
+        height: 40px;
+        margin: -20px 0 0 -20px;
+        border: 3px solid rgba(201, 169, 98, 0.2);
+        border-top-color: #c9a962;
+        border-radius: 50%;
+        animation: spinner 0.8s linear infinite;
+      }
+      
+      @keyframes spinner {
+        to { transform: rotate(360deg); }
       }
     </style>
   </head>

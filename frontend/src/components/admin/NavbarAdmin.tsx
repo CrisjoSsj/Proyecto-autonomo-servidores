@@ -8,7 +8,7 @@ interface Notificacion {
   id: string;
   tipo: 'reserva_confirmada' | 'reserva_rechazada' | 'reserva_pendiente' | 'reserva_nueva' | 'reserva_actualizada' | 'reserva_cancelada' | 'fila_nueva_entrada' | 'fila_salida' | 'mesa_actualizada';
   mensaje: string;
-  datos?: any;
+  datos?: Record<string, unknown>;
   timestamp: string; // Cambiar a string para JSON
   leida: boolean;
 }

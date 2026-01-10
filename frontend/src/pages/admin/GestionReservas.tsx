@@ -2,30 +2,14 @@ import { useCallback, useState, useEffect } from "react";
 import { apiService } from "../../services/ApiService";
 import NavbarAdmin from "../../components/admin/NavbarAdmin";
 import TarjetaReservaAdmin from "../../components/admin/TarjetaReservaAdmin";
+import type { Reserva, Mesa } from "../../types";
 import "../../css/admin/GestionReservas.css";
-
-interface Reserva {
-  id_reserva?: number;
-  id?: number;
-  id_cliente?: number;
-  id_mesa: number;
-  fecha: string;
-  hora_inicio: string;
-  hora_fin: string;
-  estado: string;
-  numero_personas?: number;
-  ocasion_especial?: string;
-  comentarios?: string;
-  nombre?: string;
-  telefono?: string;
-  email?: string;
-}
 
 export default function GestionReservas() {
   const [reservas, setReservas] = useState<Reserva[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [mesas, setMesas] = useState<any[]>([]);
+  const [mesas, setMesas] = useState<Mesa[]>([]);
   const [mostrarModalEditar, setMostrarModalEditar] = useState(false);
   const [reservaEnEdicion, setReservaEnEdicion] = useState<Reserva | null>(null);
   const [formEdicion, setFormEdicion] = useState({
@@ -105,7 +89,7 @@ export default function GestionReservas() {
         const reservasActuales = await apiService.getReservas();
         
         // Buscar reservas que deben cambiarse a "activa" (han llegado su hora)
-        const reservasParaActualizar = (reservasActuales || []).filter((r: any) => 
+        const reservasParaActualizar = (reservasActuales || []).filter((r) => 
           r.estado === 'confirmada' && 
           r.fecha === fechaHoy &&
           r.hora_inicio <= horaActual
@@ -129,7 +113,7 @@ export default function GestionReservas() {
       clearInterval(intervalo);
       clearInterval(intervaloAutoActualizar);
     };
-  }, [cargarReservas, cargarReservasSilenciosamente]);
+  }, [cargarReservas, cargarReservasSilenciosamente, cargarMesas]);
 
   // Handlers para botones de acciones
   const handleNuevaReserva = useCallback(() => {
@@ -160,7 +144,7 @@ export default function GestionReservas() {
     setMostrarModalEditar(true);
   }, [reservas]);
 
-  const handleChangeFormEdicion = (e: any) => {
+  const handleChangeFormEdicion = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormEdicion(prev => ({
       ...prev,
@@ -393,7 +377,7 @@ export default function GestionReservas() {
                 style={{ width: '100%', padding: '8px', marginBottom: '15px' }}
               >
                 <option value={0}>Selecciona una mesa</option>
-                {mesas.map((mesa: any) => (
+                {mesas.map((mesa) => (
                   <option key={mesa.id || mesa.id_mesa} value={mesa.id || mesa.id_mesa}>
                     Mesa {mesa.numero} ({mesa.capacidad} personas) - {mesa.estado}
                   </option>

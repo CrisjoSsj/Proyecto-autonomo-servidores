@@ -3,25 +3,9 @@ import NavbarAdmin from "../../components/admin/NavbarAdmin";
 import "../../css/admin/GestionMesas.css";
 import { apiService } from "../../services/ApiService";
 import { wsService } from "../../services/WebSocketService";
+import type { Mesa, PersonaFila, Reserva } from "../../types";
 
-type MesaEstado = "libre" | "disponible" | "ocupada" | "reservada" | "limpieza" | string;
-
-interface Mesa {
-  id: number;
-  numero: number;
-  capacidad: number;
-  estado: MesaEstado;
-  ubicacion?: string;
-}
-
-interface PersonaEnCola {
-  id?: number;
-  nombre?: string;
-  telefono?: string;
-  numeroPersonas?: number;
-  posicion?: number;
-  tiempoEstimado?: number;
-}
+type MesaEstado = Mesa['estado'];
 
 const ESTADOS_MESA = [
   { value: "libre", label: "Disponible" },
@@ -77,7 +61,7 @@ const tiempoRelativo = (fecha: Date | null): string => {
 
 export default function GestionMesas() {
   const [mesas, setMesas] = useState<Mesa[]>([]);
-  const [cola, setCola] = useState<PersonaEnCola[]>([]);
+  const [cola, setCola] = useState<PersonaFila[]>([]);
   const [loadingMesas, setLoadingMesas] = useState(false);
   const [loadingCola, setLoadingCola] = useState(false);
   const [errorMesas, setErrorMesas] = useState<string | null>(null);
@@ -90,7 +74,7 @@ export default function GestionMesas() {
   const [creandoMesa, setCreandoMesa] = useState(false);
   // Estado para el modal de selección de mesas
   const [mostrarModalMesas, setMostrarModalMesas] = useState(false);
-  const [clienteSeleccionado, setClienteSeleccionado] = useState<PersonaEnCola | null>(null);
+  const [clienteSeleccionado, setClienteSeleccionado] = useState<PersonaFila | null>(null);
 
   const cargarMesas = useCallback(async (showSpinner = false) => {
     if (showSpinner) {
@@ -101,21 +85,21 @@ export default function GestionMesas() {
       
       // Cargar reservas para actualizar el estado de las mesas
       try {
-        const reservas = await apiService.getReservas();
+        const reservas: Reserva[] = await apiService.getReservas();
         const hoy = new Date();
         const mesaConReserva = new Set<number>();
         
         // Marcar mesas que tienen reservas confirmadas para hoy
-        reservas.forEach((res: any) => {
+        reservas.forEach((res) => {
           if (res.estado === 'confirmada' && res.fecha === hoy.toISOString().split('T')[0]) {
             mesaConReserva.add(res.id_mesa);
           }
         });
         
         // Actualizar estado de mesas con reservas
-        const mesasActualizadas = (data || []).map((mesa: any) => ({
+        const mesasActualizadas: Mesa[] = (data || []).map((mesa) => ({
           ...mesa,
-          estado: mesaConReserva.has(mesa.numero || mesa.id_mesa) ? 'reservada' : mesa.estado
+          estado: mesaConReserva.has(mesa.numero || mesa.id) ? 'reservada' as const : mesa.estado
         }));
         
         setMesas(ordenarPorNumero(mesasActualizadas));
@@ -285,7 +269,8 @@ export default function GestionMesas() {
       });
       setFeedback(`Mesa ${mesa.numero} actualizada a estado ${estadoToLabel(nuevoEstado)}.`);
       setEstadoDrafts((prev) => {
-        const { [mesa.id]: _, ...rest } = prev;
+        const { [mesa.id]: _unused, ...rest } = prev;
+        void _unused; // Silenciar warning de variable no usada
         return rest;
       });
       await cargarMesas();
@@ -294,7 +279,8 @@ export default function GestionMesas() {
       setErrorMesas("No se pudo actualizar el estado de la mesa.");
     } finally {
       setAccionesEnProceso((prev) => {
-        const { [mesa.id]: _, ...rest } = prev;
+        const { [mesa.id]: _unused, ...rest } = prev;
+        void _unused;
         return rest;
       });
     }
@@ -316,7 +302,8 @@ export default function GestionMesas() {
       setErrorMesas("No se pudo eliminar la mesa seleccionada.");
     } finally {
       setAccionesEnProceso((prev) => {
-        const { [mesa.id]: _, ...rest } = prev;
+        const { [mesa.id]: _unused, ...rest } = prev;
+        void _unused;
         return rest;
       });
     }
@@ -328,7 +315,7 @@ export default function GestionMesas() {
   };
 
   const handleAsignarMesa = useCallback(
-    (cliente: PersonaEnCola) => {
+    (cliente: PersonaFila) => {
       // Abrir modal para seleccionar mesa
       setClienteSeleccionado(cliente);
       setMostrarModalMesas(true);
@@ -370,12 +357,13 @@ export default function GestionMesas() {
         setErrorMesas("No se pudo asignar la mesa al cliente.");
       } finally {
         setAccionesEnProceso((prev) => {
-          const { [mesaId]: _, ...rest } = prev;
+          const { [mesaId]: _unused, ...rest } = prev;
+          void _unused;
           return rest;
         });
       }
     },
-    [clienteSeleccionado, mesas]
+    [clienteSeleccionado, mesas, cargarMesas, cargarCola]
   );
 
   const handleEliminarDesCola = useCallback(async (clienteId: number | undefined) => {
@@ -394,7 +382,7 @@ export default function GestionMesas() {
       console.error("Error al eliminar de cola:", error);
       setErrorCola("No se pudo eliminar el cliente de la fila.");
     }
-  }, []);
+  }, [cargarCola]);
 
   return (
     <div className="gestion-mesas-admin">

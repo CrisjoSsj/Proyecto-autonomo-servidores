@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import "../../css/user/Navbar.css";
 
 const elementosNavegacion = [
@@ -9,36 +10,96 @@ const elementosNavegacion = [
 ];
 
 export default function Navbar() {
-  return (
-    <nav className="barra-navegacion">
-      <div className="contenedor-navegacion">
-        {/* Logo del restaurante */}
-        <div className="logo-restaurante">
-          <Link to="/" className="enlace-logo">
-            <h2 className="nombre-restaurante">Chuwue Grill</h2>
-          </Link>
-        </div>
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
 
-        {/* Menú de navegación */}
-        <div className="menu-navegacion">
+  useEffect(() => {
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 50;
+      if (isScrolled !== scrolled) {
+        setScrolled(isScrolled);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [scrolled]);
+
+  // Cerrar menú móvil al cambiar de ruta
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
+  const isActive = (ruta: string) => location.pathname === ruta;
+
+  return (
+    <nav className={`navbar-premium ${scrolled ? "navbar-scrolled" : ""}`}>
+      <div className="navbar-container">
+        {/* Logo */}
+        <Link to="/" className="navbar-logo">
+          <span className="logo-text">Chuwue</span>
+          <span className="logo-accent">Grill</span>
+        </Link>
+
+        {/* Navegación Desktop */}
+        <div className="navbar-links">
           {elementosNavegacion.map((elemento) => (
-            <Link 
-              key={elemento.ruta} 
-              to={elemento.ruta} 
-              className="enlace-navegacion"
+            <Link
+              key={elemento.ruta}
+              to={elemento.ruta}
+              className={`navbar-link ${isActive(elemento.ruta) ? "active" : ""}`}
             >
               {elemento.nombre}
+              <span className="link-underline"></span>
             </Link>
           ))}
         </div>
 
-        {/* Botón de contacto */}
-        {/*<div className="seccion-contacto-nav">
-          <a href="tel:099-123-4567" className="boton-contacto">
-            📞 Llamar
-          </a>
-        </div>*/}
+        {/* Botón Reservar */}
+        <Link to="/reservas" className="navbar-cta">
+          Reservar Mesa
+        </Link>
+
+        {/* Botón Hamburguesa Mobile */}
+        <button
+          className={`navbar-toggle ${menuOpen ? "open" : ""}`}
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Menú de navegación"
+          aria-expanded={menuOpen}
+        >
+          <span className="toggle-bar"></span>
+          <span className="toggle-bar"></span>
+          <span className="toggle-bar"></span>
+        </button>
       </div>
+
+      {/* Menú Mobile */}
+      <div className={`navbar-mobile ${menuOpen ? "open" : ""}`}>
+        <div className="mobile-links">
+          {elementosNavegacion.map((elemento) => (
+            <Link
+              key={elemento.ruta}
+              to={elemento.ruta}
+              className={`mobile-link ${isActive(elemento.ruta) ? "active" : ""}`}
+            >
+              {elemento.nombre}
+            </Link>
+          ))}
+          <Link to="/reservas" className="mobile-cta">
+            Reservar Mesa
+          </Link>
+        </div>
+      </div>
+
+      {/* Overlay para cerrar menú mobile */}
+      {menuOpen && (
+        <div 
+          className="navbar-overlay" 
+          onClick={() => setMenuOpen(false)}
+          aria-hidden="true"
+        />
+      )}
     </nav>
   );
 }

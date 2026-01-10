@@ -1,311 +1,423 @@
 /* ========================================
-   VARIABLES.CSS - GOLDIFOX COLOR SYSTEM
-   Sistema de colores globales inspirado en Pace Law
+   VARIABLES.CSS - CHUWUE GRILL PREMIUM
+   Sistema de diseño Steakhouse Premium
+   Paleta oscura con acentos dorados
    ======================================== */
 
 :root {
-  /* PALETA DE COLORES GOLDIFOX - PACE LAW
-     ===================================== 
-     - Trigo Dorado: #a39274 (acentos, bordes, enlaces)
-     - Trigo Blando: #dfd8c8 (fondos de secciones, textos secundarios)
-     - Gris Oscuro: #252523 (textos principales, navbar, footer)
-     - Plomo Oscuro: #6b6b6b (derechos reservados, textos terciarios)
-     - Blanco: #ffffff (fondos de tarjetas y contenido)
+  /* =====================================
+     PALETA DE COLORES PREMIUM STEAKHOUSE
      ===================================== */
 
-  /* Colores Principales */
-  --color-primary: #a39274;        /* Trigo Dorado - Acentos principales */
-  --color-primary-light: #b5a688;  /* Variante más clara del dorado */
-  --color-primary-dark: #8a7a5f;   /* Variante más oscura del dorado */
+  /* Fondos Oscuros - Base */
+  --color-background-main: #0a0a0a;        /* Negro profundo */
+  --color-background-card: #141414;         /* Carbon oscuro */
+  --color-background-alt: #1a1a1a;          /* Carbon medio */
+  --color-background-elevated: #1f1f1f;     /* Superficie elevada */
   
-  /* Colores de Fondo */
-  --color-background-main: #dfd8c8;    /* Trigo Blando - Fondo principal */
-  --color-background-card: #ffffff;    /* Blanco - Fondos de tarjetas */
-  --color-background-alt: #f5f5f5;     /* Gris muy claro - Alternativo */
+  /* Superficies (Navbar, Footer, Modales) */
+  --color-surface-dark: #0d0d0d;            /* Negro navbar/footer */
+  --color-surface-light: #1a1a1a;           /* Superficie alternativa */
   
-  /* Colores de Superficie (Navbar, Footer) */
-  --color-surface-dark: #252523;       /* Gris Oscuro - Navbar/Footer */
-  --color-surface-light: #dfd8c8;     /* Para superficies claras */
+  /* Dorados Premium - Acentos */
+  --color-primary: #c9a962;                 /* Dorado champagne principal */
+  --color-primary-light: #dcc88a;           /* Dorado claro - hover */
+  --color-primary-dark: #a68b4a;            /* Dorado oscuro - active */
+  --color-primary-muted: rgba(201, 169, 98, 0.15); /* Dorado translúcido */
   
-  /* Colores de Texto */
-  --color-text-primary: #252523;       /* Gris Oscuro - Texto principal */
-  --color-text-secondary: #6b6b6b;     /* Plomo Oscuro - Texto secundario */
-  --color-text-light: #dfd8c8;        /* Trigo Blando - Texto en fondos oscuros */
-  --color-text-accent: #a39274;       /* Trigo Dorado - Texto de acento */
+  /* Textos */
+  --color-text-primary: #f5f5f5;            /* Blanco suave - texto principal */
+  --color-text-secondary: #9ca3af;          /* Gris elegante - texto secundario */
+  --color-text-muted: #6b7280;              /* Gris apagado - texto terciario */
+  --color-text-light: #e5e5e5;              /* Blanco para fondos oscuros */
+  --color-text-accent: #c9a962;             /* Dorado para énfasis */
+  --color-text-dark: #0a0a0a;               /* Negro para fondos claros */
   
-  /* Colores de Estado */
-  --color-success: #38a169;           /* Verde para éxito */
-  --color-warning: #d69e2e;           /* Naranja para advertencias */
-  --color-error: #e53e3e;             /* Rojo para errores */
-  --color-info: #3182ce;              /* Azul para información */
+  /* Estados */
+  --color-success: #22c55e;                 /* Verde éxito */
+  --color-success-muted: rgba(34, 197, 94, 0.15);
+  --color-warning: #f59e0b;                 /* Ámbar advertencia */
+  --color-warning-muted: rgba(245, 158, 11, 0.15);
+  --color-error: #ef4444;                   /* Rojo error */
+  --color-error-muted: rgba(239, 68, 68, 0.15);
+  --color-info: #3b82f6;                    /* Azul información */
+  --color-info-muted: rgba(59, 130, 246, 0.15);
   
-  /* Bordes y Líneas */
-  --color-border-main: #a39274;       /* Borde principal dorado */
-  --color-border-light: #e2e2e2;      /* Borde sutil */
-  --color-border-dark: rgba(163, 146, 116, 0.2); /* Borde dorado translúcido */
+  /* Bordes */
+  --color-border-main: #c9a962;             /* Borde dorado principal */
+  --color-border-light: #2a2a2a;            /* Borde sutil oscuro */
+  --color-border-dark: rgba(201, 169, 98, 0.2); /* Borde dorado translúcido */
+  --color-border-muted: #1f1f1f;            /* Borde muy sutil */
   
-  /* Sombras */
-  --shadow-sm: 0 2px 4px rgba(37, 37, 35, 0.1);
-  --shadow-md: 0 4px 12px rgba(163, 146, 116, 0.15);
-  --shadow-lg: 0 8px 25px rgba(163, 146, 116, 0.2);
-  --shadow-navbar: 0 2px 8px rgba(0, 0, 0, 0.1);
-  --shadow-footer: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  /* Sombras Premium */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.6);
+  --shadow-gold: 0 4px 20px rgba(201, 169, 98, 0.15);
+  --shadow-gold-lg: 0 8px 32px rgba(201, 169, 98, 0.2);
+  --shadow-navbar: 0 2px 20px rgba(0, 0, 0, 0.5);
+  --shadow-footer: 0 -2px 20px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(201, 169, 98, 0.1);
   
-  /* Transparencias */
-  --opacity-overlay: rgba(37, 37, 35, 0.7);
-  --opacity-hover: rgba(163, 146, 116, 0.1);
-  --opacity-disabled: 0.6;
+  /* Overlays y Transparencias */
+  --overlay-dark: rgba(10, 10, 10, 0.85);
+  --overlay-medium: rgba(10, 10, 10, 0.7);
+  --overlay-light: rgba(10, 10, 10, 0.5);
+  --overlay-gold: rgba(201, 169, 98, 0.05);
+  --opacity-disabled: 0.5;
   --opacity-text-muted: 0.7;
   
-  /* Typography */
-  --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-family-heading: 'Inter', sans-serif;
+  /* =====================================
+     TIPOGRAFÍAS PREMIUM
+     ===================================== */
   
-  /* Espaciado - Más compacto y proporcionado */
+  --font-family-heading: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-family-primary: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-family-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  
+  /* Tamaños de Fuente */
+  --font-size-xs: 0.75rem;      /* 12px */
+  --font-size-sm: 0.875rem;     /* 14px */
+  --font-size-base: 1rem;       /* 16px */
+  --font-size-lg: 1.125rem;     /* 18px */
+  --font-size-xl: 1.25rem;      /* 20px */
+  --font-size-2xl: 1.5rem;      /* 24px */
+  --font-size-3xl: 1.875rem;    /* 30px */
+  --font-size-4xl: 2.25rem;     /* 36px */
+  --font-size-5xl: 3rem;        /* 48px */
+  --font-size-6xl: 3.75rem;     /* 60px */
+  --font-size-7xl: 4.5rem;      /* 72px */
+  
+  /* Pesos de Fuente */
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  /* Letter Spacing */
+  --letter-spacing-tight: -0.025em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.025em;
+  --letter-spacing-wider: 0.05em;
+  --letter-spacing-widest: 0.1em;
+  --letter-spacing-ultra: 0.2em;
+  
+  /* Line Heights */
+  --line-height-none: 1;
+  --line-height-tight: 1.25;
+  --line-height-snug: 1.375;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+  --line-height-loose: 2;
+  
+  /* =====================================
+     ESPACIADO
+     ===================================== */
+  
   --spacing-xs: 0.25rem;    /* 4px */
   --spacing-sm: 0.5rem;     /* 8px */
   --spacing-md: 1rem;       /* 16px */
   --spacing-lg: 1.5rem;     /* 24px */
   --spacing-xl: 2rem;       /* 32px */
-  --spacing-2xl: 2.5rem;    /* 40px - Reducido de 48px */
-  --spacing-3xl: 3rem;      /* 48px - Reducido de 64px */
+  --spacing-2xl: 3rem;      /* 48px */
+  --spacing-3xl: 4rem;      /* 64px */
+  --spacing-4xl: 6rem;      /* 96px */
+  --spacing-5xl: 8rem;      /* 128px */
   
-  /* Tamaños de Fuente - Responsivos y proporcionados */
-  --font-size-xs: 0.75rem;     /* 12px */
-  --font-size-sm: 0.875rem;    /* 14px */
-  --font-size-base: 1rem;      /* 16px */
-  --font-size-lg: 1.125rem;    /* 18px */
-  --font-size-xl: 1.25rem;     /* 20px */
-  --font-size-2xl: 1.5rem;     /* 24px */
-  --font-size-3xl: 1.75rem;    /* 28px - Más compacto */
-  --font-size-4xl: 2rem;       /* 32px - Más compacto */
-  --font-size-5xl: 2.5rem;     /* 40px - Para títulos principales */
+  /* =====================================
+     BORDES Y RADIOS
+     ===================================== */
   
-  /* Letter Spacing */
-  --letter-spacing-tight: -0.05em;
-  --letter-spacing-normal: 0;
-  --letter-spacing-wide: 0.05em;
-  --letter-spacing-wider: 0.1em;
+  --radius-none: 0;
+  --radius-sm: 0.25rem;     /* 4px */
+  --radius-md: 0.5rem;      /* 8px */
+  --radius-lg: 0.75rem;     /* 12px */
+  --radius-xl: 1rem;        /* 16px */
+  --radius-2xl: 1.5rem;     /* 24px */
+  --radius-full: 9999px;
   
-  /* Line Heights */
-  --line-height-tight: 1.25;
-  --line-height-normal: 1.5;
-  --line-height-relaxed: 1.6;
-  --line-height-loose: 1.8;
+  /* Alias para compatibilidad */
+  --border-radius-none: var(--radius-none);
+  --border-radius-sm: var(--radius-sm);
+  --border-radius-md: var(--radius-md);
+  --border-radius-lg: var(--radius-lg);
+  --border-radius-full: var(--radius-full);
   
-  /* Border Radius - Más compacto */
-  --border-radius-none: 0;
-  --border-radius-sm: 0.25rem;    /* 4px */
-  --border-radius-md: 0.5rem;     /* 8px */
-  --border-radius-lg: 0.75rem;    /* 12px */
-  --border-radius-full: 9999px;
+  /* =====================================
+     TRANSICIONES Y ANIMACIONES
+     ===================================== */
   
-  /* Transiciones - Más rápidas e intuitivas */
-  --transition-fast: 0.1s ease-out;
-  --transition-smooth: 0.2s ease-out;
-  --transition-normal: 0.3s ease-out;
+  --transition-fast: 150ms ease-out;
+  --transition-normal: 250ms ease-out;
+  --transition-smooth: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 500ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
   
-  /* Z-Index */
+  /* =====================================
+     Z-INDEX SCALE
+     ===================================== */
+  
+  --z-base: 0;
   --z-dropdown: 1000;
   --z-sticky: 1020;
+  --z-navbar: 1025;
   --z-fixed: 1030;
-  --z-modal: 1040;
-  --z-popover: 1050;
-  --z-tooltip: 1060;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
   
-  /* Breakpoints (para uso en media queries) */
+  /* =====================================
+     BREAKPOINTS (para referencia)
+     ===================================== */
+  
   --breakpoint-sm: 640px;
   --breakpoint-md: 768px;
   --breakpoint-lg: 1024px;
   --breakpoint-xl: 1280px;
   --breakpoint-2xl: 1536px;
+  
+  /* =====================================
+     CONTENEDORES
+     ===================================== */
+  
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1400px;
 }
 
 /* ========================================
-   UTILITY CLASSES - GOLDIFOX SYSTEM
-   Clases de utilidad para uso rápido
+   CLASES DE UTILIDAD PREMIUM
    ======================================== */
 
 /* Colores de Texto */
 .text-primary { color: var(--color-text-primary) !important; }
 .text-secondary { color: var(--color-text-secondary) !important; }
-.text-light { color: var(--color-text-light) !important; }
+.text-muted { color: var(--color-text-muted) !important; }
 .text-accent { color: var(--color-text-accent) !important; }
+.text-gold { color: var(--color-primary) !important; }
 
 /* Colores de Fondo */
 .bg-main { background-color: var(--color-background-main) !important; }
 .bg-card { background-color: var(--color-background-card) !important; }
-.bg-surface-dark { background-color: var(--color-surface-dark) !important; }
-.bg-primary { background-color: var(--color-primary) !important; }
+.bg-surface { background-color: var(--color-surface-dark) !important; }
+.bg-gold { background-color: var(--color-primary) !important; }
+.bg-gold-muted { background-color: var(--color-primary-muted) !important; }
 
 /* Bordes */
-.border-main { border-color: var(--color-border-main) !important; }
-.border-light { border-color: var(--color-border-light) !important; }
+.border-gold { border-color: var(--color-border-main) !important; }
+.border-subtle { border-color: var(--color-border-light) !important; }
 
 /* Sombras */
-.shadow-sm { box-shadow: var(--shadow-sm) !important; }
-.shadow-md { box-shadow: var(--shadow-md) !important; }
-.shadow-lg { box-shadow: var(--shadow-lg) !important; }
-
-/* Typography */
-.font-primary { font-family: var(--font-family-primary) !important; }
-.font-heading { font-family: var(--font-family-heading) !important; }
-
-/* Espaciado rápido */
-.p-xs { padding: var(--spacing-xs) !important; }
-.p-sm { padding: var(--spacing-sm) !important; }
-.p-md { padding: var(--spacing-md) !important; }
-.p-lg { padding: var(--spacing-lg) !important; }
-.p-xl { padding: var(--spacing-xl) !important; }
-
-.m-xs { margin: var(--spacing-xs) !important; }
-.m-sm { margin: var(--spacing-sm) !important; }
-.m-md { margin: var(--spacing-md) !important; }
-.m-lg { margin: var(--spacing-lg) !important; }
-.m-xl { margin: var(--spacing-xl) !important; }
+.shadow-premium { box-shadow: var(--shadow-md) !important; }
+.shadow-gold { box-shadow: var(--shadow-gold) !important; }
+.shadow-elevated { box-shadow: var(--shadow-lg) !important; }
 
 /* ========================================
-   COMPONENTES BASE - GOLDIFOX SYSTEM
-   Estilos base para componentes comunes
+   COMPONENTES BASE PREMIUM
    ======================================== */
 
-/* Botones */
-.btn-primary {
-  background-color: var(--color-primary);
-  color: white;
-  border: 2px solid var(--color-primary);
+/* Botón Primario Dorado */
+.btn-gold {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: var(--color-background-main);
+  border: none;
   padding: var(--spacing-md) var(--spacing-xl);
   font-family: var(--font-family-primary);
-  font-weight: 400;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
   text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-wide);
-  transition: var(--transition-normal);
-  border-radius: var(--radius-none);
+  letter-spacing: var(--letter-spacing-wider);
+  transition: var(--transition-smooth);
   cursor: pointer;
-  text-decoration: none;
-  display: inline-block;
+  position: relative;
+  overflow: hidden;
 }
 
-.btn-primary:hover {
-  background-color: var(--color-primary-dark);
-  border-color: var(--color-primary-dark);
-  box-shadow: var(--shadow-md);
+.btn-gold::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: var(--transition-slow);
 }
 
-.btn-outline {
-  background-color: transparent;
+.btn-gold:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-gold-lg);
+}
+
+.btn-gold:hover::before {
+  left: 100%;
+}
+
+/* Botón Outline Dorado */
+.btn-gold-outline {
+  background: transparent;
   color: var(--color-primary);
   border: 2px solid var(--color-primary);
   padding: var(--spacing-md) var(--spacing-xl);
   font-family: var(--font-family-primary);
-  font-weight: 400;
-  text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-wide);
-  transition: var(--transition-normal);
-  border-radius: var(--radius-none);
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-block;
-}
-
-.btn-outline:hover {
-  background-color: var(--color-primary);
-  color: white;
-}
-
-/* Tarjetas */
-.card {
-  background-color: var(--color-background-card);
-  border: 1px solid var(--color-border-light);
-  padding: var(--spacing-xl);
-  transition: var(--transition-normal);
-  box-shadow: var(--shadow-sm);
-}
-
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--color-border-main);
-}
-
-/* Enlaces */
-.link {
-  color: var(--color-text-accent);
-  text-decoration: none;
-  transition: var(--transition-fast);
-}
-
-.link:hover {
-  color: var(--color-primary-dark);
-  text-decoration: none;
-}
-
-/* Títulos profesionales */
-.heading-primary {
-  font-family: var(--font-family-heading);
-  font-size: var(--font-size-4xl);
-  font-weight: 300;
-  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
   text-transform: uppercase;
   letter-spacing: var(--letter-spacing-wider);
-  line-height: var(--line-height-tight);
-  margin-bottom: var(--spacing-lg);
+  transition: var(--transition-smooth);
+  cursor: pointer;
 }
 
-.heading-secondary {
+.btn-gold-outline:hover {
+  background: var(--color-primary);
+  color: var(--color-background-main);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-gold);
+}
+
+/* Tarjetas Premium */
+.card-premium {
+  background: var(--color-background-card);
+  border: 1px solid var(--color-border-light);
+  padding: var(--spacing-xl);
+  transition: var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+}
+
+.card-premium::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  opacity: 0;
+  transition: var(--transition-smooth);
+}
+
+.card-premium:hover {
+  border-color: var(--color-border-dark);
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-4px);
+}
+
+.card-premium:hover::before {
+  opacity: 1;
+}
+
+/* Títulos Premium */
+.heading-display {
   font-family: var(--font-family-heading);
-  font-size: var(--font-size-2xl);
-  font-weight: 400;
+  font-weight: var(--font-weight-normal);
   color: var(--color-text-primary);
-  text-transform: uppercase;
   letter-spacing: var(--letter-spacing-wide);
-  line-height: var(--line-height-normal);
-  margin-bottom: var(--spacing-md);
+  line-height: var(--line-height-tight);
 }
 
-/* Texto con opacidad */
-.text-muted {
-  opacity: var(--opacity-text-muted);
+.heading-gold {
+  font-family: var(--font-family-heading);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-primary);
+  letter-spacing: var(--letter-spacing-wide);
+  line-height: var(--line-height-tight);
+}
+
+/* Separador Dorado */
+.divider-gold {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  border: none;
+  margin: var(--spacing-lg) 0;
 }
 
 /* Contenedores */
-.container {
-  max-width: 1200px;
+.container-premium {
+  max-width: var(--container-xl);
   margin: 0 auto;
   padding: 0 var(--spacing-xl);
 }
 
 .container-wide {
-  max-width: 1400px;
+  max-width: var(--container-2xl);
   margin: 0 auto;
   padding: 0 var(--spacing-xl);
 }
 
 /* ========================================
-   GOLDIFOX DARK MODE (FUTURO)
-   Variables preparadas para modo oscuro
+   ANIMACIONES PREMIUM
    ======================================== */
 
-/* @media (prefers-color-scheme: dark) {
-  :root {
-    Preparado para futuras implementaciones de modo oscuro
-    Las variables se pueden sobrescribir aquí
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
   }
-} */
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes pulse-gold {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201, 169, 98, 0.4); }
+  50% { box-shadow: 0 0 0 10px rgba(201, 169, 98, 0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-pulse-gold {
+  animation: pulse-gold 2s infinite;
+}
+
+/* Delay classes para animaciones escalonadas */
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
 
 /* ========================================
    RESPONSIVE HELPERS
-   Utilidades para diseño responsivo
    ======================================== */
 
 @media (max-width: 768px) {
   :root {
-    --font-size-4xl: 2rem;      /* 32px en móvil */
-    --font-size-3xl: 1.75rem;   /* 28px en móvil */
-    --spacing-3xl: 3rem;        /* 48px en móvil */
+    --font-size-5xl: 2.5rem;
+    --font-size-6xl: 3rem;
+    --font-size-7xl: 3.5rem;
+    --spacing-3xl: 3rem;
+    --spacing-4xl: 4rem;
   }
   
-  .container,
+  .container-premium,
   .container-wide {
     padding: 0 var(--spacing-md);
   }
@@ -313,31 +425,40 @@
 
 @media (max-width: 480px) {
   :root {
-    --font-size-5xl: 2rem;      /* 32px - Título principal móvil */
-    --font-size-4xl: 1.75rem;   /* 28px en móvil pequeño */
-    --font-size-3xl: 1.5rem;    /* 24px en móvil pequeño */
-    --spacing-3xl: 2rem;        /* 32px en móvil pequeño */
-    --spacing-2xl: 1.5rem;      /* 24px en móvil pequeño */
+    --font-size-4xl: 2rem;
+    --font-size-5xl: 2.25rem;
+    --font-size-6xl: 2.5rem;
+    --spacing-2xl: 2rem;
+    --spacing-3xl: 2.5rem;
   }
 }
 
-/* Utilidades responsive globales */
-.text-responsive {
-  font-size: clamp(var(--font-size-sm), 2.5vw, var(--font-size-lg));
+/* ========================================
+   UTILIDADES RESPONSIVE
+   ======================================== */
+
+.text-responsive-hero {
+  font-size: clamp(2.5rem, 8vw, var(--font-size-7xl));
 }
 
-.title-responsive {
-  font-size: clamp(var(--font-size-2xl), 4vw, var(--font-size-4xl));
+.text-responsive-title {
+  font-size: clamp(1.875rem, 5vw, var(--font-size-5xl));
 }
 
-.hero-title-responsive {
-  font-size: clamp(var(--font-size-3xl), 6vw, var(--font-size-5xl));
+.text-responsive-subtitle {
+  font-size: clamp(1.125rem, 3vw, var(--font-size-xl));
 }
 
 .padding-responsive {
-  padding: clamp(var(--spacing-lg), 4vw, var(--spacing-3xl));
+  padding: clamp(var(--spacing-xl), 6vw, var(--spacing-4xl));
 }
 
-.margin-responsive {
-  margin: clamp(var(--spacing-md), 3vw, var(--spacing-2xl));
+/* Hide on mobile */
+@media (max-width: 768px) {
+  .hide-mobile { display: none !important; }
+}
+
+/* Hide on desktop */
+@media (min-width: 769px) {
+  .hide-desktop { display: none !important; }
 }

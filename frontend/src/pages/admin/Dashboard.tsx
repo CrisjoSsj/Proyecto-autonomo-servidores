@@ -1,20 +1,17 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import NavbarAdmin from "../../components/admin/NavbarAdmin";
-import { fetchDashboardData } from "../../services/GraphQLService";
+import { fetchDashboardData, DashboardData } from "../../services/GraphQLService";
 import { wsService } from "../../services/WebSocketService";
+import { apiService } from "../../services/ApiService";
+import type { 
+  EstadisticasMesas, 
+  EstadisticasReservas, 
+  EstadisticasFila,
+  Alerta,
+  WebSocketMessage
+} from "../../types";
 import "../../css/admin/Dashboard.css";
-
-interface Alerta {
-  id: string;
-  tipo: 'reserva' | 'fila' | 'mesa' | 'inventario';
-  titulo: string;
-  mensaje: string;
-  urgencia: 'urgente' | 'importante' | 'informativa';
-  timestamp: string; // Cambiar a string para JSON
-  datos?: any;
-  resuelta: boolean;
-}
 
 // Utilidades para localStorage
 const ALERTAS_STORAGE_KEY = 'alertas_dashboard';
@@ -39,10 +36,15 @@ const cargarAlertasDelStorage = (): Alerta[] => {
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [dashboardData, setDashboardData] = useState<any>(null);
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [alertas, setAlertas] = useState<Alerta[]>([]);
+  
+  // Nuevas estadísticas en tiempo real
+  const [estadisticasMesas, setEstadisticasMesas] = useState<EstadisticasMesas | null>(null);
+  const [estadisticasReservas, setEstadisticasReservas] = useState<EstadisticasReservas | null>(null);
+  const [estadisticasFila, setEstadisticasFila] = useState<EstadisticasFila | null>(null);
 
   // Cargar alertas del localStorage al montar
   useEffect(() => {
@@ -55,12 +57,32 @@ export default function Dashboard() {
     guardarAlertasEnStorage(alertas);
   }, [alertas]);
 
+  // Función para cargar estadísticas del backend
+  const cargarEstadisticas = useCallback(async () => {
+    try {
+      const [mesas, reservas, fila] = await Promise.all([
+        apiService.getEstadisticasMesas().catch(() => null),
+        apiService.getEstadisticasReservas().catch(() => null),
+        apiService.getEstadisticasFilaVirtual().catch(() => null)
+      ]);
+      
+      if (mesas) setEstadisticasMesas(mesas);
+      if (reservas) setEstadisticasReservas(reservas);
+      if (fila) setEstadisticasFila(fila);
+    } catch (err) {
+      console.error('Error cargando estadísticas:', err);
+    }
+  }, []);
+
   useEffect(() => {
     const loadDashboardData = async () => {
       try {
         const data = await fetchDashboardData();
         setDashboardData(data);
         setError(null);
+        
+        // Cargar estadísticas del backend Python
+        await cargarEstadisticas();
       } catch (err) {
         console.error('Error al cargar datos del dashboard:', err);
         setError('Error al cargar los datos del dashboard');
@@ -70,14 +92,18 @@ export default function Dashboard() {
     };
 
     loadDashboardData();
+    
+    // Actualizar estadísticas cada 30 segundos
+    const intervalo = setInterval(cargarEstadisticas, 30000);
 
     // Conectar WebSocket para recibir alertas en tiempo real
     wsService.connect();
 
     // Escuchar nuevas reservas
-    const unsubscribeReservas = wsService.subscribe('reservas', (message) => {
+    const unsubscribeReservas = wsService.subscribe('reservas', (message: WebSocketMessage) => {
       if (message.action === 'nueva_reserva') {
-        const reserva = message.data?.reserva;
+        const data = message.data as Record<string, unknown> | undefined;
+        const reserva = data?.reserva as Record<string, unknown> | undefined;
         const alerta: Alerta = {
           id: `alerta-${Date.now()}-${Math.random()}`,
           tipo: 'reserva',
@@ -93,9 +119,10 @@ export default function Dashboard() {
     });
 
     // Escuchar nuevas entradas en fila virtual
-    const unsubscribeFilaVirtual = wsService.subscribe('fila_virtual', (message) => {
+    const unsubscribeFilaVirtual = wsService.subscribe('fila_virtual', (message: WebSocketMessage) => {
       if (message.action === 'nueva_entrada') {
-        const persona = message.data?.persona;
+        const data = message.data as Record<string, unknown> | undefined;
+        const persona = data?.persona as Record<string, unknown> | undefined;
         const alerta: Alerta = {
           id: `alerta-${Date.now()}-${Math.random()}`,
           tipo: 'fila',
@@ -113,8 +140,9 @@ export default function Dashboard() {
     return () => {
       unsubscribeReservas();
       unsubscribeFilaVirtual();
+      clearInterval(intervalo);
     };
-  }, []);
+  }, [cargarEstadisticas]);
 
   // Handlers para acciones rápidas
   const handleIrAMesas = useCallback(() => {
@@ -170,48 +198,85 @@ export default function Dashboard() {
           <h1 className="titulo-dashboard">Panel de Administración</h1>
           <p className="subtitulo-dashboard">Gestiona tu restaurante Chuwue Grill</p>
           <div className="fecha-actual">
-            <span className="fecha">Hoy: Domingo, 22 de Septiembre 2025</span>
-            <span className="hora-actual">2:45 PM</span>
+            <span className="fecha">
+              {new Date().toLocaleDateString('es-ES', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              })}
+            </span>
+            <span className="hora-actual">
+              {new Date().toLocaleTimeString('es-ES', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+              })}
+            </span>
           </div>
         </div>
       </section>
 
-      {/* Estadísticas principales - Datos de GraphQL */}
+      {/* Estadísticas principales - Datos en tiempo real */}
       <section className="seccion-estadisticas">
         <div className="contenedor-estadisticas">
-          <h2 className="titulo-seccion-admin">Estadísticas de Hoy</h2>
+          <h2 className="titulo-seccion-admin">Estado Actual del Restaurante</h2>
           <div className="grilla-estadisticas">
             
+            {/* Mesas */}
             <div className="tarjeta-estadistica ventas">
               <div className="icono-estadistica ventas-icon">
-                <span className="material-symbols-outlined" style={{fontSize: '1.5rem', color: 'white'}}>event_note</span>
-              </div>
-              <div className="contenido-estadistica">
-                <h3 className="titulo-estadistica">Total de Reservas</h3>
-                <p className="valor-estadistica">{dashboardData?.totalReservas || 0}</p>
-                <span className="comparacion positiva">Datos en tiempo real</span>
-              </div>
-            </div>
-
-            <div className="tarjeta-estadistica ordenes">
-              <div className="icono-estadistica ordenes-icon">
                 <span className="material-symbols-outlined" style={{fontSize: '1.5rem', color: 'white'}}>table_restaurant</span>
               </div>
               <div className="contenido-estadistica">
-                <h3 className="titulo-estadistica">Mesas Populares</h3>
-                <p className="valor-estadistica">{dashboardData?.mesasPopulares?.length || 0}</p>
-                <span className="comparacion positiva">En análisis</span>
+                <h3 className="titulo-estadistica">Mesas Disponibles</h3>
+                <p className="valor-estadistica">
+                  {estadisticasMesas?.disponibles || 0} / {estadisticasMesas?.total || 0}
+                </p>
+                <span className={`comparacion ${estadisticasMesas?.disponibles === 0 ? 'negativa' : 'positiva'}`}>
+                  {estadisticasMesas?.ocupadas || 0} ocupadas • {estadisticasMesas?.reservadas || 0} reservadas
+                </span>
               </div>
             </div>
 
-            <div className="tarjeta-estadistica clientes">
-              <div className="icono-estadistica clientes-icon">
-                <span className="material-symbols-outlined" style={{fontSize: '1.5rem', color: 'white'}}>people</span>
+            {/* Reservas del día */}
+            <div className="tarjeta-estadistica ordenes">
+              <div className="icono-estadistica ordenes-icon">
+                <span className="material-symbols-outlined" style={{fontSize: '1.5rem', color: 'white'}}>event_note</span>
               </div>
               <div className="contenido-estadistica">
-                <h3 className="titulo-estadistica">Platos Más Pedidos</h3>
-                <p className="valor-estadistica">{dashboardData?.platosPopulares?.length || 0}</p>
-                <span className="comparacion neutra">Top platos</span>
+                <h3 className="titulo-estadistica">Reservas Hoy</h3>
+                <p className="valor-estadistica">{estadisticasReservas?.reservas_hoy || 0}</p>
+                <span className="comparacion neutra">
+                  {estadisticasReservas?.pendientes_hoy || 0} pendientes • {estadisticasReservas?.confirmadas_hoy || 0} confirmadas
+                </span>
+              </div>
+            </div>
+
+            {/* Fila Virtual */}
+            <div className="tarjeta-estadistica clientes">
+              <div className="icono-estadistica clientes-icon">
+                <span className="material-symbols-outlined" style={{fontSize: '1.5rem', color: 'white'}}>groups</span>
+              </div>
+              <div className="contenido-estadistica">
+                <h3 className="titulo-estadistica">En Fila Virtual</h3>
+                <p className="valor-estadistica">{estadisticasFila?.total_esperando || 0}</p>
+                <span className={`comparacion ${(estadisticasFila?.total_esperando || 0) > 5 ? 'negativa' : 'neutra'}`}>
+                  Espera máx: {estadisticasFila?.tiempo_espera_maximo || 0} min
+                </span>
+              </div>
+            </div>
+
+            {/* En curso */}
+            <div className="tarjeta-estadistica info">
+              <div className="icono-estadistica info-icon">
+                <span className="material-symbols-outlined" style={{fontSize: '1.5rem', color: 'white'}}>restaurant</span>
+              </div>
+              <div className="contenido-estadistica">
+                <h3 className="titulo-estadistica">En Curso Ahora</h3>
+                <p className="valor-estadistica">{estadisticasReservas?.en_curso || 0}</p>
+                <span className="comparacion positiva">
+                  {estadisticasReservas?.completadas_hoy || 0} completadas hoy
+                </span>
               </div>
             </div>
           </div>
@@ -223,7 +288,7 @@ export default function Dashboard() {
         <div className="contenedor-estado-actual">
           <h2 className="titulo-seccion-admin">Mesas más Utilizadas</h2>
           <div className="grilla-estado-actual">
-            {dashboardData?.mesasPopulares?.map((mesa: any) => (
+            {dashboardData?.mesasPopulares?.map((mesa) => (
               <div key={mesa.mesaId} className="tarjeta-estado">
                 <h3 className="titulo-estado">Mesa #{mesa.mesaId}</h3>
                 <div className="indicador-mesas">

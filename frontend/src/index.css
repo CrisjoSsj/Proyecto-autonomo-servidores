@@ -1,70 +1,124 @@
 /* ========================================
-   INDEX.CSS - ENTRADA PRINCIPAL DE ESTILOS
-   Sistema Goldifox con Tailwind CSS
+   INDEX.CSS - CHUWUE GRILL PREMIUM
+   Sistema de estilos global Steakhouse
    ======================================== */
 
-/* Importar variables globales Goldifox */
+/* Importar variables del sistema de diseño */
 @import './css/variables.css';
 
+/* Estilos globales del admin */
+@import './css/admin/Admin.css';
+
 /* Tailwind CSS */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 /* ========================================
-   ESTILOS GLOBALES BASE
-   Aplicación de variables Goldifox
+   RESET Y BASE GLOBAL
    ======================================== */
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  background-color: var(--color-background-main);
 }
 
 body {
-  font-family: var(--font-family-primary) !important;
-  color: var(--color-text-primary) !important;
-  background-color: var(--color-background-main) !important;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
   line-height: var(--line-height-normal);
-  margin: 0;
-  padding: 0;
+  color: var(--color-text-primary);
+  background-color: var(--color-background-main);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
 }
 
 #root {
   min-height: 100vh;
-  background-color: transparent;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ========================================
-   RESET DE ELEMENTOS COMUNES
+   TIPOGRAFÍA BASE
    ======================================== */
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-family-heading);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-tight);
   color: var(--color-text-primary);
   margin: 0;
-  line-height: var(--line-height-tight);
+}
+
+h1 {
+  font-size: var(--font-size-5xl);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+h2 {
+  font-size: var(--font-size-4xl);
+  letter-spacing: var(--letter-spacing-normal);
+}
+
+h3 {
+  font-size: var(--font-size-3xl);
+}
+
+h4 {
+  font-size: var(--font-size-2xl);
+}
+
+h5 {
+  font-size: var(--font-size-xl);
+}
+
+h6 {
+  font-size: var(--font-size-lg);
 }
 
 p {
   margin: 0 0 var(--spacing-md) 0;
   line-height: var(--line-height-relaxed);
+  color: var(--color-text-secondary);
 }
 
+p:last-child {
+  margin-bottom: 0;
+}
+
+/* ========================================
+   ENLACES
+   ======================================== */
+
 a {
-  color: var(--color-text-accent);
+  color: var(--color-primary);
   text-decoration: none;
   transition: var(--transition-fast);
 }
 
 a:hover {
-  color: var(--color-primary-dark);
+  color: var(--color-primary-light);
 }
+
+a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ========================================
+   BOTONES
+   ======================================== */
 
 button {
   font-family: var(--font-family-primary);
@@ -73,145 +127,394 @@ button {
   background: none;
   padding: 0;
   margin: 0;
+  font-size: inherit;
+  color: inherit;
 }
 
-input, textarea, select {
-  font-family: var(--font-family-primary);
-  color: var(--color-text-primary);
+button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 /* ========================================
-   UTILIDADES GLOBALES GOLDIFOX
+   FORMULARIOS
    ======================================== */
 
-.goldifox-container {
-  max-width: 1200px;
+input,
+textarea,
+select {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  background-color: var(--color-background-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  transition: var(--transition-fast);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-muted);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* ========================================
+   IMÁGENES Y MEDIA
+   ======================================== */
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+img {
+  border: 0;
+}
+
+/* ========================================
+   LISTAS
+   ======================================== */
+
+ul,
+ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* ========================================
+   SELECCIÓN DE TEXTO
+   ======================================== */
+
+::selection {
+  background-color: var(--color-primary);
+  color: var(--color-background-main);
+}
+
+::-moz-selection {
+  background-color: var(--color-primary);
+  color: var(--color-background-main);
+}
+
+/* ========================================
+   SCROLLBAR PREMIUM
+   ======================================== */
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background-main);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary-dark);
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-background-main);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--color-background-main);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary-dark) var(--color-background-main);
+}
+
+/* ========================================
+   ACCESIBILIDAD
+   ======================================== */
+
+/* Skip to main content link */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  background: var(--color-primary);
+  color: var(--color-background-main);
+  padding: var(--spacing-md) var(--spacing-lg);
+  z-index: 9999;
+  transition: top var(--transition-fast);
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Focus visible para accesibilidad */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ========================================
+   CONTENEDORES UTILITARIOS
+   ======================================== */
+
+.container {
+  width: 100%;
+  max-width: var(--container-xl);
   margin: 0 auto;
   padding: 0 var(--spacing-xl);
 }
 
-.goldifox-section {
-  padding: var(--spacing-3xl) 0;
+.container-wide {
+  max-width: var(--container-2xl);
+  margin: 0 auto;
+  padding: 0 var(--spacing-xl);
 }
 
-.goldifox-card {
-  background-color: var(--color-background-card);
-  border: 1px solid var(--color-border-light);
-  padding: var(--spacing-xl);
-  transition: var(--transition-normal);
-  box-shadow: var(--shadow-sm);
-}
-
-.goldifox-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--color-border-main);
-}
-
-.goldifox-text-muted {
-  opacity: var(--opacity-text-muted);
+@media (max-width: 768px) {
+  .container,
+  .container-wide {
+    padding: 0 var(--spacing-md);
+  }
 }
 
 /* ========================================
-   RESPONSIVE DESIGN GLOBALES
+   SECCIONES
    ======================================== */
 
+.section {
+  padding: var(--spacing-4xl) 0;
+}
+
+.section-dark {
+  background-color: var(--color-background-main);
+}
+
+.section-card {
+  background-color: var(--color-background-card);
+}
+
+.section-alt {
+  background-color: var(--color-background-alt);
+}
+
 @media (max-width: 768px) {
-  .goldifox-container {
-    padding: 0 var(--spacing-md);
-  }
-  
-  .goldifox-section {
+  .section {
     padding: var(--spacing-2xl) 0;
   }
 }
 
 /* ========================================
-   SCROLLBAR PERSONALIZADA GOLDIFOX
+   UTILIDADES DE DISEÑO
    ======================================== */
 
-::-webkit-scrollbar {
-  width: 8px;
+/* Flex utilities */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.gap-sm { gap: var(--spacing-sm); }
+.gap-md { gap: var(--spacing-md); }
+.gap-lg { gap: var(--spacing-lg); }
+.gap-xl { gap: var(--spacing-xl); }
+
+/* Text utilities */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+.uppercase { text-transform: uppercase; }
+.capitalize { text-transform: capitalize; }
+
+/* Spacing utilities */
+.mx-auto { margin-left: auto; margin-right: auto; }
+.mt-auto { margin-top: auto; }
+.mb-auto { margin-bottom: auto; }
+
+/* Width utilities */
+.w-full { width: 100%; }
+.max-w-full { max-width: 100%; }
+
+/* ========================================
+   ESTADOS DE CARGA
+   ======================================== */
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: var(--spacing-lg);
 }
 
-::-webkit-scrollbar-track {
-  background-color: var(--color-background-main);
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid var(--color-border-light);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
-::-webkit-scrollbar-thumb {
-  background-color: var(--color-primary);
-  border-radius: var(--radius-full);
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background-color: var(--color-primary-dark);
-}
-
-/* Firefox scrollbar */
-html {
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-primary) var(--color-background-main);
+.loading-text {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
 }
 
 /* ========================================
-   UTILIDADES RESPONSIVE AVANZADAS
-   Sistema adaptativo para elementos gigantes
+   ESTADOS DE ERROR
    ======================================== */
 
-/* Títulos adaptativos */
-.responsive-title-hero {
-  font-size: clamp(2rem, 8vw, var(--font-size-5xl));
-  line-height: var(--line-height-tight);
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: var(--spacing-lg);
+  text-align: center;
+  padding: var(--spacing-xl);
 }
 
-.responsive-title-section {
-  font-size: clamp(1.5rem, 5vw, var(--font-size-4xl));
-  line-height: var(--line-height-tight);
+.error-icon {
+  font-size: 4rem;
+  color: var(--color-error);
 }
 
-.responsive-title-card {
-  font-size: clamp(1.25rem, 3vw, var(--font-size-2xl));
+.error-title {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-2xl);
+  color: var(--color-text-primary);
 }
 
-/* Espaciado adaptativo */
-.responsive-padding {
-  padding: clamp(var(--spacing-lg), 5vw, var(--spacing-3xl));
+.error-message {
+  color: var(--color-text-secondary);
+  max-width: 400px;
 }
 
-.responsive-margin {
-  margin: clamp(var(--spacing-md), 4vw, var(--spacing-2xl));
-}
+/* ========================================
+   RESPONSIVE GRID SYSTEM
+   ======================================== */
 
-/* Botones adaptativos */
-.responsive-button {
-  padding: clamp(var(--spacing-sm), 2vw, var(--spacing-md)) clamp(var(--spacing-md), 4vw, var(--spacing-lg));
-  font-size: clamp(var(--font-size-sm), 2.5vw, var(--font-size-base));
-  border-radius: var(--border-radius-sm);
-  transition: var(--transition-smooth);
-}
-
-/* Grid responsivo inteligente */
-.responsive-grid {
+.grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: clamp(var(--spacing-md), 3vw, var(--spacing-xl));
+  gap: var(--spacing-lg);
 }
 
-/* Optimizaciones móviles específicas */
-@media (max-width: 480px) {
-  .hide-mobile {
-    display: none;
-  }
-  
-  .stack-mobile {
-    flex-direction: column !important;
-  }
-  
-  .full-width-mobile {
-    width: 100% !important;
-  }
-  
-  .text-center-mobile {
-    text-align: center !important;
-  }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+.grid-auto {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+@media (max-width: 1024px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .grid-2,
+  .grid-3,
+  .grid-4 { grid-template-columns: 1fr; }
+}
+
+/* ========================================
+   MATERIAL SYMBOLS CONFIG
+   ======================================== */
+
+.material-symbols-outlined {
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 300,
+    'GRAD' 0,
+    'opsz' 24;
+  vertical-align: middle;
+  /* Por defecto hereda el color del padre, pero forzamos dorado en secciones de usuario */
+}
+
+.material-symbols-outlined.filled {
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+}
+
+/* ========================================
+   ICONOS - FORZAR COLOR DORADO EN USUARIO
+   ======================================== */
+
+/* Iconos en tarjetas de servicios, info, etc. */
+.service-icon .material-symbols-outlined,
+.info-icon.material-symbols-outlined,
+.menu-category-icon .material-symbols-outlined,
+.hero-scroll-indicator .material-symbols-outlined,
+.dish-badge .material-symbols-outlined,
+.alert-icon.material-symbols-outlined {
+  color: var(--color-primary) !important;
+}
+
+/* Iconos de error mantienen rojo */
+.error-icon.material-symbols-outlined {
+  color: var(--color-error) !important;
+}
+
+/* Iconos de warning mantienen ámbar */
+.alert-card.warning .alert-icon.material-symbols-outlined {
+  color: var(--color-warning) !important;
+}
+
+/* Iconos de urgente mantienen rojo */
+.alert-card.urgent .alert-icon.material-symbols-outlined {
+  color: var(--color-error) !important;
+}
+
+/* Iconos en enlaces heredan color del padre (no el color de enlace) */
+a .material-symbols-outlined,
+button .material-symbols-outlined {
+  color: inherit;
+}
+
+/* Iconos en botones primarios */
+.btn-primary .material-symbols-outlined,
+.btn-secondary .material-symbols-outlined,
+.btn-outline .material-symbols-outlined {
+  color: inherit !important;
 }

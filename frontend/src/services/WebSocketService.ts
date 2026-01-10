@@ -4,18 +4,15 @@
  * Conecta a ws://localhost:8080
  */
 
-type MessageCallback = (message: any) => void;
+import type { WebSocketChannel, WebSocketMessage, MessageCallback } from '../types';
 
-interface WebSocketMessage {
-  channel: 'fila_virtual' | 'mesas' | 'reservas';
-  action: string;
-  data: any;
-}
+// Re-exportar tipos para compatibilidad
+export type { WebSocketMessage, MessageCallback };
 
 class WebSocketService {
   private ws: WebSocket | null = null;
   private reconnectInterval: number = 5000; // 5 segundos
-  private reconnectTimer: number | null = null;
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private listeners: Map<string, Set<MessageCallback>> = new Map();
   private isConnecting: boolean = false;
   private shouldReconnect: boolean = true;
@@ -36,7 +33,7 @@ class WebSocketService {
     try {
       this.ws = new WebSocket('ws://localhost:8080');
 
-      this.ws.onopen = () => {
+      this.ws.onopen = (): void => {
         console.log('✅ WebSocket: Conectado exitosamente');
         this.isConnecting = false;
         if (this.reconnectTimer) {
@@ -45,9 +42,9 @@ class WebSocketService {
         }
       };
 
-      this.ws.onmessage = (event) => {
+      this.ws.onmessage = (event: MessageEvent): void => {
         try {
-          const message = JSON.parse(event.data);
+          const message = JSON.parse(event.data) as WebSocketMessage;
           console.log('📨 WebSocket: Mensaje recibido:', message);
           this.handleMessage(message);
         } catch (error) {
@@ -55,12 +52,12 @@ class WebSocketService {
         }
       };
 
-      this.ws.onerror = (error) => {
+      this.ws.onerror = (error: Event): void => {
         console.error('❌ WebSocket: Error de conexión:', error);
         this.isConnecting = false;
       };
 
-      this.ws.onclose = () => {
+      this.ws.onclose = (): void => {
         console.log('🔌 WebSocket: Conexión cerrada');
         this.isConnecting = false;
         this.ws = null;
@@ -112,7 +109,7 @@ class WebSocketService {
   /**
    * Manejar mensajes recibidos y notificar a los listeners
    */
-  private handleMessage(message: any): void {
+  private handleMessage(message: WebSocketMessage): void {
     const channel = message.channel?.toLowerCase();
     if (!channel) return;
 
@@ -222,7 +219,7 @@ class WebSocketService {
   /**
    * RESERVAS - Nueva reserva
    */
-  newReserva(reservaData: any): void {
+  newReserva(reservaData: Record<string, unknown>): void {
     this.send({
       channel: 'reservas',
       action: 'crear',
@@ -247,7 +244,7 @@ class WebSocketService {
   /**
    * RESERVAS - Actualizar reserva
    */
-  updateReserva(reservaId: number, updates: any): void {
+  updateReserva(reservaId: number, updates: Record<string, unknown>): void {
     this.send({
       channel: 'reservas',
       action: 'actualizar',
@@ -291,5 +288,5 @@ class WebSocketService {
 // Exportar instancia singleton
 export const wsService = new WebSocketService();
 
-// Exportar tipos
-export type { WebSocketMessage, MessageCallback };
+// Re-exportar tipo de canal para uso externo
+export type { WebSocketChannel };

@@ -542,7 +542,7 @@ export default function GestionMenu() {
             <h2>{editingPlato ? 'Editar Plato' : 'Crear Nuevo Plato'}</h2>
             <form onSubmit={(e) => {
               e.preventDefault();
-              editingPlato ? actualizarPlato() : crearPlato();
+              if (editingPlato) { actualizarPlato(); } else { crearPlato(); }
             }}>
               <div className="form-group">
                 <label>Nombre:</label>
@@ -610,7 +610,7 @@ export default function GestionMenu() {
             <h2>{editingCategoria ? 'Editar Categoría' : 'Crear Nueva Categoría'}</h2>
             <form onSubmit={(e) => {
               e.preventDefault();
-              editingCategoria ? actualizarCategoria() : crearCategoria();
+              if (editingCategoria) { actualizarCategoria(); } else { crearCategoria(); }
             }}>
               <div className="form-group">
                 <label>Nombre de la categoría:</label>

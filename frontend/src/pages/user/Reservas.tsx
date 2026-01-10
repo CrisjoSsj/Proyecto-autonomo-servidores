@@ -2,274 +2,174 @@ import Navbar from "../../components/user/Navbar";
 import ReservaForm from "../../components/user/ReservaForm";
 import PiePagina from "../../components/user/PiePagina";
 import "../../css/user/Reservas.css";
+
 export default function Reservas() {
   return (
-    <div>
+    <div className="page-wrapper">
       <Navbar />
       
-      {/* Banner de reservas */}
-      <section className="banner-reservas">
-        <div className="contenedor-banner-reservas">
-          <h1 className="titulo-reservas">Reserva tu Mesa</h1>
-          <p className="subtitulo-reservas">Asegura tu lugar para fechas especiales y eventos importantes</p>
-          <p className="descripcion-reservas">
-            Perfecto para cumpleaños, aniversarios, citas románticas y celebraciones familiares
+      {/* Hero de Reservas */}
+      <section className="reservas-hero">
+        <div className="reservas-hero-overlay"></div>
+        <div className="reservas-hero-content">
+          <p className="reservas-hero-tagline">Experiencia Premium</p>
+          <h1 className="reservas-hero-title">Reserva tu Mesa</h1>
+          <p className="reservas-hero-subtitle">
+            Asegura tu lugar para una experiencia gastronómica inolvidable
           </p>
         </div>
       </section>
 
-      {/* ¿Por qué reservar con anticipación? */}
-      <section className="seccion-ventajas-reserva">
-        <div className="contenedor-ventajas">
-          <h2 className="titulo-ventajas">¿Por qué reservar con anticipación?</h2>
-          <div className="grilla-ventajas">
-            <div className="tarjeta-ventaja">
-              <div className="icono-ventaja garantia">
-                <span className="material-symbols-outlined">table_restaurant</span>
-              </div>
-              <h3 className="titulo-ventaja">Mesa Garantizada</h3>
-              <p className="descripcion-ventaja">
-                Tu mesa estará lista exactamente a la hora que elijas, sin esperas
-              </p>
+      {/* Ventajas */}
+      <section className="reservas-benefits">
+        <div className="section-container">
+          <div className="benefits-grid">
+            <div className="benefit-card">
+              <span className="material-symbols-outlined benefit-icon">table_restaurant</span>
+              <h3 className="benefit-title">Mesa Garantizada</h3>
+              <p className="benefit-text">Tu mesa estará lista exactamente a la hora elegida</p>
             </div>
-            <div className="tarjeta-ventaja">
-              <div className="icono-ventaja fechas-especiales">
-                <span className="material-symbols-outlined">calendar_today</span>
-              </div>
-              <h3 className="titulo-ventaja">Fechas Especiales</h3>
-              <p className="descripcion-ventaja">
-                Ideal para cumpleaños, aniversarios, Día de San Valentín y celebraciones
-              </p>
+            <div className="benefit-card">
+              <span className="material-symbols-outlined benefit-icon">schedule</span>
+              <h3 className="benefit-title">Sin Esperas</h3>
+              <p className="benefit-text">Acceso directo sin hacer cola al llegar</p>
             </div>
-            <div className="tarjeta-ventaja">
-              <div className="icono-ventaja atencion-preferencial">
-                <span className="material-symbols-outlined">support_agent</span>
-              </div>
-              <h3 className="titulo-ventaja">Atención Preferencial</h3>
-              <p className="descripcion-ventaja">
-                Servicio prioritario y posibilidad de solicitar decoraciones especiales
-              </p>
+            <div className="benefit-card">
+              <span className="material-symbols-outlined benefit-icon">star</span>
+              <h3 className="benefit-title">Atención Premium</h3>
+              <p className="benefit-text">Servicio prioritario durante toda tu visita</p>
             </div>
-            <div className="tarjeta-ventaja">
-              <div className="icono-ventaja horarios-premium">
-                <span className="material-symbols-outlined">schedule</span>
-              </div>
-              <h3 className="titulo-ventaja">Mejores Horarios</h3>
-              <p className="descripcion-ventaja">
-                Acceso a horarios premium especialmente en fines de semana
-              </p>
+            <div className="benefit-card">
+              <span className="material-symbols-outlined benefit-icon">celebration</span>
+              <h3 className="benefit-title">Ocasiones Especiales</h3>
+              <p className="benefit-text">Decoración personalizada para celebraciones</p>
             </div>
           </div>
         </div>
       </section>
 
-      <div className="contenedor-reservas">
-        {/* Información importante para reservas */}
-        <section className="seccion-informacion-reservas">
-          <div className="tarjeta-informacion-reservas">
-            <h2 className="titulo-informacion-reservas">Información Importante</h2>
-            <div className="contenido-informacion">
-              <div className="columna-informacion">
-                <h3 className="subtitulo-informacion">Política de Reservas</h3>
-                <ul className="lista-informacion-reservas">
-                  <li className="item-informacion-reservas">
-                    <span className="material-symbols-outlined">schedule</span> Reservas deben hacerse con <strong>mínimo 4 horas</strong> de anticipación
+      {/* Formulario Principal */}
+      <section className="reservas-form-section">
+        <div className="section-container">
+          <div className="reservas-layout">
+            {/* Columna del Formulario */}
+            <div className="form-column">
+              <div className="form-wrapper">
+                <header className="form-header">
+                  <h2 className="form-title">Completa tu Reserva</h2>
+                  <p className="form-subtitle">Todos los campos son requeridos</p>
+                </header>
+                <ReservaForm />
+              </div>
+            </div>
+
+            {/* Columna de Información */}
+            <div className="info-column">
+              {/* Políticas */}
+              <div className="info-card">
+                <h3 className="info-card-title">
+                  <span className="material-symbols-outlined">info</span>
+                  Información Importante
+                </h3>
+                <ul className="info-list">
+                  <li>
+                    <span className="material-symbols-outlined">schedule</span>
+                    Reservas con mínimo 4 horas de anticipación
                   </li>
-                  <li className="item-informacion-reservas">
-                    <span className="material-symbols-outlined">calendar_month</span> Para fechas especiales (fines de semana, feriados): <strong>24 horas</strong> de anticipación
+                  <li>
+                    <span className="material-symbols-outlined">calendar_month</span>
+                    Fines de semana: 24 horas de anticipación
                   </li>
-                  <li className="item-informacion-reservas">
-                    <span className="material-symbols-outlined">groups</span> Grupos de más de 8 personas requieren <strong>confirmación telefónica</strong>
+                  <li>
+                    <span className="material-symbols-outlined">timer</span>
+                    Tiempo máximo de reserva: 2 horas
                   </li>
-                  <li className="item-informacion-reservas">
-                    <span className="material-symbols-outlined">timer</span> Tiempo máximo de reserva: <strong>2 horas</strong>
+                  <li>
+                    <span className="material-symbols-outlined">notification_important</span>
+                    Llega máximo 15 minutos tarde
                   </li>
                 </ul>
               </div>
-              <div className="columna-informacion">
-                <h3 className="subtitulo-informacion">Confirmación</h3>
-                <ul className="lista-informacion-reservas">
-                  <li className="item-informacion-reservas">
-                    <span className="material-symbols-outlined">phone</span> Te llamaremos para <strong>confirmar</strong> en los próximos 30 minutos
-                  </li>
-                  <li className="item-informacion-reservas">
-                    <span className="material-symbols-outlined">sms</span> Recibirás un <strong>SMS de recordatorio</strong> 2 horas antes
-                  </li>
-                  <li className="item-informacion-reservas">
-                    <span className="material-symbols-outlined">schedule</span> Llega <strong>máximo 15 minutos tarde</strong> o perderás la reserva
-                  </li>
-                  <li className="item-informacion-reservas">
-                    <span className="material-symbols-outlined">celebration</span> Podemos ayudarte con <strong>decoraciones especiales</strong> (consultar)
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
 
-        {/* Formulario de reserva */}
-        <section className="seccion-formulario-reserva">
-          <div className="contenedor-formulario">
-            <h2 className="titulo-formulario">Completa tu Reserva</h2>
-            <p className="descripcion-formulario">
-              Llena todos los campos para garantizar tu mesa en la fecha y hora deseada
-            </p>
-            <ReservaForm />
-          </div>
-        </section>
+              {/* Horarios */}
+              <div className="info-card">
+                <h3 className="info-card-title">
+                  <span className="material-symbols-outlined">schedule</span>
+                  Horarios de Reserva
+                </h3>
+                <div className="hours-block">
+                  <div className="hours-row">
+                    <span className="hours-day">Lun - Jue</span>
+                    <span className="hours-time">11:30 AM - 9:00 PM</span>
+                  </div>
+                  <div className="hours-row">
+                    <span className="hours-day">Vie - Sáb</span>
+                    <span className="hours-time">12:00 PM - 9:30 PM</span>
+                  </div>
+                  <div className="hours-row">
+                    <span className="hours-day">Domingo</span>
+                    <span className="hours-time">12:00 PM - 8:00 PM</span>
+                  </div>
+                </div>
+              </div>
 
-        {/* Ocasiones especiales */}
-        <section className="seccion-ocasiones-especiales">
-          <div className="contenedor-ocasiones">
-            <h2 className="titulo-ocasiones">Ocasiones Especiales</h2>
-            <p className="descripcion-ocasiones">
-              Hacemos que tus momentos especiales sean inolvidables
-            </p>
-            <div className="grilla-ocasiones">
-              <div className="tarjeta-ocasion">
-                <div className="icono-ocasion cumpleanos">
-                  <span className="material-symbols-outlined">celebration</span>
-                </div>
-                <h3 className="titulo-ocasion">Cumpleaños</h3>
-                <p className="descripcion-ocasion">
-                  Globos, decoración especial y postre de cortesía para el cumpleañero
-                </p>
-              </div>
-              <div className="tarjeta-ocasion">
-                <div className="icono-ocasion aniversario">
-                  <span className="material-symbols-outlined">favorite</span>
-                </div>
-                <h3 className="titulo-ocasion">Aniversarios</h3>
-                <p className="descripcion-ocasion">
-                  Mesa decorada con velas, pétalos de rosa y atención romántica
-                </p>
-              </div>
-              <div className="tarjeta-ocasion">
-                <div className="icono-ocasion cita">
-                  <span className="material-symbols-outlined">dining</span>
-                </div>
-                <h3 className="titulo-ocasion">Citas Románticas</h3>
-                <p className="descripcion-ocasion">
-                  Mesas en ubicaciones especiales con ambiente íntimo y música suave
-                </p>
-              </div>
-              <div className="tarjeta-ocasion">
-                <div className="icono-ocasion celebracion">
-                  <span className="material-symbols-outlined">celebration</span>
-                </div>
-                <h3 className="titulo-ocasion">Celebraciones</h3>
-                <p className="descripcion-ocasion">
-                  Graduaciones, promociones laborales y logros importantes
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Horarios disponibles para reservas */}
-        <section className="seccion-horarios-reservas">
-          <div className="contenedor-horarios-reservas">
-            <h2 className="titulo-horarios-reservas">Horarios Disponibles para Reservas</h2>
-            <div className="grilla-horarios-reservas">
-              <div className="bloque-horario">
-                <h3 className="dia-horario">Lunes a Jueves</h3>
-                <div className="horarios-disponibles">
-                  <span className="horario-item">11:30 AM</span>
-                  <span className="horario-item">12:00 PM</span>
-                  <span className="horario-item">12:30 PM</span>
-                  <span className="horario-item">1:00 PM</span>
-                  <span className="horario-item">1:30 PM</span>
-                  <span className="horario-item">2:00 PM</span>
-                  <span className="horario-item">6:30 PM</span>
-                  <span className="horario-item">7:00 PM</span>
-                  <span className="horario-item">7:30 PM</span>
-                  <span className="horario-item">8:00 PM</span>
-                  <span className="horario-item">8:30 PM</span>
-                  <span className="horario-item">9:00 PM</span>
-                </div>
-              </div>
-              
-              <div className="bloque-horario">
-                <h3 className="dia-horario">Viernes y Sábado</h3>
-                <div className="horarios-disponibles">
-                  <span className="horario-item">12:00 PM</span>
-                  <span className="horario-item">12:30 PM</span>
-                  <span className="horario-item">1:00 PM</span>
-                  <span className="horario-item">1:30 PM</span>
-                  <span className="horario-item">2:00 PM</span>
-                  <span className="horario-item premium">7:00 PM <span className="material-symbols-outlined">star</span></span>
-                  <span className="horario-item premium">7:30 PM <span className="material-symbols-outlined">star</span></span>
-                  <span className="horario-item premium">8:00 PM <span className="material-symbols-outlined">star</span></span>
-                  <span className="horario-item premium">8:30 PM <span className="material-symbols-outlined">star</span></span>
-                  <span className="horario-item">9:00 PM</span>
-                  <span className="horario-item">9:30 PM</span>
-                </div>
-                <p className="nota-horario"><span className="material-symbols-outlined" style={{fontSize: '16px', verticalAlign: 'middle'}}>star</span> Horarios premium - Mayor demanda</p>
-              </div>
-              
-              <div className="bloque-horario">
-                <h3 className="dia-horario">Domingo</h3>
-                <div className="horarios-disponibles">
-                  <span className="horario-item">12:00 PM</span>
-                  <span className="horario-item">12:30 PM</span>
-                  <span className="horario-item">1:00 PM</span>
-                  <span className="horario-item">1:30 PM</span>
-                  <span className="horario-item">2:00 PM</span>
-                  <span className="horario-item">6:00 PM</span>
-                  <span className="horario-item">6:30 PM</span>
-                  <span className="horario-item">7:00 PM</span>
-                  <span className="horario-item">7:30 PM</span>
-                  <span className="horario-item">8:00 PM</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Contacto para reservas especiales */}
-        <section className="seccion-contacto-especial">
-          <div className="tarjeta-contacto-especial">
-            <h2 className="titulo-contacto-especial">Reservas Especiales y Eventos Privados</h2>
-            <p className="descripcion-contacto-especial">
-              Para grupos grandes, eventos corporativos o celebraciones que requieren atención especial
-            </p>
-            <div className="informacion-contacto-especial">
-              <div className="metodo-contacto">
-                <span className="icono-contacto telefono">
+              {/* Contacto */}
+              <div className="info-card highlight">
+                <h3 className="info-card-title">
                   <span className="material-symbols-outlined">phone</span>
-                </span>
-                <div className="detalles-contacto">
-                  <h3 className="titulo-metodo">Teléfono Directo</h3>
-                  <p className="detalle-metodo">099-123-4567</p>
-                  <p className="horario-contacto">Lun-Dom: 10:00 AM - 6:00 PM</p>
-                </div>
-              </div>
-              
-              <div className="metodo-contacto">
-                <span className="icono-contacto whatsapp">
-                  <span className="material-symbols-outlined">mail</span>
-                </span>
-                <div className="detalles-contacto">
-                  <h3 className="titulo-metodo">WhatsApp</h3>
-                  <p className="detalle-metodo">099-123-4567</p>
-                  <p className="horario-contacto">Respuesta inmediata</p>
-                </div>
-              </div>
-              
-              <div className="metodo-contacto">
-                <span className="icono-contacto email">
-                  <span className="material-symbols-outlined">email</span>
-                </span>
-                <div className="detalles-contacto">
-                  <h3 className="titulo-metodo">Email</h3>
-                  <p className="detalle-metodo">reservas@chuguegrill.com</p>
-                  <p className="horario-contacto">Respuesta en 2-4 horas</p>
-                </div>
+                  ¿Necesitas Ayuda?
+                </h3>
+                <p className="contact-text">Para grupos grandes o eventos especiales:</p>
+                <a href="tel:099-123-4567" className="contact-phone">
+                  099-123-4567
+                </a>
+                <p className="contact-email">reservas@chuguegrill.com</p>
               </div>
             </div>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
+
+      {/* Ocasiones Especiales */}
+      <section className="reservas-occasions">
+        <div className="section-container">
+          <div className="section-header">
+            <p className="section-tagline">Celebra con Nosotros</p>
+            <h2 className="section-title">Ocasiones Especiales</h2>
+            <div className="section-divider"></div>
+          </div>
+
+          <div className="occasions-grid">
+            <div className="occasion-card">
+              <div className="occasion-icon">
+                <span className="material-symbols-outlined">cake</span>
+              </div>
+              <h3 className="occasion-title">Cumpleaños</h3>
+              <p className="occasion-text">
+                Decoración especial, globos y postre de cortesía para el cumpleañero
+              </p>
+            </div>
+            <div className="occasion-card">
+              <div className="occasion-icon">
+                <span className="material-symbols-outlined">favorite</span>
+              </div>
+              <h3 className="occasion-title">Aniversarios</h3>
+              <p className="occasion-text">
+                Mesa decorada con velas y pétalos para una noche romántica
+              </p>
+            </div>
+            <div className="occasion-card">
+              <div className="occasion-icon">
+                <span className="material-symbols-outlined">groups</span>
+              </div>
+              <h3 className="occasion-title">Eventos Corporativos</h3>
+              <p className="occasion-text">
+                Espacios privados para reuniones de negocios y celebraciones
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <PiePagina />
     </div>

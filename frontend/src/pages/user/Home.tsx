@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import Navbar from "../../components/user/Navbar";
 import PiePagina from "../../components/user/PiePagina";
 import "../../css/user/Home.css";
-import { Link } from "react-router-dom";
 
-// Interfaces para tipado
+// Interfaces
 interface Restaurante {
   id_restaurante: number;
   nombre: string;
@@ -79,7 +79,6 @@ export default function Home() {
       setLoading(true);
       setError(null);
 
-      // Obtener datos en paralelo
       const [restaurantesRes, mesasRes, platosRes, reservasRes] = await Promise.all([
         fetch('http://localhost:8000/restaurantes'),
         fetch('http://localhost:8000/mesas/'),
@@ -98,7 +97,6 @@ export default function Home() {
         reservasRes.json()
       ]);
 
-      // Calcular estadísticas de mesas
       const estadisticas = mesas.reduce((acc: EstadisticasMesas, mesa: Mesa) => {
         acc.total++;
         switch (mesa.estado.toLowerCase()) {
@@ -117,10 +115,10 @@ export default function Home() {
 
       setEstadisticasMesas(estadisticas);
       setData({
-        restaurante: restaurantes[0] || null, // Tomar el primer restaurante
+        restaurante: restaurantes[0] || null,
         mesas,
-        platos: platos.filter((p: Plato) => p.disponible), // Solo platos disponibles
-        reservas: reservas.filter((r: Reserva) => r.estado === 'confirmada') // Solo reservas confirmadas
+        platos: platos.filter((p: Plato) => p.disponible),
+        reservas: reservas.filter((r: Reserva) => r.estado === 'confirmada')
       });
 
     } catch (err) {
@@ -130,42 +128,26 @@ export default function Home() {
     }
   };
 
-  const obtenerHorariosLibresHoy = () => {
-    const hoy = new Date().toISOString().split('T')[0];
-    const reservasHoy = data.reservas.filter(r => r.fecha === hoy);
-    
-    const horariosCompletos = ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30'];
-    const horariosOcupados = reservasHoy.map(r => r.hora_inicio);
-    
-    return horariosCompletos.filter(h => !horariosOcupados.includes(h));
-  };
-
   const obtenerPlatosPopulares = () => {
     return data.platos
       .filter(p => p.destacado || p.nombre.toLowerCase().includes('bbq') || p.nombre.toLowerCase().includes('hamburguesa'))
       .slice(0, 3);
   };
 
-  const calcularTiempoEspera = () => {
-    const mesasOcupadas = estadisticasMesas.ocupadas;
-    const tiempoBase = 15;
-    return Math.max(tiempoBase, tiempoBase + (mesasOcupadas * 5));
-  };
-
   const estaAbierto = () => {
     const ahora = new Date();
     const hora = ahora.getHours();
-    return hora >= 11 && hora < 22; // Abierto de 11 AM a 10 PM
+    return hora >= 11 && hora < 22;
   };
 
   if (loading) {
     return (
-      <div>
+      <div className="page-wrapper">
         <Navbar />
-        <div className="loading-home">
+        <main className="loading-container">
           <div className="spinner"></div>
-          <p>Cargando información del restaurante...</p>
-        </div>
+          <p className="loading-text">Preparando tu experiencia...</p>
+        </main>
         <PiePagina />
       </div>
     );
@@ -173,201 +155,266 @@ export default function Home() {
 
   if (error) {
     return (
-      <div>
+      <div className="page-wrapper">
         <Navbar />
-        <div className="error-home">
-          <h2>Error al cargar datos</h2>
-          <p>{error}</p>
-          <button onClick={fetchHomeData} className="boton-reintentar">
+        <main className="error-container">
+          <span className="material-symbols-outlined error-icon">error</span>
+          <h2 className="error-title">Error al cargar</h2>
+          <p className="error-message">{error}</p>
+          <button onClick={fetchHomeData} className="btn-retry">
             Reintentar
           </button>
-        </div>
+        </main>
         <PiePagina />
       </div>
     );
   }
 
   return (
-    <div>
+    <div className="page-wrapper">
       <Navbar />
 
-      {/* Banner principal del restaurante */}
-      <section className="banner-menu">
-        <div className="contenedor-banner-menu">
-          <h1 className="titulo-menu">
-            {data.restaurante?.nombre || "Chuwue Grill"}
+      {/* Hero Section */}
+      <section className="hero-section">
+        <div className="hero-overlay"></div>
+        <div className="hero-content">
+          <p className="hero-tagline">Steakhouse Premium</p>
+          <h1 className="hero-title">
+            <span className="title-line">Chuwue</span>
+            <span className="title-accent">Grill</span>
           </h1>
-          <p className="subtitulo-menu">
+          <p className="hero-subtitle">
             Las mejores alitas y parrilladas de la ciudad
           </p>
-
-          <p className="nota-menu">Ven a disfrutar de sabor auténtico • Atención desde 11 AM a 10 PM</p>
+          <div className="hero-cta">
+            <Link to="/reservas" className="btn-primary">
+              Reservar Mesa
+            </Link>
+            <Link to="/menu" className="btn-secondary">
+              Ver Menú
+            </Link>
+          </div>
+        </div>
+        <div className="hero-scroll-indicator">
+          <span className="material-symbols-outlined">keyboard_arrow_down</span>
         </div>
       </section>
 
-      {/* Información importante del día */}
-      <section className="seccion-informacion-importante">
-        <div className="contenedor-informacion">
-          <h2 className="titulo-informacion">Información en Tiempo Real</h2>
-          
-          <div className="grilla-informacion">
-            {/* Estado actual */}
-            <div className={`tarjeta-info ${estaAbierto() ? 'abierto' : 'cerrado'}`}>
-              <span className="material-symbols-outlined icono-tarjeta">
-                {estaAbierto() ? 'storefront' : 'door_front'}
+      {/* Estadísticas Section */}
+      <section className="stats-section">
+        <div className="stats-container">
+          <div className="stat-card">
+            <span className={`stat-status ${estaAbierto() ? 'open' : 'closed'}`}>
+              {estaAbierto() ? 'Abierto Ahora' : 'Cerrado'}
+            </span>
+            <span className="stat-detail">11:00 AM - 10:00 PM</span>
+          </div>
+          <div className="stat-divider"></div>
+          <div className="stat-card">
+            <span className="stat-number">{estadisticasMesas.disponibles}</span>
+            <span className="stat-label">Mesas Disponibles</span>
+          </div>
+          <div className="stat-divider"></div>
+          <div className="stat-card">
+            <span className="stat-number">{data.platos.length}+</span>
+            <span className="stat-label">Platos en el Menú</span>
+          </div>
+          <div className="stat-divider hide-mobile"></div>
+          <div className="stat-card hide-mobile">
+            <span className="stat-number">100%</span>
+            <span className="stat-label">Ingredientes Frescos</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Servicios Section */}
+      <section className="services-section">
+        <div className="section-container">
+          <div className="section-header">
+            <p className="section-tagline">Nuestros Servicios</p>
+            <h2 className="section-title">¿Qué deseas hacer?</h2>
+            <div className="section-divider"></div>
+          </div>
+
+          <div className="services-grid">
+            <Link to="/menu" className="service-card">
+              <div className="service-icon">
+                <span className="material-symbols-outlined">restaurant_menu</span>
+              </div>
+              <h3 className="service-title">Explorar el Menú</h3>
+              <p className="service-description">
+                Descubre nuestra selección de platos premium, desde entradas hasta postres.
+              </p>
+              <span className="service-arrow">
+                <span className="material-symbols-outlined">arrow_forward</span>
               </span>
-              <h3 className="titulo-tarjeta">
-                {estaAbierto() ? 'Estamos Abiertos' : 'Cerrado'}
-              </h3>
-              <p>Hoy: 11:00 AM - 10:00 PM</p>
-              <p className="detalle-info">
-                {estadisticasMesas.disponibles > 0 
-                  ? `${estadisticasMesas.disponibles} mesas libres` 
-                  : 'Sin mesas libres'}
-              </p>
-            </div>
-
-            {/* Promoción del día */}
-            <div className="tarjeta-info">
-              <span className="material-symbols-outlined icono-tarjeta">sell</span>
-              <h3 className="titulo-tarjeta">Promoción del Día</h3>
-              <p className="detalle-info">
-                {data.platos.some(p => p.nombre.toLowerCase().includes('bbq')) 
-                  ? '2x1 en Alitas BBQ' 
-                  : 'Descuentos especiales'}
-              </p>
-              <p>Válido hasta las 6:00 PM</p>
-            </div>
-
-            {/* Tiempo de espera actual */}
-            <div className="tarjeta-info">
-              <span className="material-symbols-outlined icono-tarjeta">timer</span>
-              <h3 className="titulo-tarjeta">Tiempo de Espera</h3>
-              <p className="detalle-info">Aprox. {calcularTiempoEspera()} min</p>
-              <p>Para mesa de 2-4 personas</p>
-            </div>
-
-            {/* Reservas para hoy */}
-            <div className="tarjeta-info">
-              <span className="material-symbols-outlined icono-tarjeta">event_available</span>
-              <h3 className="titulo-tarjeta">Reservas para Hoy</h3>
-              <p className="detalle-info">
-                {obtenerHorariosLibresHoy().length > 0 
-                  ? 'Horarios disponibles' 
-                  : 'Sin horarios libres'}
-              </p>
-              <p>{obtenerHorariosLibresHoy().slice(0, 3).join(', ')}</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Acceso rápido a servicios */}
-      <section className="seccion-acceso-rapido">
-        <div className="contenedor-acceso">
-          <h2 className="titulo-acceso">¿Qué deseas hacer?</h2>
-          <div className="grilla-servicios">
-            
-            <Link to="/menu" className="tarjeta-servicio">
-              <span className="material-symbols-outlined icono-servicio">restaurant_menu</span>
-              <h3 className="titulo-servicio">Ver Menú</h3>
-              <p className="descripcion-servicio">Explora nuestros deliciosos platos organizados por categorías.</p>
             </Link>
 
-            <Link to="/reservas" className="tarjeta-servicio">
-              <span className="material-symbols-outlined icono-servicio">book_online</span>
-              <h3 className="titulo-servicio">Hacer una Reserva</h3>
-              <p className="descripcion-servicio">Asegura tu mesa con anticipación para una experiencia sin esperas.</p>
+            <Link to="/reservas" className="service-card featured">
+              <div className="service-badge">Recomendado</div>
+              <div className="service-icon">
+                <span className="material-symbols-outlined">book_online</span>
+              </div>
+              <h3 className="service-title">Hacer una Reserva</h3>
+              <p className="service-description">
+                Asegura tu mesa con anticipación para una experiencia sin esperas.
+              </p>
+              <span className="service-arrow">
+                <span className="material-symbols-outlined">arrow_forward</span>
+              </span>
             </Link>
 
-            <Link to="/filavirtual" className="tarjeta-servicio">
-              <span className="material-symbols-outlined icono-servicio">groups</span>
-              <h3 className="titulo-servicio">Unirse a la Fila Virtual</h3>
-              <p className="descripcion-servicio">Consulta la disponibilidad y únete a la cola de espera desde donde estés.</p>
+            <Link to="/filavirtual" className="service-card">
+              <div className="service-icon">
+                <span className="material-symbols-outlined">groups</span>
+              </div>
+              <h3 className="service-title">Fila Virtual</h3>
+              <p className="service-description">
+                Únete a la cola desde donde estés y te avisaremos cuando esté lista tu mesa.
+              </p>
+              <span className="service-arrow">
+                <span className="material-symbols-outlined">arrow_forward</span>
+              </span>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Platos más populares */}
-      <section className="seccion-platos-populares">
-        <div className="contenedor-populares">
-          <h2 className="titulo-populares">Los Más Pedidos</h2>
-          <div className="grilla-populares">
+      {/* Platos Populares Section */}
+      <section className="dishes-section">
+        <div className="section-container">
+          <div className="section-header">
+            <p className="section-tagline">Del Chef</p>
+            <h2 className="section-title">Los Más Pedidos</h2>
+            <div className="section-divider"></div>
+          </div>
+
+          <div className="dishes-grid">
             {obtenerPlatosPopulares().length > 0 ? (
-              obtenerPlatosPopulares().map((plato) => (
-                <div key={plato.id_plato} className="tarjeta-plato-popular">
-                  <div className="imagen-plato" style={{ backgroundImage: `url(${plato.imagen || '/src/assets/placeholder-plato.jpg'})` }}></div>
-                  <div className="contenido-plato">
-                    <h3 className="nombre-plato-popular">{plato.nombre}</h3>
-                    <p className="descripcion-popular">{plato.descripcion}</p>
-                    <span className="precio-popular">${plato.precio.toFixed(2)}</span>
+              obtenerPlatosPopulares().map((plato, index) => (
+                <div key={plato.id_plato} className="dish-card" style={{ animationDelay: `${index * 100}ms` }}>
+                  <div 
+                    className="dish-image" 
+                    style={{ 
+                      backgroundImage: `url(${plato.imagen || 'https://images.unsplash.com/photo-1544025162-d76694265947?w=400'})` 
+                    }}
+                  >
+                    {plato.destacado && (
+                      <span className="dish-badge">
+                        <span className="material-symbols-outlined">star</span>
+                        Destacado
+                      </span>
+                    )}
                   </div>
-                  {plato.destacado && <span className="badge-destacado">
-                    <span className="material-symbols-outlined">star</span> Destacado
-                  </span>}
+                  <div className="dish-content">
+                    <h3 className="dish-name">{plato.nombre}</h3>
+                    <p className="dish-description">{plato.descripcion}</p>
+                    <div className="dish-footer">
+                      <span className="dish-price">${plato.precio.toFixed(2)}</span>
+                      <Link to="/menu" className="dish-link">
+                        Ver Menú
+                        <span className="material-symbols-outlined">arrow_forward</span>
+                      </Link>
+                    </div>
+                  </div>
                 </div>
               ))
             ) : (
-              // Fallback si no hay platos populares
-              <p>No se encontraron platos populares en este momento.</p>
+              <div className="no-dishes">
+                <p>Nuestros platos destacados se actualizan diariamente.</p>
+                <Link to="/menu" className="btn-secondary">Ver Menú Completo</Link>
+              </div>
             )}
+          </div>
+
+          <div className="dishes-cta">
+            <Link to="/menu" className="btn-outline">
+              Ver Menú Completo
+              <span className="material-symbols-outlined">arrow_forward</span>
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* Alertas e información adicional */}
-      <section className="seccion-alertas">
-        <div className="contenedor-alertas">
-          {/* Alerta de ocupación */}
-          {estadisticasMesas.disponibles === 0 && (
-            <div className="alerta importante">
-              <span className="material-symbols-outlined icono-alerta">error</span>
-              <div className="contenido-alerta">
-                <h3 className="titulo-alerta">¡Restaurante Lleno!</h3>
-                <p className="mensaje-alerta">
-                  Todas nuestras mesas están ocupadas. Te recomendamos unirte a nuestra fila virtual.
-                </p>
+      {/* Promoción / CTA Section */}
+      <section className="promo-section">
+        <div className="promo-overlay"></div>
+        <div className="promo-content">
+          <p className="promo-tagline">Promoción del Día</p>
+          <h2 className="promo-title">2x1 en Alitas BBQ</h2>
+          <p className="promo-description">
+            Válido todos los días hasta las 6:00 PM. No te lo pierdas.
+          </p>
+          <Link to="/reservas" className="btn-primary">
+            Reservar Ahora
+          </Link>
+        </div>
+      </section>
+
+      {/* Alertas Section */}
+      {(estadisticasMesas.disponibles === 0 || estadisticasMesas.disponibles <= 3) && (
+        <section className="alerts-section">
+          <div className="section-container">
+            {estadisticasMesas.disponibles === 0 && (
+              <div className="alert-card urgent">
+                <span className="material-symbols-outlined alert-icon">priority_high</span>
+                <div className="alert-content">
+                  <h3 className="alert-title">Restaurante Lleno</h3>
+                  <p className="alert-message">
+                    Todas nuestras mesas están ocupadas. Te recomendamos unirte a la fila virtual.
+                  </p>
+                </div>
+                <Link to="/filavirtual" className="alert-action">
+                  Unirse a la Fila
+                </Link>
               </div>
-            </div>
-          )}
-          
-          {/* Alerta de pocas mesas */}
-          {estadisticasMesas.disponibles > 0 && estadisticasMesas.disponibles <= 3 && (
-            <div className="alerta importante">
-              <span className="material-symbols-outlined icono-alerta">warning</span>
-              <div className="contenido-alerta">
-                <h3 className="titulo-alerta">¡Pocas Mesas Disponibles!</h3>
-                <p className="mensaje-alerta">
-                  Solo quedan {estadisticasMesas.disponibles} mesa(s). ¡Reserva pronto!
-                </p>
+            )}
+            
+            {estadisticasMesas.disponibles > 0 && estadisticasMesas.disponibles <= 3 && (
+              <div className="alert-card warning">
+                <span className="material-symbols-outlined alert-icon">schedule</span>
+                <div className="alert-content">
+                  <h3 className="alert-title">Pocas Mesas Disponibles</h3>
+                  <p className="alert-message">
+                    Solo quedan {estadisticasMesas.disponibles} mesa(s). ¡Reserva pronto!
+                  </p>
+                </div>
+                <Link to="/reservas" className="alert-action">
+                  Reservar
+                </Link>
               </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* Info Section */}
+      <section className="info-section">
+        <div className="section-container">
+          <div className="info-grid">
+            <div className="info-card">
+              <span className="material-symbols-outlined info-icon">location_on</span>
+              <h3 className="info-title">Ubicación</h3>
+              <p className="info-text">
+                {data.restaurante?.direccion || 'Av. Principal 123, Montevideo'}
+              </p>
             </div>
-          )}
-          
-          {/* Información sobre fila virtual */}
-          <div className="alerta informativa">
-            <span className="material-symbols-outlined icono-alerta">info</span>
-            <div className="contenido-alerta">
-              <h3 className="titulo-alerta">Nuevo Servicio: Fila Virtual</h3>
-              <p className="mensaje-alerta">
-                Evita las esperas. Únete a nuestra fila virtual y te notificaremos cuando tu mesa esté lista.
+            <div className="info-card">
+              <span className="material-symbols-outlined info-icon">phone</span>
+              <h3 className="info-title">Reservaciones</h3>
+              <p className="info-text">
+                {data.restaurante?.telefono || '099-123-4567'}
+              </p>
+            </div>
+            <div className="info-card">
+              <span className="material-symbols-outlined info-icon">schedule</span>
+              <h3 className="info-title">Horarios</h3>
+              <p className="info-text">
+                Lun-Sáb: 11AM-10PM<br />
+                Dom: 12PM-9PM
               </p>
             </div>
           </div>
-          
-          {/* Información de contacto del restaurante */}
-          {data.restaurante && (
-            <div className="alerta informativa">
-              <span className="material-symbols-outlined icono-alerta">location_on</span>
-              <div className="contenido-alerta">
-                <h3 className="titulo-alerta">Encuéntranos</h3>
-                <p className="mensaje-alerta">
-                  {data.restaurante.direccion} | Llámanos al {data.restaurante.telefono}
-                </p>
-              </div>
-            </div>
-          )}
         </div>
       </section>
 

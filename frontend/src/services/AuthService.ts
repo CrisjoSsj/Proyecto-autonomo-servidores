@@ -1,12 +1,13 @@
-// Servicio de autenticación para manejar el estado de sesión
-import { apiService } from './ApiService';
+/**
+ * AuthService.ts
+ * Servicio de autenticación para manejar el estado de sesión
+ */
 
-export interface User {
-  id: number;
-  email: string;
-  name: string;
-  is_admin: boolean;
-}
+import { apiService } from './ApiService';
+import type { User, LoginResponse } from '../types';
+
+// Re-exportar tipo User para compatibilidad
+export type { User };
 
 class AuthService {
   private user: User | null = null;
@@ -16,11 +17,11 @@ class AuthService {
     this.loadUserFromStorage();
   }
 
-  private loadUserFromStorage() {
+  private loadUserFromStorage(): void {
     const userStr = localStorage.getItem('user');
     if (userStr) {
       try {
-        this.user = JSON.parse(userStr);
+        this.user = JSON.parse(userStr) as User;
       } catch (e) {
         console.error('Error al cargar usuario del localStorage:', e);
         this.user = null;
@@ -30,10 +31,10 @@ class AuthService {
 
   async login(email: string, password: string): Promise<{ user: User; token: string }> {
     try {
-      const response = await apiService.login(email, password, true);
+      const response: LoginResponse = await apiService.login(email, password, true);
       
       if (response.access_token && response.user) {
-        this.user = response.user as User;
+        this.user = response.user;
         return {
           user: this.user,
           token: response.access_token
@@ -41,13 +42,13 @@ class AuthService {
       }
       
       throw new Error('Respuesta de login inválida');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error en login:', error);
       throw error;
     }
   }
 
-  logout() {
+  logout(): void {
     this.user = null;
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
@@ -87,4 +88,3 @@ class AuthService {
 // Instancia global del servicio de autenticación
 export const authService = new AuthService();
 export default AuthService;
-

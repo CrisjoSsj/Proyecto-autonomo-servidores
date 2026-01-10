@@ -1,55 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { apiService } from "../../services/ApiService";
 import { downloadReportePDF } from "../../services/GraphQLService";
 import NavbarAdmin from "../../components/admin/NavbarAdmin";
+import type { Mesa, Reserva, PersonaFila, Plato, Categoria } from "../../types";
 import "../../css/admin/Reportes.css";
-
-// Interfaces para tipado
-interface Mesa {
-  id?: number;
-  id_mesa?: number;
-  numero: number;
-  capacidad: number;
-  estado: string;
-}
-
-interface Plato {
-  id?: number;
-  id_plato?: number;
-  nombre: string;
-  descripcion: string;
-  disponible: boolean;
-  categoria_id?: number;
-}
-
-interface Reserva {
-  id_reserva?: number;
-  id?: number;
-  id_cliente?: number;
-  id_mesa: number;
-  fecha: string;
-  hora_inicio: string;
-  hora_fin: string;
-  estado: string;
-  nombre?: string;
-  numero_personas?: number;
-}
-
-interface PersonaEnCola {
-  id?: number;
-  nombre?: string;
-  telefono?: string;
-  numeroPersonas?: number;
-  posicion?: number;
-  tiempoEstimado?: number;
-}
-
-interface Categoria {
-  id?: number;
-  id_categoria?: number;
-  nombre: string;
-  descripcion?: string;
-}
 
 interface MetricasOperacionales {
   mesasDisponibles: number;
@@ -71,7 +25,7 @@ export default function Reportes() {
   const [mesas, setMesas] = useState<Mesa[]>([]);
   const [platos, setPlatos] = useState<Plato[]>([]);
   const [reservas, setReservas] = useState<Reserva[]>([]);
-  const [filaVirtual, setFilaVirtual] = useState<PersonaEnCola[]>([]);
+  const [filaVirtual, setFilaVirtual] = useState<PersonaFila[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [metricas, setMetricas] = useState<MetricasOperacionales>({
     mesasDisponibles: 0,
@@ -92,19 +46,7 @@ export default function Reportes() {
   const [error, setError] = useState<string | null>(null);
   const [periodo, setPeriodo] = useState('hoy');
 
-  useEffect(() => {
-    cargarDatos();
-    const intervalo = setInterval(cargarDatos, 10000);
-    return () => clearInterval(intervalo);
-  }, []);
-
-  useEffect(() => {
-    if (mesas.length > 0 || reservas.length > 0 || filaVirtual.length > 0) {
-      calcularMetricas();
-    }
-  }, [mesas, reservas, filaVirtual, periodo]);
-
-  const cargarDatos = async () => {
+  const cargarDatos = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -127,9 +69,9 @@ export default function Reportes() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const calcularMetricas = () => {
+  const calcularMetricas = useCallback(() => {
     const hoy = new Date().toISOString().split('T')[0];
 
     // Métricas de mesas
@@ -173,7 +115,19 @@ export default function Reportes() {
       platosNoDisponibles,
       tiempoPromedioEspera
     });
-  };
+  }, [mesas, reservas, filaVirtual, platos, periodo]);
+
+  useEffect(() => {
+    cargarDatos();
+    const intervalo = setInterval(cargarDatos, 10000);
+    return () => clearInterval(intervalo);
+  }, [cargarDatos]);
+
+  useEffect(() => {
+    if (mesas.length > 0 || reservas.length > 0 || filaVirtual.length > 0) {
+      calcularMetricas();
+    }
+  }, [mesas, reservas, filaVirtual, calcularMetricas]);
 
   const descargarPDF = async () => {
     try {

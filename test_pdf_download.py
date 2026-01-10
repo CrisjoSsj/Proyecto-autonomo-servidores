@@ -3,7 +3,8 @@ import json
 import base64
 
 # URL del servidor GraphQL
-url = 'http://localhost:3002/api/graphql'
+# Por defecto Next.js usa puerto 3000, pero puedes cambiarlo con: npm run dev -- -p 3002
+url = 'http://localhost:3000/api/graphql'
 
 # Query GraphQL
 query = {

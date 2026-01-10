@@ -12,23 +12,20 @@
 
 /* Header de Reportes */
 .header-reportes {
-  background: linear-gradient(135deg, var(--color-surface-elevated) 0%, #fafbfc 100%);
-  padding: var(--spacing-xl) var(--spacing-md) var(--spacing-lg);
+  background: var(--color-background-card);
+  padding: var(--spacing-xl) var(--spacing-lg);
   border-bottom: 1px solid var(--color-border-light);
-  box-shadow: var(--shadow-sm);
   position: relative;
-  overflow: hidden;
 }
 
-.header-reportes::before {
+.header-reportes::after {
   content: '';
   position: absolute;
-  top: 0;
+  bottom: 0;
   left: 0;
   right: 0;
-  bottom: 0;
-  background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23a39274" fill-opacity="0.03"><circle cx="30" cy="30" r="25"/></g></g></svg>') repeat;
-  opacity: 0.5;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
 }
 
 .contenedor-header-reportes {
@@ -39,18 +36,13 @@
 }
 
 .titulo-reportes {
-  font-size: var(--font-size-3xl);
-  font-weight: 400;
-  color: var(--color-text-primary);
-  margin: 0 0 var(--spacing-sm) 0;
-  text-align: center;
   font-family: var(--font-family-heading);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  background: linear-gradient(135deg, var(--color-text-primary), var(--color-primary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-xs) 0;
+  text-align: center;
+  letter-spacing: var(--letter-spacing-wide);
 }
 
 .subtitulo-reportes {
@@ -68,11 +60,9 @@
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--color-background-alt);
   padding: var(--spacing-md);
-  border-radius: var(--border-radius-lg);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid var(--color-border-light);
 }
 
 .selector-periodo,

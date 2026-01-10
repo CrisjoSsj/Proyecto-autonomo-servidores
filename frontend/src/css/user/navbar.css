@@ -1,360 +1,331 @@
 /* ===================================
-   NAVBAR.CSS - BARRA DE NAVEGACIÓN GOLDIFOX
-   Estilo Pace Law con paleta dorada profesional
+   NAVBAR.CSS - CHUWUE GRILL PREMIUM
+   Barra de navegación estilo Steakhouse
    =================================== */
 
-/* Barra de navegación principal */
-.barra-navegacion {
-  background: var(--color-surface-dark);
-  backdrop-filter: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  position: sticky;
+/* Navbar Principal */
+.navbar-premium {
+  position: fixed;
   top: 0;
-  z-index: 1000;
-  border-bottom: 1px solid rgba(163, 146, 116, 0.2);
+  left: 0;
+  right: 0;
+  z-index: var(--z-fixed);
+  background: transparent;
+  transition: var(--transition-smooth);
+  padding: var(--spacing-md) 0;
 }
 
-.contenedor-navegacion {
-  max-width: 1400px;
+.navbar-premium.navbar-scrolled {
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-navbar);
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1px solid rgba(201, 169, 98, 0.1);
+}
+
+/* Contenedor */
+.navbar-container {
+  max-width: var(--container-2xl);
   margin: 0 auto;
+  padding: 0 var(--spacing-xl);
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-md) var(--spacing-lg);
-  min-height: 60px;
+  height: 70px;
 }
 
-/* Logo del restaurante - Más elegante */
-.logo-restaurante {
+.navbar-scrolled .navbar-container {
+  height: 60px;
+}
+
+/* Logo */
+.navbar-logo {
   display: flex;
-  align-items: center;
+  align-items: baseline;
+  gap: var(--spacing-xs);
+  text-decoration: none;
+  transition: var(--transition-fast);
 }
 
-.enlace-logo {
-  text-decoration: none;
-  color: inherit;
-  transition: all 0.3s ease;
-}
-
-.enlace-logo:hover {
-  text-decoration: none;
+.navbar-logo:hover {
   transform: scale(1.02);
 }
 
-.nombre-restaurante {
-  font-size: 1.75rem;
-  font-weight: 500;
-  color: var(--color-primary);
-  margin: 0;
-  font-family: 'Google Sans', 'Inter', sans-serif;
-  text-shadow: none;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  background: none;
-  -webkit-background-clip: unset;
-  -webkit-text-fill-color: unset;
-  background-clip: unset;
+.logo-text {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-primary);
+  letter-spacing: var(--letter-spacing-wide);
 }
 
-/* Menú de navegación - Más sofisticado */
-.menu-navegacion {
+.logo-accent {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-primary);
+  font-style: italic;
+}
+
+/* Links de Navegación */
+.navbar-links {
   display: flex;
-  gap: 2.5rem;
   align-items: center;
+  gap: var(--spacing-xl);
 }
 
-.enlace-navegacion {
-  color: var(--color-text-light);
-  text-decoration: none;
-  font-weight: 500;
-  font-size: var(--font-size-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--border-radius-sm);
-  transition: var(--transition-smooth);
+.navbar-link {
   position: relative;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-family: 'Google Sans', 'Inter', sans-serif;
-}
-
-.enlace-navegacion:hover {
-  background: transparent;
-  color: var(--color-primary);
+  color: var(--color-text-secondary);
   text-decoration: none;
-  transform: none;
-  box-shadow: none;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wider);
+  padding: var(--spacing-sm) 0;
+  transition: var(--transition-fast);
 }
 
-.enlace-navegacion:active {
-  transform: translateY(0);
+.navbar-link:hover,
+.navbar-link.active {
+  color: var(--color-primary);
 }
 
-.enlace-navegacion::before {
-  display: none;
-}
-
-.enlace-navegacion:hover::before {
-  display: none;
-}
-
-.enlace-navegacion::after {
-  content: '';
+.link-underline {
   position: absolute;
+  bottom: 0;
+  left: 0;
   width: 0;
   height: 1px;
-  bottom: 4px;
-  left: 50%;
-  background: var(--color-primary);
-  transition: all 0.3s ease;
-  transform: translateX(-50%);
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
+  transition: var(--transition-smooth);
 }
 
-.enlace-navegacion:hover::after {
-  width: 70%;
+.navbar-link:hover .link-underline,
+.navbar-link.active .link-underline {
+  width: 100%;
 }
 
-/* Botón de contacto - Premium */
-.seccion-contacto-nav {
-  display: flex;
+/* Botón CTA */
+.navbar-cta {
+  display: inline-flex;
   align-items: center;
-}
-
-.boton-contacto {
-  background: var(--color-primary);
-  color: white;
-  text-decoration: none;
-  padding: 0.9rem 1.75rem;
-  border-radius: 0;
-  font-weight: 500;
-  font-size: 0.85rem;
-  transition: all 0.3s ease;
-  box-shadow: none;
-  border: none;
+  justify-content: center;
+  background: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  position: relative;
-  overflow: hidden;
-  font-family: 'Google Sans', 'Inter', sans-serif;
-}
-
-.boton-contacto::before {
-  display: none;
-}
-
-.boton-contacto:hover::before {
-  display: none;
-}
-
-.boton-contacto:hover {
-  transform: none;
-  box-shadow: 0 4px 12px rgba(163, 146, 116, 0.3);
-  background: var(--color-primary-dark);
+  letter-spacing: var(--letter-spacing-wider);
   text-decoration: none;
-  color: white;
-  border-color: transparent;
+  transition: var(--transition-smooth);
 }
 
-.boton-contacto:active {
-  transform: translateY(-1px);
+.navbar-cta:hover {
+  background: var(--color-primary);
+  color: var(--color-background-main);
+  box-shadow: var(--shadow-gold);
 }
 
-/* Diseño responsivo mejorado */
+/* Botón Hamburguesa */
+.navbar-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: var(--spacing-sm);
+  gap: 6px;
+  z-index: calc(var(--z-fixed) + 10);
+}
+
+.toggle-bar {
+  width: 24px;
+  height: 2px;
+  background: var(--color-text-primary);
+  transition: var(--transition-smooth);
+  transform-origin: center;
+}
+
+.navbar-toggle.open .toggle-bar:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+
+.navbar-toggle.open .toggle-bar:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.navbar-toggle.open .toggle-bar:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+/* Menú Mobile */
+.navbar-mobile {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  max-width: 320px;
+  height: 100vh;
+  background: var(--color-background-card);
+  z-index: calc(var(--z-fixed) + 5);
+  transition: var(--transition-smooth);
+  display: flex;
+  flex-direction: column;
+  padding: calc(var(--spacing-4xl) + 20px) var(--spacing-xl) var(--spacing-xl);
+  box-shadow: var(--shadow-xl);
+}
+
+.navbar-mobile.open {
+  right: 0;
+}
+
+.mobile-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.mobile-link {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  padding: var(--spacing-md) 0;
+  border-bottom: 1px solid var(--color-border-light);
+  transition: var(--transition-fast);
+}
+
+.mobile-link:hover,
+.mobile-link.active {
+  color: var(--color-primary);
+  padding-left: var(--spacing-sm);
+}
+
+.mobile-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary);
+  color: var(--color-background-main);
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wider);
+  text-decoration: none;
+  margin-top: var(--spacing-xl);
+  transition: var(--transition-smooth);
+}
+
+.mobile-cta:hover {
+  background: var(--color-primary-light);
+}
+
+/* Overlay */
+.navbar-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay-dark);
+  z-index: calc(var(--z-fixed) + 2);
+  opacity: 1;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ===================================
+   RESPONSIVE
+   =================================== */
+
 @media (max-width: 1024px) {
-  .contenedor-navegacion {
-    padding: 1rem 1.5rem;
+  .navbar-links {
+    gap: var(--spacing-lg);
   }
   
-  .menu-navegacion {
-    gap: 2rem;
-  }
-  
-  .nombre-restaurante {
-    font-size: 1.8rem;
+  .navbar-cta {
+    padding: var(--spacing-xs) var(--spacing-md);
   }
 }
 
 @media (max-width: 768px) {
-  .contenedor-navegacion {
-    flex-direction: column;
-    gap: 1.5rem;
-    padding: 1.5rem 1rem;
-    min-height: auto;
+  .navbar-premium {
+    padding: var(--spacing-sm) 0;
+    background: rgba(10, 10, 10, 0.9);
+    backdrop-filter: blur(10px);
   }
-
-  .menu-navegacion {
-    gap: 1.5rem;
-    flex-wrap: wrap;
-    justify-content: center;
+  
+  .navbar-container {
+    padding: 0 var(--spacing-md);
+    height: 60px;
   }
-
-  .enlace-navegacion {
-    font-size: 0.85rem;
-    padding: 0.6rem 1rem;
+  
+  .navbar-links,
+  .navbar-cta {
+    display: none;
   }
-
-  .nombre-restaurante {
-    font-size: 1.6rem;
+  
+  .navbar-toggle {
+    display: flex;
   }
-
-  .boton-contacto {
-    padding: 0.8rem 1.5rem;
-    font-size: 0.8rem;
+  
+  .logo-text,
+  .logo-accent {
+    font-size: var(--font-size-xl);
   }
 }
 
 @media (max-width: 480px) {
-  .contenedor-navegacion {
-    padding: 1rem 0.75rem;
-    gap: 1rem;
+  .navbar-mobile {
+    max-width: 100%;
   }
-
-  .menu-navegacion {
-    gap: 1rem;
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .enlace-navegacion {
-    font-size: 0.8rem;
-    padding: 0.5rem 0.8rem;
-    text-align: center;
-    width: 100%;
-    max-width: 200px;
-  }
-
-  .nombre-restaurante {
-    font-size: 1.4rem;
-  }
-
-  .boton-contacto {
-    padding: 0.7rem 1.2rem;
-    font-size: 0.75rem;
+  
+  .logo-text,
+  .logo-accent {
+    font-size: var(--font-size-lg);
   }
 }
 
-/* Estados de accesibilidad */
-.enlace-navegacion:focus,
-.boton-contacto:focus {
+/* ===================================
+   ACCESIBILIDAD
+   =================================== */
+
+.navbar-link:focus-visible,
+.navbar-cta:focus-visible,
+.mobile-link:focus-visible,
+.mobile-cta:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 4px;
 }
 
-/* Animación sutil para el logo */
-.logo-restaurante:hover .nombre-restaurante {
-  filter: brightness(1.1);
-  transition: filter 0.3s ease;
+.navbar-toggle:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
-/* Efectos de hover mejorados */
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-.nombre-restaurante::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  transform: translateX(-100%);
-  transition: transform 0.6s ease;
-}
-
-.logo-restaurante:hover .nombre-restaurante::after {
-  animation: shimmer 0.6s ease;
-}
-
-/* Estilos de compatibilidad antiguos actualizados */
-.navbar {
-  background: var(--color-surface-dark);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  margin-bottom: 0;
-  padding: 1rem 2rem;
-  border-bottom: 1px solid rgba(163, 146, 116, 0.2);
-}
-
-.nav-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 1rem 2rem;
-}
-
-.nav-brand {
-  font-size: 1.75rem;
-  font-weight: 500;
-  color: var(--color-primary);
-  font-family: 'Google Sans', 'Inter', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.nav-links {
-  display: flex;
-  gap: 2rem;
-}
-
-.nav-link {
-  color: var(--color-text-light);
-  text-decoration: none;
-  padding: 0.75rem 1.25rem;
-  border-radius: 0;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-  font-size: 0.85rem;
-  letter-spacing: 0.05em;
-  font-family: 'Google Sans', 'Inter', sans-serif;
-  font-weight: 500;
-}
-
-.nav-link:hover {
-  background: transparent;
-  text-decoration: none;
-  color: var(--color-primary);
-  transform: none;
-}
-
-.user-link {
-  color: var(--color-text-light);
-  text-decoration: none;
-  font-weight: 400;
-  padding: 0.75rem 1.25rem;
-  border-radius: 0;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-  font-size: 0.9rem;
-  letter-spacing: 0.05em;
-}
-
-.user-link:hover {
-  background: transparent;
-  color: var(--color-primary);
-  text-decoration: none;
-  transform: none;
-  box-shadow: none;
-}
-
-/* Navegacion usuario navbar antiguo */
-.navbar-usuario {
-  background: var(--color-surface-dark);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  border-bottom: 1px solid rgba(163, 146, 116, 0.2);
-}
-
-.contenedor-navbar {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 5rem;
+/* Reducir movimiento */
+@media (prefers-reduced-motion: reduce) {
+  .navbar-premium,
+  .navbar-link,
+  .link-underline,
+  .navbar-cta,
+  .navbar-mobile,
+  .toggle-bar {
+    transition: none;
+  }
 }

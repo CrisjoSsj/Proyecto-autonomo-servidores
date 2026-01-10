@@ -1,3 +1,32 @@
+/**
+ * ApiService.ts
+ * Servicio centralizado para comunicación con la API REST Python
+ */
+
+import type {
+  Mesa,
+  MesaBackend,
+  MesaFormData,
+  Reserva,
+  ReservaCreate,
+  PersonaFila,
+  PersonaFilaCreate,
+  Cliente,
+  Restaurante,
+  Categoria,
+  Plato,
+  Menu,
+  User,
+  UserCreate,
+  LoginResponse,
+  EstadisticasMesas,
+  EstadisticasReservas,
+  EstadisticasFila,
+  DisponibilidadResponse,
+  VerificacionDisponibilidad,
+  ReservasHoy,
+} from '../types';
+
 // Configuración base de la API
 const API_BASE_URL = 'http://localhost:8000';
 
@@ -10,7 +39,7 @@ class ApiService {
   }
 
   // Método genérico para hacer peticiones
-  private async request(endpoint: string, options: RequestInit = {}): Promise<any> {
+  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
     
     const config: RequestInit = {
@@ -38,7 +67,7 @@ class ApiService {
 
       if (!response.ok) {
         // Intentar leer el cuerpo para dar más contexto en el error
-        let body: any = null;
+        let body: unknown = null;
         try {
           body = isJson ? await response.json() : await response.text();
         } catch (readErr) {
@@ -49,7 +78,7 @@ class ApiService {
         throw err;
       }
 
-      return isJson ? await response.json() : await response.text();
+      return (isJson ? await response.json() : await response.text()) as T;
     } catch (error) {
       console.error(`Error en petición a ${endpoint}:`, error);
       throw error;
@@ -59,202 +88,205 @@ class ApiService {
   // --- MÉTODOS QUE COINCIDEN CON TU API REST PYTHON ---
   
   // Restaurante
-  async getRestaurantes() {
-    return this.request('/restaurantes');
+  async getRestaurantes(): Promise<Restaurante[]> {
+    return this.request<Restaurante[]>('/restaurantes');
   }
 
-  async crearRestaurante(restauranteData: any) {
-    return this.request('/restaurante/', {
+  async crearRestaurante(restauranteData: Partial<Restaurante>): Promise<Restaurante> {
+    return this.request<Restaurante>('/restaurante/', {
       method: 'POST',
       body: JSON.stringify(restauranteData),
     });
   }
 
   // Categorias del Menú
-  async getCategorias() {
-    return this.request('/categorias/');
+  async getCategorias(): Promise<Categoria[]> {
+    return this.request<Categoria[]>('/categorias/');
   }
 
-  async crearCategoria(categoriaData: any) {
-    return this.request('/categoria/', {
+  async crearCategoria(categoriaData: Partial<Categoria>): Promise<Categoria> {
+    return this.request<Categoria>('/categoria/', {
       method: 'POST',
       body: JSON.stringify(categoriaData),
     });
   }
 
   // Menú
-  async getMenus() {
-    return this.request('/menu/');
+  async getMenus(): Promise<Menu[]> {
+    return this.request<Menu[]>('/menu/');
   }
 
-  async crearMenu(menuData: any) {
-    return this.request('/menu/', {
+  async crearMenu(menuData: Partial<Menu>): Promise<Menu> {
+    return this.request<Menu>('/menu/', {
       method: 'POST',
       body: JSON.stringify(menuData),
     });
   }
 
   // Platos
-  async getPlatos() {
-    return this.request('/platos/');
+  async getPlatos(): Promise<Plato[]> {
+    return this.request<Plato[]>('/platos/');
   }
 
-  async crearPlato(platoData: any) {
-    return this.request('/platos/', {
+  async crearPlato(platoData: Partial<Plato>): Promise<Plato> {
+    return this.request<Plato>('/platos/', {
       method: 'POST',
       body: JSON.stringify(platoData),
     });
   }
 
-  async buscarPlatos(query: string) {
-    return this.request(`/platos/buscar?query=${query}`);
+  async buscarPlatos(query: string): Promise<Plato[]> {
+    return this.request<Plato[]>(`/platos/buscar?query=${query}`);
   }
 
   // Mesas
-  async getMesas() {
-    const data = await this.request('/mesas/');
+  async getMesas(): Promise<Mesa[]> {
+    const data = await this.request<MesaBackend[]>('/mesas/');
     // Mapear la forma del backend (id_mesa) a la forma que el frontend espera
-    return (data || []).map((m: any) => ({
-      id: m.id_mesa ?? m.id ?? Math.floor(Math.random() * 1000000),
+    return (data || []).map((m) => ({
+      id: m.id_mesa ?? Math.floor(Math.random() * 1000000),
+      id_mesa: m.id_mesa,
       numero: m.numero,
       capacidad: m.capacidad,
-      estado: m.estado ?? m.estado_mesa ?? 'libre',
-      ubicacion: m.ubicacion ?? ''
+      estado: (m.estado ?? 'libre') as Mesa['estado'],
+      ubicacion: ''
     }));
   }
 
-  async crearMesa(mesaData: any) {
+  async crearMesa(mesaData: MesaFormData & { id?: number }): Promise<Mesa> {
     // Alinear la forma de la UI con lo que espera el backend
     // Obtener mesas actuales para generar id_mesa si no se provee
-    const existing: any[] = await this.request('/mesas/');
+    const existing = await this.request<MesaBackend[]>('/mesas/');
     const maxId = (existing || []).reduce((acc, cur) => {
-      const id = cur.id_mesa ?? cur.id ?? 0;
+      const id = cur.id_mesa ?? 0;
       return id > acc ? id : acc;
     }, 0);
 
-    const backendPayload = {
+    const backendPayload: MesaBackend = {
       id_mesa: mesaData.id ?? maxId + 1,
       numero: mesaData.numero,
       capacidad: mesaData.capacidad,
       estado: mesaData.estado ?? 'libre'
     };
 
-    const created = await this.request('/mesa/', {
+    const created = await this.request<MesaBackend>('/mesa/', {
       method: 'POST',
       body: JSON.stringify(backendPayload),
     });
 
     // Mapear respuesta a la forma frontend
     return {
-      id: created.id_mesa ?? created.id ?? backendPayload.id_mesa,
+      id: created.id_mesa ?? backendPayload.id_mesa,
+      id_mesa: created.id_mesa ?? backendPayload.id_mesa,
       numero: created.numero ?? backendPayload.numero,
       capacidad: created.capacidad ?? backendPayload.capacidad,
-      estado: created.estado ?? backendPayload.estado,
-      ubicacion: created.ubicacion ?? ''
+      estado: (created.estado ?? backendPayload.estado) as Mesa['estado'],
+      ubicacion: ''
     };
   }
 
-  async actualizarMesa(mesaData: any) {
-    const backendPayload = {
-      id_mesa: mesaData.id ?? mesaData.id_mesa,
+  async actualizarMesa(mesaData: Mesa): Promise<Mesa> {
+    const backendPayload: MesaBackend = {
+      id_mesa: mesaData.id ?? mesaData.id_mesa ?? 0,
       numero: mesaData.numero,
       capacidad: mesaData.capacidad,
       estado: mesaData.estado ?? 'libre'
     };
 
-    const updated = await this.request('/mesa/', {
+    const response = await this.request<{ mesa?: MesaBackend } & MesaBackend>('/mesa/', {
       method: 'PUT',
       body: JSON.stringify(backendPayload),
     });
 
-    const source = updated?.mesa ?? updated ?? backendPayload;
+    const source = response?.mesa ?? response ?? backendPayload;
 
     return {
-      id: source.id_mesa ?? source.id ?? backendPayload.id_mesa,
+      id: source.id_mesa ?? backendPayload.id_mesa,
+      id_mesa: source.id_mesa ?? backendPayload.id_mesa,
       numero: source.numero ?? backendPayload.numero,
       capacidad: source.capacidad ?? backendPayload.capacidad,
-      estado: source.estado ?? backendPayload.estado,
-      ubicacion: source.ubicacion ?? mesaData.ubicacion ?? ''
+      estado: (source.estado ?? backendPayload.estado) as Mesa['estado'],
+      ubicacion: mesaData.ubicacion ?? ''
     };
   }
 
-  async eliminarMesa(idMesa: number) {
-    return this.request(`/mesa/${idMesa}`, {
+  async eliminarMesa(idMesa: number): Promise<{ message: string }> {
+    return this.request<{ message: string }>(`/mesa/${idMesa}`, {
       method: 'DELETE',
     });
   }
 
   // Clientes
-  async getClientes() {
-    return this.request('/clientes/');
+  async getClientes(): Promise<Cliente[]> {
+    return this.request<Cliente[]>('/clientes/');
   }
 
-  async crearCliente(clienteData: any) {
-    return this.request('/cliente/', {
+  async crearCliente(clienteData: Partial<Cliente>): Promise<Cliente> {
+    return this.request<Cliente>('/cliente/', {
       method: 'POST',
       body: JSON.stringify(clienteData),
     });
   }
 
-  async buscarClientes(query: string) {
-    return this.request(`/cliente/buscar?query=${query}`);
+  async buscarClientes(query: string): Promise<Cliente[]> {
+    return this.request<Cliente[]>(`/cliente/buscar?query=${query}`);
   }
 
   // Reservas
-  async getReservas() {
-    return this.request('/reservas/');
+  async getReservas(): Promise<Reserva[]> {
+    return this.request<Reserva[]>('/reservas/');
   }
 
-  async crearReserva(reservaData: any) {
-    return this.request('/reserva/', {
+  async crearReserva(reservaData: ReservaCreate): Promise<Reserva> {
+    return this.request<Reserva>('/reserva/', {
       method: 'POST',
       body: JSON.stringify(reservaData),
     });
   }
 
-  async actualizarReserva(reservaData: any) {
-    return this.request('/reserva/', {
+  async actualizarReserva(reservaData: Reserva): Promise<Reserva> {
+    return this.request<Reserva>('/reserva/', {
       method: 'PUT',
       body: JSON.stringify(reservaData),
     });
   }
 
-  async buscarReservas(query: string) {
-    return this.request(`/reservas/buscar?query=${query}`);
+  async buscarReservas(query: string): Promise<Reserva[]> {
+    return this.request<Reserva[]>(`/reservas/buscar?query=${query}`);
   }
 
   // Fila Virtual
-  async getFilaVirtual() {
-    const data = await this.request('/fila-virtual/');
+  async getFilaVirtual(): Promise<PersonaFila[]> {
+    const data = await this.request<PersonaFila[]>('/fila-virtual/');
     // Mapear la respuesta del endpoint nuevo que ya tiene todos los campos
-    return (data || []).map((f: any, idx: number) => ({
+    return (data || []).map((f, idx) => ({
       id: f.id ?? idx,
       nombre: f.nombre ?? `Cliente ${f.cliente_id ?? f.id ?? idx}`,
       telefono: f.telefono ?? '',
-      numeroPersonas: f.numeroPersonas ?? f.numero_personas ?? 2,
+      numeroPersonas: f.numeroPersonas ?? 2,
       posicion: f.posicion ?? (idx + 1),
       tiempoEstimado: f.tiempoEstimado ?? 15,
     }));
   }
 
   // Alias para compatibilidad con componentes
-  async getFilas() {
+  async getFilas(): Promise<PersonaFila[]> {
     // Reusar la versión mapeada
     return this.getFilaVirtual();
   }
 
-  async unirseFilaVirtual(filaData: any) {
+  async unirseFilaVirtual(filaData: PersonaFilaCreate): Promise<PersonaFila> {
     // Usar el endpoint nuevo que soporta todos los campos
     const backendPayload = {
-      cliente_id: filaData.cliente_id ?? filaData.id_cliente ?? Math.floor(Math.random() * 1000000),
-      nombre: filaData.nombre ?? `Cliente ${filaData.cliente_id ?? Math.floor(Math.random() * 1000)}`,
+      cliente_id: filaData.cliente_id ?? Math.floor(Math.random() * 1000000),
+      nombre: filaData.nombre ?? `Cliente ${Math.floor(Math.random() * 1000)}`,
       telefono: filaData.telefono ?? '',
-      numeroPersonas: filaData.numeroPersonas ?? filaData.numero_personas ?? 1,
+      numeroPersonas: filaData.numeroPersonas ?? 1,
       hora_llegada: filaData.hora_llegada ?? new Date().toISOString(),
       estado: filaData.estado ?? 'esperando'
     };
 
-    const created = await this.request('/fila-virtual/', {
+    const created = await this.request<PersonaFila>('/fila-virtual/', {
       method: 'POST',
       body: JSON.stringify(backendPayload),
     });
@@ -271,24 +303,24 @@ class ApiService {
   }
 
   // Alias para compatibilidad con componentes
-  async crearFila(filaData: any) {
+  async crearFila(filaData: PersonaFilaCreate): Promise<PersonaFila> {
     // Reusar la lógica de unirseFilaVirtual que ya normaliza y mapea la respuesta
     return this.unirseFilaVirtual(filaData);
   }
 
-  async buscarFilaVirtual(query: string) {
-    return this.request(`/fila/buscar?query=${query}`);
+  async buscarFilaVirtual(query: string): Promise<PersonaFila[]> {
+    return this.request<PersonaFila[]>(`/fila/buscar?query=${query}`);
   }
 
-  async eliminarFilaVirtual(idFila: number) {
-    return this.request(`/fila-virtual/${idFila}`, {
+  async eliminarFilaVirtual(idFila: number): Promise<{ mensaje: string }> {
+    return this.request<{ mensaje: string }>(`/fila-virtual/${idFila}`, {
       method: 'DELETE',
     });
   }
 
   // Autenticación
-  async login(email: string, password: string, isAdmin: boolean = true) {
-    const response = await this.request('/auth/login', {
+  async login(email: string, password: string, isAdmin: boolean = true): Promise<LoginResponse> {
+    const response = await this.request<LoginResponse>('/auth/login', {
       method: 'POST',
       body: JSON.stringify({
         email: email,
@@ -308,35 +340,88 @@ class ApiService {
     return response;
   }
 
-  async logout() {
+  logout(): void {
     localStorage.removeItem('authToken');
   }
 
-  async getCurrentUser() {
-    return this.request('/auth/users/me');
+  async getCurrentUser(): Promise<User> {
+    return this.request<User>('/auth/users/me');
   }
 
-  async registerUser(userData: any) {
-    return this.request('/auth/register', {
+  async registerUser(userData: UserCreate): Promise<User> {
+    return this.request<User>('/auth/register', {
       method: 'POST',
       body: JSON.stringify(userData),
     });
   }
 
   // Usuarios
-  async getUsers() {
-    return this.request('/users/');
+  async getUsers(): Promise<User[]> {
+    return this.request<User[]>('/users/');
   }
 
-  async crearUser(userData: any) {
-    return this.request('/users/', {
+  async crearUser(userData: UserCreate): Promise<User> {
+    return this.request<User>('/users/', {
       method: 'POST',
       body: JSON.stringify(userData),
     });
   }
 
-  async buscarUsers(query: string) {
-    return this.request(`/users/buscar?query=${query}`);
+  async buscarUsers(query: string): Promise<User[]> {
+    return this.request<User[]>(`/users/buscar?query=${query}`);
+  }
+
+  // ===== ESTADÍSTICAS Y MÉTRICAS =====
+
+  // Estadísticas de reservas
+  async getEstadisticasReservas(): Promise<EstadisticasReservas> {
+    return this.request<EstadisticasReservas>('/reservas/estadisticas');
+  }
+
+  // Reservas del día
+  async getReservasHoy(): Promise<ReservasHoy> {
+    return this.request<ReservasHoy>('/reservas/hoy');
+  }
+
+  // Disponibilidad de mesas para reservas
+  async getDisponibilidad(fecha: string, personas: number = 2): Promise<DisponibilidadResponse> {
+    return this.request<DisponibilidadResponse>(`/reservas/disponibilidad?fecha=${fecha}&personas=${personas}`);
+  }
+
+  // Verificar disponibilidad específica
+  async verificarDisponibilidad(mesaId: number, fecha: string, horaInicio: string): Promise<VerificacionDisponibilidad> {
+    return this.request<VerificacionDisponibilidad>(`/reservas/verificar-disponibilidad?mesa_id=${mesaId}&fecha=${fecha}&hora_inicio=${horaInicio}`);
+  }
+
+  // Cambiar estado de reserva
+  async cambiarEstadoReserva(idReserva: number, nuevoEstado: string): Promise<{ message: string; reserva: Reserva }> {
+    return this.request<{ message: string; reserva: Reserva }>(`/reserva/${idReserva}/estado?nuevo_estado=${nuevoEstado}`, {
+      method: 'PUT',
+    });
+  }
+
+  // Estadísticas de mesas
+  async getEstadisticasMesas(): Promise<EstadisticasMesas> {
+    return this.request<EstadisticasMesas>('/mesas/estadisticas');
+  }
+
+  // Cambiar estado de mesa
+  async cambiarEstadoMesa(idMesa: number, nuevoEstado: string): Promise<{ message: string; mesa: Mesa }> {
+    return this.request<{ message: string; mesa: Mesa }>(`/mesa/${idMesa}/estado?nuevo_estado=${nuevoEstado}`, {
+      method: 'PUT',
+    });
+  }
+
+  // Estadísticas de fila virtual
+  async getEstadisticasFilaVirtual(): Promise<EstadisticasFila> {
+    return this.request<EstadisticasFila>('/fila-virtual/estadisticas/resumen');
+  }
+
+  // Llamar siguiente en fila
+  async llamarSiguienteEnFila(): Promise<{ mensaje: string; persona: PersonaFila }> {
+    return this.request<{ mensaje: string; persona: PersonaFila }>('/fila-virtual/admin/llamar-siguiente', {
+      method: 'POST',
+    });
   }
 }
 

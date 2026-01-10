@@ -5,8 +5,121 @@
 
 import { ApolloClient, InMemoryCache, gql, HttpLink } from '@apollo/client';
 
+// ============================================================
+// TIPOS LOCALES PARA GRAPHQL (diferentes a la API REST)
+// ============================================================
+
+export interface GQLRestaurante {
+  id: string;
+  nombre: string;
+  direccion: string;
+  telefono: string;
+  horario: string;
+  capacidadTotal: number;
+}
+
+export interface GQLMenu {
+  id: string;
+  nombre: string;
+  descripcion: string;
+  precioTotal: number;
+  disponible: boolean;
+}
+
+export interface GQLPlato {
+  id: string;
+  nombre: string;
+  descripcion: string;
+  precio: number;
+  categoria: string;
+  disponible: boolean;
+  categoria_id?: string;
+  id_categoria?: string;
+}
+
+export interface GQLReserva {
+  id: string;
+  clienteId: string;
+  mesaId: string;
+  fecha: string;
+  hora: string;
+  numeroPersonas: number;
+  estado: string;
+  numero_personas?: number;
+}
+
+export interface GQLMesa {
+  id: string;
+  numero: number;
+  capacidad: number;
+  estado: string;
+  ubicacion: string;
+}
+
+export interface GQLCategoria {
+  id?: string;
+  id_categoria?: string;
+  nombre: string;
+}
+
+export interface GQLPersonaFila {
+  id?: number;
+  nombre: string;
+  numeroPersonas: number;
+  tiempoEstimado: number;
+}
+
+export interface DashboardData {
+  totalReservas: number;
+  reservasPorMes: { mes: string; total: number }[];
+  mesasPopulares: { mesaId: string; usos: number }[];
+  platosPopulares: { platoId: string; nombre: string; pedidos: number }[];
+}
+
+export interface ReporteMetricas {
+  tasaOcupacion: number;
+  mesasDisponibles: number;
+  totalMesas: number;
+  mesasOcupadas: number;
+  mesasReservadas: number;
+  totalReservas: number;
+  personasEnCola: number;
+  reservasPendientes?: number;
+}
+
+export interface ReporteData {
+  metricas: ReporteMetricas;
+  periodo: string;
+  mesas: GQLMesa[];
+  platos: GQLPlato[];
+  reservas: GQLReserva[];
+  filaVirtual: GQLPersonaFila[];
+  categorias?: GQLCategoria[];
+}
+
+export interface RestauranteInput {
+  nombre: string;
+  direccion: string;
+  telefono: string;
+  horario?: string;
+  capacidadTotal?: number;
+}
+
+export interface ReservaInput {
+  clienteId: string;
+  mesaId: string;
+  fecha: string;
+  hora: string;
+  numeroPersonas: number;
+  estado?: string;
+}
+
+// ============================================================
+// CONFIGURACIÓN
+// ============================================================
+
 // Determinar la URL del servidor GraphQL dinámicamente
-const getGraphQLUri = () => {
+const getGraphQLUri = (): string => {
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
     const protocol = window.location.protocol;
@@ -286,19 +399,12 @@ export const CANCEL_RESERVA = gql`
 /**
  * Obtener datos del dashboard
  */
-export interface DashboardData {
-  totalReservas: number;
-  reservasPorMes: { mes: string; total: number; }[];
-  mesasPopulares: { mesaId: string; usos: number; }[];
-  platosPopulares: { platoId: string; nombre: string; pedidos: number; }[];
-}
-
 export async function fetchDashboardData(): Promise<DashboardData> {
   try {
-    const result = await client.query({
+    const result = await client.query<DashboardData>({
       query: GET_DASHBOARD_DATA,
     });
-    return result.data as DashboardData;
+    return result.data;
   } catch (error) {
     console.error('Error al obtener datos del dashboard:', error);
     // Retornar datos de ejemplo si hay error
@@ -326,12 +432,12 @@ export async function fetchDashboardData(): Promise<DashboardData> {
 /**
  * Obtener todos los restaurantes
  */
-export async function fetchRestaurantes(): Promise<Restaurante[]> {
+export async function fetchRestaurantes(): Promise<GQLRestaurante[]> {
   try {
-    const { data } = await client.query({
+    const { data } = await client.query<{ restaurantes: GQLRestaurante[] }>({
       query: GET_RESTAURANTES,
     });
-    return (data as any).restaurantes;
+    return data.restaurantes;
   } catch (error) {
     console.error('Error al obtener restaurantes:', error);
     throw error;
@@ -341,13 +447,13 @@ export async function fetchRestaurantes(): Promise<Restaurante[]> {
 /**
  * Obtener un restaurante por ID
  */
-export async function fetchRestaurante(id: string): Promise<Restaurante> {
+export async function fetchRestaurante(id: string): Promise<GQLRestaurante> {
   try {
-    const { data } = await client.query({
+    const { data } = await client.query<{ restaurante: GQLRestaurante }>({
       query: GET_RESTAURANTE,
       variables: { id },
     });
-    return (data as any).restaurante;
+    return data.restaurante;
   } catch (error) {
     console.error('Error al obtener restaurante:', error);
     throw error;
@@ -357,12 +463,12 @@ export async function fetchRestaurante(id: string): Promise<Restaurante> {
 /**
  * Obtener todos los menús
  */
-export async function fetchMenus(): Promise<Menu[]> {
+export async function fetchMenus(): Promise<GQLMenu[]> {
   try {
-    const { data } = await client.query({
+    const { data } = await client.query<{ menus: GQLMenu[] }>({
       query: GET_MENUS,
     });
-    return (data as any).menus;
+    return data.menus;
   } catch (error) {
     console.error('Error al obtener menús:', error);
     throw error;
@@ -372,12 +478,12 @@ export async function fetchMenus(): Promise<Menu[]> {
 /**
  * Obtener todos los platos
  */
-export async function fetchPlatos(): Promise<Plato[]> {
+export async function fetchPlatos(): Promise<GQLPlato[]> {
   try {
-    const { data } = await client.query({
+    const { data } = await client.query<{ platos: GQLPlato[] }>({
       query: GET_PLATOS,
     });
-    return (data as any).platos;
+    return data.platos;
   } catch (error) {
     console.error('Error al obtener platos:', error);
     throw error;
@@ -387,12 +493,12 @@ export async function fetchPlatos(): Promise<Plato[]> {
 /**
  * Obtener todas las reservas
  */
-export async function fetchReservas(): Promise<Reserva[]> {
+export async function fetchReservas(): Promise<GQLReserva[]> {
   try {
-    const { data } = await client.query({
+    const { data } = await client.query<{ reservas: GQLReserva[] }>({
       query: GET_RESERVAS,
     });
-    return (data as any).reservas;
+    return data.reservas;
   } catch (error) {
     console.error('Error al obtener reservas:', error);
     throw error;
@@ -402,12 +508,12 @@ export async function fetchReservas(): Promise<Reserva[]> {
 /**
  * Obtener todas las mesas
  */
-export async function fetchMesas(): Promise<Mesa[]> {
+export async function fetchMesas(): Promise<GQLMesa[]> {
   try {
-    const { data } = await client.query({
+    const { data } = await client.query<{ mesas: GQLMesa[] }>({
       query: GET_MESAS,
     });
-    return (data as any).mesas;
+    return data.mesas;
   } catch (error) {
     console.error('Error al obtener mesas:', error);
     throw error;
@@ -417,13 +523,14 @@ export async function fetchMesas(): Promise<Mesa[]> {
 /**
  * Crear una nueva reserva
  */
-export async function createReserva(input: any): Promise<Reserva> {
+export async function createReserva(input: ReservaInput): Promise<GQLReserva> {
   try {
-    const { data } = await client.mutate({
+    const { data } = await client.mutate<{ createReserva: GQLReserva }>({
       mutation: CREATE_RESERVA,
       variables: { input },
     });
-    return (data as any).createReserva;
+    if (!data?.createReserva) throw new Error('No se pudo crear la reserva');
+    return data.createReserva;
   } catch (error) {
     console.error('Error al crear reserva:', error);
     throw error;
@@ -433,13 +540,14 @@ export async function createReserva(input: any): Promise<Reserva> {
 /**
  * Actualizar una reserva
  */
-export async function updateReserva(id: string, input: any): Promise<Reserva> {
+export async function updateReserva(id: string, input: Partial<ReservaInput>): Promise<GQLReserva> {
   try {
-    const { data } = await client.mutate({
+    const { data } = await client.mutate<{ updateReserva: GQLReserva }>({
       mutation: UPDATE_RESERVA,
       variables: { id, input },
     });
-    return (data as any).updateReserva;
+    if (!data?.updateReserva) throw new Error('No se pudo actualizar la reserva');
+    return data.updateReserva;
   } catch (error) {
     console.error('Error al actualizar reserva:', error);
     throw error;
@@ -449,13 +557,14 @@ export async function updateReserva(id: string, input: any): Promise<Reserva> {
 /**
  * Cancelar una reserva
  */
-export async function cancelReserva(id: string): Promise<Reserva> {
+export async function cancelReserva(id: string): Promise<GQLReserva> {
   try {
-    const { data } = await client.mutate({
+    const { data } = await client.mutate<{ cancelReserva: GQLReserva }>({
       mutation: CANCEL_RESERVA,
       variables: { id },
     });
-    return (data as any).cancelReserva;
+    if (!data?.cancelReserva) throw new Error('No se pudo cancelar la reserva');
+    return data.cancelReserva;
   } catch (error) {
     console.error('Error al cancelar reserva:', error);
     throw error;
@@ -465,13 +574,14 @@ export async function cancelReserva(id: string): Promise<Reserva> {
 /**
  * Crear un nuevo restaurante
  */
-export async function createRestaurante(input: any): Promise<Restaurante> {
+export async function createRestaurante(input: RestauranteInput): Promise<GQLRestaurante> {
   try {
-    const { data } = await client.mutate({
+    const { data } = await client.mutate<{ createRestaurante: GQLRestaurante }>({
       mutation: CREATE_RESTAURANTE,
       variables: { input },
     });
-    return (data as any).createRestaurante;
+    if (!data?.createRestaurante) throw new Error('No se pudo crear el restaurante');
+    return data.createRestaurante;
   } catch (error) {
     console.error('Error al crear restaurante:', error);
     throw error;
@@ -482,7 +592,7 @@ export async function createRestaurante(input: any): Promise<Restaurante> {
  * Descargar reporte operacional en PDF (generado en el frontend con jsPDF)
  * Incluye estadísticas detalladas de mesas, menús, reservas y fila virtual
  */
-export async function downloadReportePDF(data: any): Promise<void> {
+export async function downloadReportePDF(data: ReporteData): Promise<void> {
   try {
     console.log('📥 Iniciando generación de PDF enriquecido...');
     
@@ -504,12 +614,12 @@ export async function downloadReportePDF(data: any): Promise<void> {
     const margin = 15;
 
     // ========== FUNCIONES AUXILIARES ==========
-    const addNewPage = () => {
+    const addNewPage = (): void => {
       doc.addPage();
       yPosition = 15;
     };
 
-    const addTitle = (text: string) => {
+    const addTitle = (text: string): void => {
       if (yPosition > pageHeight - 30) addNewPage();
       doc.setFontSize(14);
       doc.setFont('helvetica', 'bold');
@@ -521,7 +631,7 @@ export async function downloadReportePDF(data: any): Promise<void> {
       doc.setTextColor(0, 0, 0);
     };
 
-    const addSubtitle = (text: string) => {
+    const addSubtitle = (text: string): void => {
       if (yPosition > pageHeight - 20) addNewPage();
       doc.setFontSize(11);
       doc.setFont('helvetica', 'bold');
@@ -529,7 +639,7 @@ export async function downloadReportePDF(data: any): Promise<void> {
       yPosition += 6;
     };
 
-    const addText = (text: string, fontSize = 10, bold = false) => {
+    const addText = (text: string, fontSize = 10, bold = false): void => {
       if (yPosition > pageHeight - 15) addNewPage();
       doc.setFontSize(fontSize);
       doc.setFont('helvetica', bold ? 'bold' : 'normal');
@@ -537,11 +647,11 @@ export async function downloadReportePDF(data: any): Promise<void> {
       yPosition += 5;
     };
 
-    const addLineSpacing = (space = 2) => {
+    const addLineSpacing = (space = 2): void => {
       yPosition += space;
     };
 
-    const addMetricRow = (label: string, value: string, isHighlight = false) => {
+    const addMetricRow = (label: string, value: string, isHighlight = false): void => {
       if (yPosition > pageHeight - 15) addNewPage();
       doc.setFontSize(10);
       doc.setFont('helvetica', isHighlight ? 'bold' : 'normal');
@@ -592,12 +702,12 @@ export async function downloadReportePDF(data: any): Promise<void> {
     
     // Estadísticas por estado
     const mesasPorEstado: Record<string, number> = {};
-    mesas.forEach((mesa: any) => {
+    mesas.forEach((mesa) => {
       const estado = mesa.estado?.toLowerCase() || 'desconocido';
       mesasPorEstado[estado] = (mesasPorEstado[estado] || 0) + 1;
     });
 
-    Object.entries(mesasPorEstado).forEach(([estado, count]: any) => {
+    Object.entries(mesasPorEstado).forEach(([estado, count]) => {
       const porcentaje = ((count / mesas.length) * 100).toFixed(1);
       addMetricRow(
         `Mesas ${estado.charAt(0).toUpperCase() + estado.slice(1)}`,
@@ -609,14 +719,14 @@ export async function downloadReportePDF(data: any): Promise<void> {
     addLineSpacing(3);
     addSubtitle('Distribución por Capacidad');
     const mesasPorCapacidad: Record<string, number> = {};
-    mesas.forEach((mesa: any) => {
-      const capacidad = mesa.capacidad || 'N/A';
+    mesas.forEach((mesa) => {
+      const capacidad = mesa.capacidad?.toString() || 'N/A';
       mesasPorCapacidad[capacidad] = (mesasPorCapacidad[capacidad] || 0) + 1;
     });
 
     Object.entries(mesasPorCapacidad)
       .sort()
-      .forEach(([capacidad, count]: any) => {
+      .forEach(([capacidad, count]) => {
         addMetricRow(`Capacidad ${capacidad} personas`, count.toString());
       });
 
@@ -626,12 +736,12 @@ export async function downloadReportePDF(data: any): Promise<void> {
     addTitle('3. ANÁLISIS DE RESERVAS');
 
     const reservasPorEstado: Record<string, number> = {};
-    reservas.forEach((r: any) => {
+    reservas.forEach((r) => {
       const estado = r.estado?.toLowerCase() || 'pendiente';
       reservasPorEstado[estado] = (reservasPorEstado[estado] || 0) + 1;
     });
 
-    Object.entries(reservasPorEstado).forEach(([estado, count]: any) => {
+    Object.entries(reservasPorEstado).forEach(([estado, count]) => {
       const porcentaje = metricas.totalReservas > 0 
         ? ((count / metricas.totalReservas) * 100).toFixed(1)
         : '0';
@@ -645,15 +755,15 @@ export async function downloadReportePDF(data: any): Promise<void> {
     addLineSpacing(3);
     addSubtitle('Análisis de Personas');
     
-    const totalPersonas = reservas.reduce((sum: number, r: any) => sum + (r.numero_personas || 0), 0);
+    const totalPersonas = reservas.reduce((sum, r) => sum + (r.numeroPersonas || r.numero_personas || 0), 0);
     const promedioPersonas = reservas.length > 0 ? (totalPersonas / reservas.length).toFixed(1) : '0';
     
     addMetricRow('Total de Personas Reservadas', totalPersonas.toString());
     addMetricRow('Promedio por Reserva', `${promedioPersonas} personas`);
     
     if (reservas.length > 0) {
-      const maxPersonas = Math.max(...reservas.map((r: any) => r.numero_personas || 0));
-      const minPersonas = Math.min(...reservas.map((r: any) => r.numero_personas || 0));
+      const maxPersonas = Math.max(...reservas.map((r) => r.numeroPersonas || r.numero_personas || 0));
+      const minPersonas = Math.min(...reservas.map((r) => r.numeroPersonas || r.numero_personas || 0));
       addMetricRow('Máximo por Reserva', `${maxPersonas} personas`);
       addMetricRow('Mínimo por Reserva', `${minPersonas} personas`);
     }
@@ -663,8 +773,8 @@ export async function downloadReportePDF(data: any): Promise<void> {
     // ========== ANÁLISIS DE MENÚ Y PLATOS ==========
     addTitle('4. ANÁLISIS DE MENÚ Y PLATOS');
 
-    const platosDisp = platos.filter((p: any) => p.disponible).length;
-    const platosNoDisp = platos.filter((p: any) => !p.disponible).length;
+    const platosDisp = platos.filter((p) => p.disponible).length;
+    const platosNoDisp = platos.filter((p) => !p.disponible).length;
     const dispPorcentaje = platos.length > 0 ? ((platosDisp / platos.length) * 100).toFixed(1) : '0';
 
     addMetricRow('Total de Platos', platos.length.toString());
@@ -676,13 +786,13 @@ export async function downloadReportePDF(data: any): Promise<void> {
       addLineSpacing(3);
       addSubtitle('Platos por Categoría');
 
-      categorias.forEach((cat: any) => {
+      categorias.forEach((cat) => {
         const catId = cat.id || cat.id_categoria;
-        const platosCat = platos.filter((p: any) => 
+        const platosCat = platos.filter((p) => 
           (p.categoria_id === catId || p.id_categoria === catId || p.categoria === cat.nombre)
         ).length;
         
-        const dispCat = platos.filter((p: any) => 
+        const dispCat = platos.filter((p) => 
           (p.categoria_id === catId || p.id_categoria === catId || p.categoria === cat.nombre) && p.disponible
         ).length;
 
@@ -701,9 +811,9 @@ export async function downloadReportePDF(data: any): Promise<void> {
     if (filaVirtual && filaVirtual.length > 0) {
       addTitle('5. ANÁLISIS DE FILA VIRTUAL');
 
-      const totalEnCola = filaVirtual.reduce((sum: number, p: any) => sum + (p.numeroPersonas || 0), 0);
+      const totalEnCola = filaVirtual.reduce((sum, p) => sum + (p.numeroPersonas || 0), 0);
       const tiempoPromedio = filaVirtual.length > 0
-        ? (filaVirtual.reduce((sum: number, p: any) => sum + (p.tiempoEstimado || 0), 0) / filaVirtual.length).toFixed(1)
+        ? (filaVirtual.reduce((sum, p) => sum + (p.tiempoEstimado || 0), 0) / filaVirtual.length).toFixed(1)
         : '0';
 
       addMetricRow('Personas en Fila', filaVirtual.length.toString());
@@ -715,7 +825,7 @@ export async function downloadReportePDF(data: any): Promise<void> {
         addLineSpacing(2);
         addSubtitle('Próximos en Llegar');
 
-        filaVirtual.slice(0, 5).forEach((persona: any, index: number) => {
+        filaVirtual.slice(0, 5).forEach((persona, index) => {
           const nombre = persona.nombre || `Cliente #${index + 1}`;
           const personas = persona.numeroPersonas || 0;
           const tiempo = persona.tiempoEstimado || 'N/A';
@@ -737,7 +847,7 @@ export async function downloadReportePDF(data: any): Promise<void> {
     // ========== CONCLUSIONES Y RECOMENDACIONES ==========
     addTitle('6. CONCLUSIONES Y RECOMENDACIONES');
 
-    const recomendaciones = [];
+    const recomendaciones: string[] = [];
 
     if (metricas.tasaOcupacion > 80) {
       recomendaciones.push('• Alta ocupación: Considerar aumentar personal o capacidad.');
@@ -753,7 +863,7 @@ export async function downloadReportePDF(data: any): Promise<void> {
       recomendaciones.push(`• ${platosNoDisp} platos sin disponibilidad: Revisar stock.`);
     }
 
-    if (metricas.reservasPendientes > 0) {
+    if (metricas.reservasPendientes && metricas.reservasPendientes > 0) {
       recomendaciones.push(`• ${metricas.reservasPendientes} reservas pendientes: Confirmar o rechazar.`);
     }
 
@@ -762,7 +872,7 @@ export async function downloadReportePDF(data: any): Promise<void> {
       recomendaciones.push('• Todas las métricas dentro de rangos óptimos.');
     }
 
-    recomendaciones.forEach((rec: string) => {
+    recomendaciones.forEach((rec) => {
       if (yPosition > pageHeight - 20) addNewPage();
       addText(rec, 9);
     });
@@ -791,47 +901,9 @@ export async function downloadReportePDF(data: any): Promise<void> {
 // Exportar cliente Apollo para uso avanzado
 export { client as apolloClient };
 
-// Tipos para TypeScript
-export interface Restaurante {
-  id: string;
-  nombre: string;
-  direccion: string;
-  telefono: string;
-  horario: string;
-  capacidadTotal: number;
-}
-
-export interface Menu {
-  id: string;
-  nombre: string;
-  descripcion: string;
-  precioTotal: number;
-  disponible: boolean;
-}
-
-export interface Plato {
-  id: string;
-  nombre: string;
-  descripcion: string;
-  precio: number;
-  categoria: string;
-  disponible: boolean;
-}
-
-export interface Reserva {
-  id: string;
-  clienteId: string;
-  mesaId: string;
-  fecha: string;
-  hora: string;
-  numeroPersonas: number;
-  estado: string;
-}
-
-export interface Mesa {
-  id: string;
-  numero: number;
-  capacidad: number;
-  estado: string;
-  ubicacion: string;
-}
+// Re-exportar tipos con alias para compatibilidad
+export type Restaurante = GQLRestaurante;
+export type Menu = GQLMenu;
+export type Plato = GQLPlato;
+export type Reserva = GQLReserva;
+export type Mesa = GQLMesa;

@@ -32,6 +32,7 @@ export default function Menu() {
   const [categorias, setCategorias] = useState<CategoriaMenu[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [categoriaActiva, setCategoriaActiva] = useState<string>('');
 
   useEffect(() => {
     cargarDatos();
@@ -39,8 +40,9 @@ export default function Menu() {
 
   useEffect(() => {
     if (!loading && categorias.length > 0) {
-      // Configurar navegación y scroll después de que los datos estén cargados
-      configurarNavegacion();
+      const primerCategoria = generarIdSeccion(categorias[0].nombre);
+      setCategoriaActiva(primerCategoria);
+      configurarIntersectionObserver();
     }
   }, [loading, categorias]);
 
@@ -49,7 +51,6 @@ export default function Menu() {
       setLoading(true);
       setError(null);
       
-      // Cargar platos y categorías en paralelo
       const [platosRes, categoriasRes] = await Promise.all([
         fetch(`${API_BASE_URL}/platos/`),
         fetch(`${API_BASE_URL}/categorias/`)
@@ -62,7 +63,6 @@ export default function Menu() {
       const platosData = await platosRes.json();
       const categoriasData = await categoriasRes.json();
 
-      // Filtrar solo platos disponibles para el menú público
       const platosDisponibles = platosData.filter((plato: Plato) => 
         plato.disponible && plato.estado === 'disponible'
       );
@@ -77,81 +77,45 @@ export default function Menu() {
     }
   };
 
-  const configurarNavegacion = () => {
-    const navegacionCategorias = document.querySelector('.navegacion-categorias');
-    const enlaces = document.querySelectorAll('.enlace-categoria');
-    const secciones = document.querySelectorAll('.seccion-categoria');
-    const navbar = document.querySelector('.navbar');
-
-    // Función para obtener la altura dinámica del navbar
-    const getNavbarHeight = () => {
-      return navbar ? navbar.getBoundingClientRect().height : 60;
-    };
-
-    // Función para manejar el scroll
-    const handleScroll = () => {
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      const navbarHeight = getNavbarHeight();
-      
-      // Agregar clase 'scrolled' cuando se hace scroll
-      if (scrollTop > 100) {
-        navegacionCategorias?.classList.add('scrolled');
-      } else {
-        navegacionCategorias?.classList.remove('scrolled');
+  const configurarIntersectionObserver = () => {
+    const secciones = document.querySelectorAll('.menu-category-section');
+    
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.getAttribute('id');
+            if (id) setCategoriaActiva(id);
+          }
+        });
+      },
+      {
+        rootMargin: '-20% 0px -60% 0px',
+        threshold: 0
       }
+    );
 
-      // Detectar qué sección está visible
-      let currentSection = '';
-      secciones.forEach((seccion) => {
-        const rect = seccion.getBoundingClientRect();
-        const offset = navbarHeight + 80;
-        
-        if (rect.top <= offset && rect.bottom >= offset) {
-          currentSection = seccion.getAttribute('id') || '';
-        }
-      });
+    secciones.forEach((seccion) => observer.observe(seccion));
 
-      // Actualizar enlaces activos
-      enlaces.forEach((enlace) => {
-        enlace.classList.remove('activo');
-        const href = enlace.getAttribute('href');
-        if (href === `#${currentSection}`) {
-          enlace.classList.add('activo');
-        }
-      });
-    };
-
-    // Smooth scroll para los enlaces
-    enlaces.forEach((enlace) => {
-      enlace.addEventListener('click', (e) => {
-        e.preventDefault();
-        const targetId = enlace.getAttribute('href')?.substring(1);
-        const targetElement = document.getElementById(targetId || '');
-        
-        if (targetElement) {
-          const navbarHeight = getNavbarHeight();
-          const navegacionHeight = navegacionCategorias ? navegacionCategorias.getBoundingClientRect().height : 60;
-          const offsetTop = targetElement.offsetTop - navbarHeight - navegacionHeight - 10;
-          
-          window.scrollTo({
-            top: offsetTop,
-            behavior: 'smooth'
-          });
-        }
-      });
-    });
-
-    // Agregar event listener para scroll
-    window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Llamar una vez para inicializar
-
-    // Cleanup
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      secciones.forEach((seccion) => observer.unobserve(seccion));
     };
   };
 
-  // Convertir platos a formato esperado por MenuCard
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const offset = 140;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   const convertirPlatosParaMenuCard = (platosCategoria: Plato[]): PlatoFormateado[] => {
     return platosCategoria.map(plato => ({
       nombre: plato.nombre,
@@ -160,13 +124,11 @@ export default function Menu() {
     }));
   };
 
-  // Obtener platos por categoría
   const obtenerPlatosPorCategoria = (idCategoria: number): PlatoFormateado[] => {
     const platosCategoria = platos.filter(plato => plato.id_categoria === idCategoria);
     return convertirPlatosParaMenuCard(platosCategoria);
   };
 
-  // Función para generar ID de sección desde nombre de categoría
   const generarIdSeccion = (nombreCategoria: string): string => {
     return nombreCategoria.toLowerCase()
       .replace(/\s+/g, '-')
@@ -179,13 +141,12 @@ export default function Menu() {
       .replace(/[^a-z0-9-]/g, '');
   };
 
-  // Función para obtener ícono de Google Fonts por categoría
   const obtenerIconoCategoria = (nombreCategoria: string): string => {
     const iconos: { [key: string]: string } = {
-      'entradas': 'kebab_dining',
+      'entradas': 'tapas',
       'platos principales': 'restaurant',
       'postres': 'cake',
-      'bebidas': 'local_drink',
+      'bebidas': 'local_bar',
       'ensaladas': 'eco',
       'sopas': 'soup_kitchen',
       'mariscos': 'set_meal',
@@ -198,12 +159,12 @@ export default function Menu() {
 
   if (loading) {
     return (
-      <div>
+      <div className="page-wrapper">
         <Navbar />
-        <div className="loading-menu">
+        <main className="loading-container">
           <div className="spinner"></div>
-          <p>Cargando nuestro delicioso menú...</p>
-        </div>
+          <p className="loading-text">Cargando nuestro menú...</p>
+        </main>
         <PiePagina />
       </div>
     );
@@ -211,149 +172,132 @@ export default function Menu() {
 
   if (error) {
     return (
-      <div>
+      <div className="page-wrapper">
         <Navbar />
-        <div className="error-menu">
-          <h2><span className="material-symbols-outlined" style={{verticalAlign: 'middle', marginRight: '8px'}}>error</span>Oops! Algo salió mal</h2>
-          <p>{error}</p>
-          <button onClick={cargarDatos} className="boton-reintentar">
-            Intentar de nuevo
+        <main className="error-container">
+          <span className="material-symbols-outlined error-icon">error</span>
+          <h2 className="error-title">Error al cargar el menú</h2>
+          <p className="error-message">{error}</p>
+          <button onClick={cargarDatos} className="btn-retry">
+            Reintentar
           </button>
-        </div>
+        </main>
         <PiePagina />
       </div>
     );
   }
 
-  // Filtrar categorías que tienen platos disponibles
   const categoriasConPlatos = categorias.filter(categoria => 
     platos.some(plato => plato.id_categoria === categoria.id_categoria)
   );
 
   return (
-    <div>
+    <div className="page-wrapper">
       <Navbar />
       
-      {/* Banner del menú */}
-      <section className="banner-menu">
-        <div className="contenedor-banner-menu">
-          <h1 className="titulo-menu">Nuestro Menú Completo</h1>
-          <p className="subtitulo-menu">
-            Descubre todos nuestros sabores organizados por categorías
-          </p>
-          <div className="stats-menu-banner">
-            <div className="stat-item">
-              <span className="stat-number">{platos.length}</span>
-              <span className="stat-label">Platos Disponibles</span>
+      {/* Hero del Menú */}
+      <section className="menu-hero">
+        <div className="menu-hero-overlay"></div>
+        <div className="menu-hero-content">
+          <p className="menu-hero-tagline">Nuestra Carta</p>
+          <h1 className="menu-hero-title">El Menú</h1>
+          <div className="menu-hero-stats">
+            <div className="menu-stat">
+              <span className="menu-stat-number">{platos.length}</span>
+              <span className="menu-stat-label">Platos</span>
             </div>
-            <div className="stat-item">
-              <span className="stat-number">{categoriasConPlatos.length}</span>
-              <span className="stat-label">Categorías</span>
+            <div className="menu-stat-divider"></div>
+            <div className="menu-stat">
+              <span className="menu-stat-number">{categoriasConPlatos.length}</span>
+              <span className="menu-stat-label">Categorías</span>
             </div>
-            <div className="stat-item">
-              <span className="stat-number">100%</span>
-              <span className="stat-label">Fresco</span>
+            <div className="menu-stat-divider"></div>
+            <div className="menu-stat">
+              <span className="menu-stat-number">100%</span>
+              <span className="menu-stat-label">Fresco</span>
             </div>
           </div>
-          <p className="nota-menu">Todos los precios incluyen IVA • Aceptamos efectivo y tarjetas</p>
         </div>
       </section>
 
-      {/* Navegación por categorías */}
+      {/* Navegación de Categorías */}
       {categoriasConPlatos.length > 0 && (
-        <section className="navegacion-categorias">
-          <div className="contenedor-categorias">
+        <nav className="menu-nav">
+          <div className="menu-nav-container">
             {categoriasConPlatos.map(categoria => {
               const idSeccion = generarIdSeccion(categoria.nombre);
               const cantidadPlatos = platos.filter(p => p.id_categoria === categoria.id_categoria).length;
-              const icono = obtenerIconoCategoria(categoria.nombre);
               
               return (
-                <a 
+                <button
                   key={categoria.id_categoria}
-                  href={`#${idSeccion}`} 
-                  className="enlace-categoria"
+                  onClick={() => scrollToSection(idSeccion)}
+                  className={`menu-nav-item ${categoriaActiva === idSeccion ? 'active' : ''}`}
                 >
-                  <span className="material-symbols-outlined" style={{fontSize: '20px', marginRight: '4px'}}>
-                    {icono}
+                  <span className="material-symbols-outlined menu-nav-icon">
+                    {obtenerIconoCategoria(categoria.nombre)}
                   </span>
-                  {categoria.nombre}
-                  <span className="contador-platos">({cantidadPlatos})</span>
-                </a>
+                  <span className="menu-nav-text">{categoria.nombre}</span>
+                  <span className="menu-nav-count">{cantidadPlatos}</span>
+                </button>
               );
             })}
           </div>
-        </section>
+        </nav>
       )}
 
-      <div className="contenedor-menu">
-        {categoriasConPlatos.length === 0 ? (
-          <section className="sin-menu-disponible">
-            <h2><span className="material-symbols-outlined" style={{verticalAlign: 'middle', marginRight: '8px'}}>event_busy</span>Menú temporalmente no disponible</h2>
-            <p>Estamos actualizando nuestro menú. Por favor, vuelve pronto.</p>
-            <button onClick={() => window.location.href = '/reservas'} className="boton-reservar">
-              Hacer una Reserva
-            </button>
-          </section>
-        ) : (
-          categoriasConPlatos.map((categoria, index) => {
-            const idSeccion = generarIdSeccion(categoria.nombre);
-            const platosCategoria = obtenerPlatosPorCategoria(categoria.id_categoria);
-            const icono = obtenerIconoCategoria(categoria.nombre);
-            
-            // Destacar la primera categoría o la de "Platos principales"
-            const esDestacada = index === 0 || categoria.nombre.toLowerCase().includes('principal');
+      {/* Contenido del Menú */}
+      <main className="menu-content">
+        <div className="menu-container">
+          {categoriasConPlatos.length === 0 ? (
+            <div className="menu-empty">
+              <span className="material-symbols-outlined">restaurant_menu</span>
+              <h2>Menú en actualización</h2>
+              <p>Estamos preparando nuevos platos. Vuelve pronto.</p>
+            </div>
+          ) : (
+            categoriasConPlatos.map((categoria) => {
+              const idSeccion = generarIdSeccion(categoria.nombre);
+              const platosCategoria = obtenerPlatosPorCategoria(categoria.id_categoria);
+              const icono = obtenerIconoCategoria(categoria.nombre);
 
-            return (
-              <section 
-                key={categoria.id_categoria}
-                id={idSeccion} 
-                className={`seccion-categoria ${esDestacada ? 'destacada' : ''}`}
-              >
-                <div className="cabecera-categoria">
-                  <h2 className="titulo-categoria">
-                    <span className="material-symbols-outlined" style={{fontSize: '24px'}}>
-                      {icono}
-                    </span>
-                    {categoria.nombre}
-                    {esDestacada && <span className="badge-destacada"><span className="material-symbols-outlined" style={{fontSize: '16px'}}>star</span> Destacada</span>}
-                  </h2>
-                  <p className="descripcion-categoria">
-                    {categoria.nombre === 'Entradas' && 'Perfectas para comenzar o acompañar tu comida'}
-                    {categoria.nombre === 'Platos principales' && 'Nuestras especialidades principales'}
-                    {categoria.nombre === 'Postres' && 'El final perfecto para tu comida'}
-                    {!['Entradas', 'Platos principales', 'Postres'].includes(categoria.nombre) && 
-                     `Deliciosos ${categoria.nombre.toLowerCase()} preparados con ingredientes frescos`}
-                  </p>
-                  <div className="info-categoria">
-                    <span className="contador-platos-categoria">
-                      {platosCategoria.length} platos disponibles
-                    </span>
+              return (
+                <section 
+                  key={categoria.id_categoria}
+                  id={idSeccion} 
+                  className="menu-category-section"
+                >
+                  <header className="menu-category-header">
+                    <div className="menu-category-icon">
+                      <span className="material-symbols-outlined">{icono}</span>
+                    </div>
+                    <div className="menu-category-info">
+                      <h2 className="menu-category-title">{categoria.nombre}</h2>
+                      <p className="menu-category-count">{platosCategoria.length} opciones disponibles</p>
+                    </div>
+                  </header>
+                  
+                  <div className="menu-items-grid">
+                    {platosCategoria.map((plato, platoIndex) => (
+                      <MenuCard key={platoIndex} {...plato} />
+                    ))}
                   </div>
-                </div>
-                <div className="grilla-menu">
-                  {platosCategoria.map((plato, platoIndex) => (
-                    <MenuCard key={platoIndex} {...plato} />
-                  ))}
-                </div>
-              </section>
-            );
-          })
-        )}
-      </div>
+                </section>
+              );
+            })
+          )}
+        </div>
+      </main>
 
-      {/* Llamada a la acción */}
+      {/* CTA Section */}
       {categoriasConPlatos.length > 0 && (
-        <section className="cta-menu">
-          <div className="contenedor-cta">
-            <h2>¿Listo para ordenar?</h2>
-            <p>Reserva tu mesa y disfruta de nuestros deliciosos platos</p>
-            <button 
-              className="boton-reservar-cta" 
-              onClick={() => window.location.href = '/reservas'}
-            >
-              Hacer Reserva Ahora
-            </button>
+        <section className="menu-cta">
+          <div className="menu-cta-content">
+            <h2 className="menu-cta-title">¿Listo para ordenar?</h2>
+            <p className="menu-cta-text">Reserva tu mesa y disfruta de nuestros platos</p>
+            <a href="/reservas" className="btn-primary">
+              Reservar Mesa
+            </a>
           </div>
         </section>
       )}

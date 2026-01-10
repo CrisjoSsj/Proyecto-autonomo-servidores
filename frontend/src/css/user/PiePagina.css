@@ -1,444 +1,331 @@
 /* ===================================
-   PIE-PAGINA.CSS - FOOTER GOLDIFOX
-   Estilo Pace Law con paleta dorada profesional
+   PIE-PAGINA.CSS - CHUWUE GRILL PREMIUM
+   Footer estilo Steakhouse
    =================================== */
 
-/* Footer Principal - Optimizado */
-.pie-pagina {
+/* Footer Principal */
+.footer-premium {
   background: var(--color-surface-dark);
-  color: var(--color-text-light);
+  margin-top: auto;
   position: relative;
-  margin-top: var(--spacing-xl);
-  box-shadow: var(--shadow-footer);
 }
 
-.pie-pagina::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: rgba(163, 146, 116, 0.2);
+/* Línea decorativa superior */
+.footer-accent-line {
+  height: 3px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    var(--color-primary-dark) 20%, 
+    var(--color-primary) 50%, 
+    var(--color-primary-dark) 80%, 
+    transparent 100%
+  );
 }
 
-/* Contenedor Principal - Optimizado */
-.contenedor-pie-pagina {
-  max-width: 1200px;
+/* Contenedor Principal */
+.footer-container {
+  max-width: var(--container-xl);
   margin: 0 auto;
-  padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-md);
+  padding: var(--spacing-3xl) var(--spacing-xl) var(--spacing-2xl);
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: 1.5fr repeat(3, 1fr);
+  gap: var(--spacing-2xl);
+}
+
+/* Sección de Marca */
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.footer-logo {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--spacing-xs);
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+.footer-logo:hover {
+  opacity: 0.9;
+}
+
+.footer-logo-text {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-primary);
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.footer-logo-accent {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-primary);
+  font-style: italic;
+}
+
+.footer-tagline {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-widest);
+  margin: 0;
+}
+
+.footer-description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  line-height: var(--line-height-relaxed);
+  max-width: 300px;
+  margin: 0;
+}
+
+/* Secciones del Footer */
+.footer-section {
+  display: flex;
+  flex-direction: column;
   gap: var(--spacing-lg);
 }
 
-/* Sección de Información del Restaurante */
-.seccion-informacion-footer {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-  text-align: center;
-  align-items: center;
-  justify-content: center;
-}
-
-.titulo-footer {
-  font-size: var(--font-size-lg);
-  font-weight: 500;
+.footer-section-title {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-primary);
-  font-family: 'Google Sans', var(--font-family-heading), sans-serif;
-  margin: 0 0 var(--spacing-sm) 0;
-  text-shadow: none;
-  background: none;
-  -webkit-background-clip: unset;
-  -webkit-text-fill-color: unset;
-  background-clip: unset;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  text-align: center;
-}
-
-.descripcion-footer {
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: var(--color-text-light);
-  font-style: normal;
+  letter-spacing: var(--letter-spacing-widest);
   margin: 0;
-  opacity: 0.8;
-  font-family: 'Google Sans', 'Inter', sans-serif;
-  text-align: center;
-  max-width: 280px;
-  font-weight: 400;
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-border-light);
 }
 
-/* Estilos Comunes para Títulos de Sección */
-.titulo-seccion-footer {
-  font-size: var(--font-size-base);
-  font-weight: 500;
-  color: var(--color-primary);
-  margin: 0 0 var(--spacing-md) 0;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  position: relative;
-  padding-bottom: var(--spacing-xs);
-  font-family: 'Google Sans', var(--font-family-heading), sans-serif;
-  text-align: center;
-}
-
-.titulo-seccion-footer::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 30px;
-  height: 2px;
-  background: var(--color-primary);
-  opacity: 0.6;
-}
-
-/* Sección de Contacto */
-.seccion-contacto-footer {
+/* Navegación */
+.footer-nav {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
-  align-items: center;
-  text-align: center;
 }
 
-.dato-contacto {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-sm);
-  font-size: 0.9rem;
-  color: var(--color-text-light);
-  margin: 0;
+.footer-link {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  transition: var(--transition-fast);
   padding: var(--spacing-xs) 0;
-  transition: var(--transition-smooth);
-  cursor: pointer;
-  line-height: var(--line-height-normal);
-  font-weight: 400;
 }
 
-.dato-contacto .material-symbols-outlined {
-  font-size: 1.25rem;
+.footer-link:hover {
   color: var(--color-primary);
-  display: flex;
-  align-items: center;
+  padding-left: var(--spacing-sm);
 }
 
-.dato-contacto:hover {
-  color: var(--color-primary);
-  transform: translateX(5px);
-}
-
-.dato-contacto:first-of-type {
-  font-weight: 600;
-}
-
-/* Sección de Horarios */
-.seccion-horarios-footer {
+/* Contacto */
+.footer-contact {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
-  align-items: center;
-  text-align: center;
 }
 
-.horario-footer {
+.footer-contact-item {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: var(--spacing-sm);
-  font-size: 0.9rem;
-  color: var(--color-text-light);
-  margin: 0;
-  padding: var(--spacing-xs) 0;
-  transition: var(--transition-smooth);
-  cursor: pointer;
-  line-height: var(--line-height-normal);
-  font-weight: 400;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  transition: var(--transition-fast);
 }
 
-
-.horario-footer:hover {
+.footer-contact-item:hover {
   color: var(--color-primary);
-  border-color: var(--color-primary-alpha);
 }
 
-.horario-footer:last-child {
+.footer-contact-item .material-symbols-outlined {
+  font-size: 18px;
+  color: var(--color-primary);
+}
+
+/* Horarios */
+.footer-hours {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.hours-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-xs) 0;
+  border-bottom: 1px solid var(--color-border-muted);
+}
+
+.hours-row:last-child {
   border-bottom: none;
 }
 
-/* Sección de Redes Sociales */
-.seccion-redes-footer {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
-  align-items: center;
-  text-align: center;
+.hours-days {
+  color: var(--color-text-secondary);
 }
 
-.enlaces-redes {
+.hours-time {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Footer Bottom */
+.footer-bottom {
+  background: rgba(0, 0, 0, 0.3);
+  border-top: 1px solid var(--color-border-light);
+}
+
+.footer-bottom-container {
+  max-width: var(--container-xl);
+  margin: 0 auto;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-lg);
+}
+
+/* Redes Sociales */
+.footer-social {
   display: flex;
   gap: var(--spacing-md);
-  flex-wrap: wrap;
-  justify-content: center;
 }
 
-.enlace-red-social {
+.social-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 50px;
-  height: 50px;
-  background: transparent;
-  color: white;
-  text-decoration: none;
-  border-radius: var(--border-radius-md);
-  font-weight: 500;
-  font-size: var(--font-size-sm);
-  transition: all var(--transition-smooth);
-  position: relative;
-  overflow: hidden;
-  box-shadow: none;
-  font-family: 'Google Sans', 'Inter', sans-serif;
-  border: 2px solid white;
-}
-
-.enlace-red-social .material-symbols-outlined {
-  font-size: 1.5rem;
-  color: var(--color-primary);
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.enlace-red-social .icon-text {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Google Sans', 'Inter', sans-serif;
-}
-
-.enlace-red-social svg {
-  width: 24px;
-  height: 24px;
-  color: white;
-  fill: white;
-}
-
-.enlace-red-social::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, var(--color-primary-alpha), transparent);
-  transition: left var(--transition-slow);
-}
-
-.enlace-red-social:hover::before {
-  left: 100%;
-}
-
-.enlace-red-social:hover {
-  background: white;
-  color: white;
-  text-decoration: none;
-  transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
-  border-color: white;
-}
-
-.enlace-red-social:hover .icon-text {
-  filter: drop-shadow(none);
-}
-
-.enlace-red-social:hover svg {
-  fill: currentColor;
-}
-
-/* Colores específicos para cada red en hover */
-.enlace-red-social.facebook-icon:hover svg {
-  color: #1877f2;
-  fill: #1877f2;
-}
-
-.enlace-red-social.github-icon:hover svg {
-  color: #333333;
-  fill: #333333;
-}
-
-.enlace-red-social.twitter-icon:hover svg {
-  color: #000000;
-  fill: #000000;
-}
-
-/* Copyright - Optimizado */
-.copyright {
-  background: var(--color-surface-dark);
-  padding: var(--spacing-sm) var(--spacing-lg);
-  border-top: 1px solid var(--color-border-dark);
-  text-align: center;
-  margin-top: var(--spacing-md);
-}
-
-.texto-copyright {
+  width: 40px;
+  height: 40px;
   color: var(--color-text-secondary);
-  font-size: 0.85rem;
-  margin: 0;
-  opacity: var(--opacity-text-muted);
-  font-weight: 400;
-  font-family: 'Google Sans', 'Inter', sans-serif;
+  border: 1px solid var(--color-border-light);
+  transition: var(--transition-smooth);
 }
 
-/* Efectos Especiales removidos para mantener diseño profesional */
+.social-link:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+}
 
-/* Responsive Design - Optimizado */
+.social-link svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Copyright */
+.footer-copyright {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* ===================================
+   RESPONSIVE
+   =================================== */
+
 @media (max-width: 1024px) {
-  .contenedor-pie-pagina {
+  .footer-container {
     grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-lg);
-    padding: var(--spacing-xl) var(--spacing-md) var(--spacing-md);
+    gap: var(--spacing-xl);
   }
   
-  .titulo-footer {
-    font-size: var(--font-size-lg);
+  .footer-brand {
+    grid-column: span 2;
+    text-align: center;
+    align-items: center;
+  }
+  
+  .footer-description {
+    max-width: 400px;
   }
 }
 
 @media (max-width: 768px) {
-  .contenedor-pie-pagina {
+  .footer-container {
     grid-template-columns: 1fr;
-    gap: var(--spacing-md);
-    padding: var(--spacing-lg) var(--spacing-md) var(--spacing-sm);
-  }
-  
-  .titulo-footer {
-    font-size: var(--font-size-lg);
+    padding: var(--spacing-2xl) var(--spacing-md);
     text-align: center;
   }
   
-  .descripcion-footer {
+  .footer-brand {
+    grid-column: span 1;
+    align-items: center;
+  }
+  
+  .footer-section {
+    align-items: center;
+  }
+  
+  .footer-section-title {
+    display: inline-block;
+  }
+  
+  .footer-nav,
+  .footer-contact {
+    align-items: center;
+  }
+  
+  .footer-link:hover {
+    padding-left: 0;
+  }
+  
+  .hours-row {
+    flex-direction: column;
+    gap: var(--spacing-xs);
     text-align: center;
-    font-size: var(--font-size-sm);
   }
   
-  .titulo-seccion-footer {
+  .footer-bottom-container {
+    flex-direction: column;
     text-align: center;
-    font-size: var(--font-size-base);
+    padding: var(--spacing-lg) var(--spacing-md);
   }
   
-  .titulo-seccion-footer::after {
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  
-  .horario-footer {
-    justify-content: center;
-    text-align: center;
-  }
-  
-  .enlaces-redes {
-    justify-content: center;
-  }
-  
-  .copyright {
-    padding: 1rem;
+  .footer-logo-text,
+  .footer-logo-accent {
+    font-size: var(--font-size-2xl);
   }
 }
 
 @media (max-width: 480px) {
-  .contenedor-pie-pagina {
-    padding: var(--spacing-md) var(--spacing-sm) var(--spacing-xs);
-    gap: var(--spacing-sm);
+  .footer-container {
+    padding: var(--spacing-xl) var(--spacing-md);
+    gap: var(--spacing-lg);
   }
   
-  .titulo-footer {
-    font-size: var(--font-size-lg);
-  }
-  
-  .descripcion-footer {
-    font-size: var(--font-size-xs);
-  }
-  
-  .titulo-seccion-footer {
-    font-size: var(--font-size-sm);
-  }
-  
-  .copyright {
-    padding: var(--spacing-sm) var(--spacing-md);
+  .footer-logo-text,
+  .footer-logo-accent {
+    font-size: var(--font-size-xl);
   }
 }
-  
-  .dato-contacto {
-    font-size: 0.9rem;
-  }
-  
-  .horario-footer {
-    font-size: 0.85rem;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-  
-  .enlace-red-social {
-    width: 45px;
-    height: 45px;
-    font-size: 0.8rem;
-  }
-  
-  .texto-copyright {
-    font-size: 0.8rem;
-  }
 
+/* ===================================
+   ACCESIBILIDAD
+   =================================== */
 
-/* Estados de Accesibilidad */
-.enlace-red-social:focus,
-.dato-contacto:focus {
+.footer-link:focus-visible,
+.footer-contact-item:focus-visible,
+.social-link:focus-visible {
   outline: 2px solid var(--color-primary);
-  outline-offset: 4px;
+  outline-offset: 2px;
 }
 
-/* Animaciones Adicionales */
-.seccion-contacto-footer .dato-contacto:nth-child(2) {
-  animation-delay: 0.1s;
-}
-
-.seccion-contacto-footer .dato-contacto:nth-child(3) {
-  animation-delay: 0.2s;
-}
-
-.seccion-contacto-footer .dato-contacto:nth-child(4) {
-  animation-delay: 0.3s;
-}
-
-.seccion-horarios-footer .horario-footer:nth-child(2) {
-  animation-delay: 0.1s;
-}
-
-.seccion-horarios-footer .horario-footer:nth-child(3) {
-  animation-delay: 0.2s;
-}
-
-.seccion-horarios-footer .horario-footer:nth-child(4) {
-  animation-delay: 0.3s;
-}
-
-/* Hover para información del restaurante */
-.seccion-informacion-footer:hover .titulo-footer {
-  filter: brightness(1.1);
-  transform: scale(1.02);
-  transition: all 0.3s ease;
-}
-
-.seccion-informacion-footer:hover .descripcion-footer {
-  opacity: 1;
-  transition: opacity 0.3s ease;
+/* Reducir movimiento */
+@media (prefers-reduced-motion: reduce) {
+  .footer-link,
+  .footer-contact-item,
+  .social-link {
+    transition: none;
+  }
 }

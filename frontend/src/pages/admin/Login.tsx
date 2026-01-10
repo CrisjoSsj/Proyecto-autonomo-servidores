@@ -19,9 +19,9 @@ export default function Login() {
       await authService.login(email, password);
       // Redirigir al dashboard después del login exitoso
       navigate('/admin');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error en login:', err);
-      const errorMessage = err.message || 'Credenciales incorrectas. Por favor, intenta de nuevo.';
+      const errorMessage = err instanceof Error ? err.message : 'Credenciales incorrectas. Por favor, intenta de nuevo.';
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -31,11 +31,14 @@ export default function Login() {
   return (
     <div className="login-container">
       <div className="login-card">
-        <div className="login-header">
-          <h1 className="login-title">Chuwue Grill</h1>
-          <h2 className="login-subtitle">Panel de Administración</h2>
-          <p className="login-description">Inicia sesión para acceder al panel de administración</p>
-        </div>
+        <header className="login-header">
+          <div className="login-logo">
+            <span className="login-logo-text">Chuwue</span>
+            <span className="login-logo-accent">Grill</span>
+          </div>
+          <p className="login-title">Panel de Administración</p>
+          <p className="login-subtitle">Inicia sesión para continuar</p>
+        </header>
 
         <form onSubmit={handleSubmit} className="login-form">
           {error && (
