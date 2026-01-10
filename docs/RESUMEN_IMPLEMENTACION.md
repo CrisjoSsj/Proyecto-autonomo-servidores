@@ -198,6 +198,15 @@ class StripeAdapter(PaymentProvider):
 | `mcp/server.py` | **Servidor MCP** que orquesta herramientas. `get_tools_for_llm()` retorna definiciones para el LLM, `execute()` ejecuta una herramienta. |
 | `mcp/tools/__init__.py` | **Registro de tools**: expone `get_all_tools()` y `execute_tool()`. |
 
+---
+
+## 🔎 Endpoints de Integración (Diagnóstico)
+
+- `GET /integracion/pilar1/status` → Estado Pilar 1 (API REST)
+- `GET /integracion/pilar2/status` → Estado Pilar 2 (B2B)
+- `GET /integracion/status` → Estado combinado (headers: `X-Pilar1`, `X-Pilar2`, `X-API-Version`)
+
+
 ### Carpeta `mcp/tools/` (5 Herramientas MCP)
 
 | Archivo | Herramienta | Tipo | Qué hace |
