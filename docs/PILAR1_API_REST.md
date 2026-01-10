@@ -30,6 +30,7 @@ Se incorporan encabezados estándar en todas las respuestas del servicio:
 Endpoints de diagnóstico:
 
 - `GET /integracion/pilar1/status` → devuelve el estado del Pilar 1.
+- `GET /integracion/status` → estado combinado de Pilar 1 y Pilar 2.
 
 Ejemplo de respuesta:
 
@@ -57,3 +58,13 @@ Ejemplo de respuesta:
 - Añadir rate limiting básico para protección.
 - Homologar errores con un formato estándar.
 - Publicar especificación OpenAPI con tags de módulos.
+
+---
+
+## Metadata OpenAPI
+
+La aplicación expone metadatos básicos de OpenAPI para mejorar la exploración:
+
+- Título: "Chuwue Grill API"
+- Versión: `1.0.0`
+- Descripción: API REST principal para operaciones del restaurante, reservas y menú.
