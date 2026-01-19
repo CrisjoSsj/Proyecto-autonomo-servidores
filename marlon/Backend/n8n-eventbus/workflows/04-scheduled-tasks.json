@@ -1,0 +1,501 @@
+{
+  "name": "Scheduled Tasks - FindYourWork",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 24
+            }
+          ]
+        }
+      },
+      "id": "cron-daily-report",
+      "name": "Daily Report Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 150]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 24
+            }
+          ]
+        }
+      },
+      "id": "cron-cleanup",
+      "name": "Cleanup Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 12
+            }
+          ]
+        }
+      },
+      "id": "cron-reminders",
+      "name": "Reminders Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 450]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 5
+            }
+          ]
+        }
+      },
+      "id": "cron-health",
+      "name": "Health Check Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 600]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.DJANGO_API_URL }}/api_rest/reports/daily/",
+        "options": {}
+      },
+      "id": "fetch-daily-stats",
+      "name": "Fetch Daily Stats",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [450, 150]
+    },
+    {
+      "parameters": {
+        "functionCode": "const stats = $input.first().json;\nconst today = new Date().toISOString().split('T')[0];\n\nconst report = `\n📊 *Reporte Diario FindYourWork*\n📅 Fecha: ${today}\n\n📈 *Estadísticas del Día:*\n- Reservas nuevas: ${stats.reservas_nuevas || 0}\n- Reservas confirmadas: ${stats.reservas_confirmadas || 0}\n- Ingresos: $${stats.ingresos_totales || 0} COP\n- Nuevos usuarios: ${stats.nuevos_usuarios || 0}\n- Servicios activos: ${stats.servicios_activos || 0}\n\n🔝 *Top Servicios:*\n${(stats.top_servicios || []).map((s, i) => `${i+1}. ${s.nombre}: ${s.reservas} reservas`).join('\\n')}\n\n✅ Reporte generado automáticamente por n8n Event Bus\n`;\n\nreturn [{ json: { report, stats, date: today } }];"
+      },
+      "id": "generate-report",
+      "name": "Generate Report",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [650, 150]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM_ADDRESS }}",
+        "toEmail": "admin@findyourwork.com",
+        "subject": "=📊 Reporte Diario FindYourWork - {{ $json.date }}",
+        "text": "={{ $json.report }}",
+        "options": {}
+      },
+      "id": "send-report-email",
+      "name": "Send Report Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [850, 150]
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "={{ $env.DJANGO_API_URL }}/api_rest/cleanup/old-data/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Cleanup-Days",
+              "value": "90"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cleanup-old-data",
+      "name": "Cleanup Old Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const result = $input.first().json;\n\nconsole.log('Cleanup completed:', result);\n\nreturn [{\n  json: {\n    task: 'cleanup_old_data',\n    status: 'completed',\n    deleted_records: result.deleted || 0,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "log-cleanup",
+      "name": "Log Cleanup Result",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.DJANGO_API_URL }}/api_rest/reservas/upcoming/",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "hours",
+              "value": "24"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fetch-upcoming-reservations",
+      "name": "Fetch Upcoming Reservations",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [450, 450]
+    },
+    {
+      "parameters": {
+        "batchSize": 10,
+        "options": {}
+      },
+      "id": "split-reservations",
+      "name": "Split Into Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [650, 450]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM_ADDRESS }}",
+        "toEmail": "={{ $json.cliente_email }}",
+        "subject": "=⏰ Recordatorio: Tu reserva en {{ $json.servicio_nombre }}",
+        "text": "=¡Hola {{ $json.cliente_nombre }}!\n\nTe recordamos que tienes una reserva próxima:\n\n📋 Servicio: {{ $json.servicio_nombre }}\n📅 Fecha: {{ $json.fecha }}\n⏰ Hora: {{ $json.hora }}\n📍 Ubicación: {{ $json.ubicacion }}\n\n¡Te esperamos!\n\nSaludos,\nFindYourWork",
+        "options": {}
+      },
+      "id": "send-reminder",
+      "name": "Send Reminder Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [850, 450]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.DJANGO_API_URL }}/webhooks/health/",
+        "options": {
+          "timeout": 5000
+        }
+      },
+      "id": "check-django",
+      "name": "Check Django API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [450, 550],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.WEBSOCKET_SERVER_URL }}/health",
+        "options": {
+          "timeout": 5000
+        }
+      },
+      "id": "check-websocket",
+      "name": "Check WebSocket Server",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [450, 650],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.AI_ORCHESTRATOR_URL }}/health",
+        "options": {
+          "timeout": 5000
+        }
+      },
+      "id": "check-ai",
+      "name": "Check AI Orchestrator",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [450, 750],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "functionCode": "const django = $('Check Django API').first();\nconst websocket = $('Check WebSocket Server').first();\nconst ai = $('Check AI Orchestrator').first();\n\nconst services = [\n  {\n    name: 'Django API',\n    status: django.json?.status === 'healthy' ? 'healthy' : 'unhealthy',\n    response_time: django.json?.$response?.responseTime || 'N/A'\n  },\n  {\n    name: 'WebSocket Server',\n    status: websocket.json?.status === 'ok' ? 'healthy' : 'unhealthy',\n    response_time: websocket.json?.$response?.responseTime || 'N/A'\n  },\n  {\n    name: 'AI Orchestrator',\n    status: ai.json?.status === 'ok' ? 'healthy' : 'unhealthy',\n    response_time: ai.json?.$response?.responseTime || 'N/A'\n  }\n];\n\nconst allHealthy = services.every(s => s.status === 'healthy');\n\nreturn [{\n  json: {\n    overall_status: allHealthy ? 'healthy' : 'degraded',\n    services: services,\n    checked_at: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "aggregate-health",
+      "name": "Aggregate Health Results",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [650, 650]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.overall_status }}",
+              "operation": "notEqual",
+              "value2": "healthy"
+            }
+          ]
+        }
+      },
+      "id": "check-degraded",
+      "name": "Is Degraded?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [850, 650]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.SLACK_WEBHOOK_URL }}",
+        "text": "=🚨 *ALERTA: Sistema Degradado*\n\nAlgunos servicios no están respondiendo correctamente:\n\n{{ $json.services.filter(s => s.status !== 'healthy').map(s => `❌ ${s.name}: ${s.status}`).join('\\n') }}\n\nRevisado: {{ $json.checked_at }}",
+        "additionalFields": {}
+      },
+      "id": "alert-slack",
+      "name": "Alert Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2,
+      "position": [1050, 600]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "scheduled-tasks",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "manual-trigger",
+      "name": "Manual Task Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 850]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.task }}",
+              "value2": "daily_report"
+            }
+          ]
+        }
+      },
+      "id": "route-manual-task",
+      "name": "Route Manual Task",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 2,
+      "position": [450, 850]
+    }
+  ],
+  "connections": {
+    "Daily Report Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch Daily Stats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Daily Stats": {
+      "main": [
+        [
+          {
+            "node": "Generate Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Report": {
+      "main": [
+        [
+          {
+            "node": "Send Report Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cleanup Trigger": {
+      "main": [
+        [
+          {
+            "node": "Cleanup Old Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cleanup Old Data": {
+      "main": [
+        [
+          {
+            "node": "Log Cleanup Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reminders Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch Upcoming Reservations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Upcoming Reservations": {
+      "main": [
+        [
+          {
+            "node": "Split Into Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Into Batches": {
+      "main": [
+        [
+          {
+            "node": "Send Reminder Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Health Check Trigger": {
+      "main": [
+        [
+          {
+            "node": "Check Django API",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check WebSocket Server",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check AI Orchestrator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Django API": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Health Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check WebSocket Server": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Health Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check AI Orchestrator": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Health Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Health Results": {
+      "main": [
+        [
+          {
+            "node": "Is Degraded?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Degraded?": {
+      "main": [
+        [
+          {
+            "node": "Alert Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Task Trigger": {
+      "main": [
+        [
+          {
+            "node": "Route Manual Task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "name": "scheduled",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "name": "cron",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "name": "pilar4",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    }
+  ],
+  "pinData": {},
+  "versionId": "1"
+}

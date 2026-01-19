@@ -1,0 +1,346 @@
+{
+  "name": "Partner Handler - FindYourWork",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "partner-generic",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-partner",
+      "name": "Partner Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Verificar firma HMAC-SHA256\nconst crypto = require('crypto');\n\nconst payload = JSON.stringify($input.first().json);\nconst signature = $input.first().headers['x-partner-signature'] || '';\nconst secret = $env.PARTNER_WEBHOOK_SECRET;\n\nconst expectedSignature = 'sha256=' + crypto\n  .createHmac('sha256', secret)\n  .update(payload)\n  .digest('hex');\n\nconst isValid = crypto.timingSafeEqual(\n  Buffer.from(signature),\n  Buffer.from(expectedSignature)\n);\n\nreturn [\n  {\n    json: {\n      ...$input.first().json,\n      signature_valid: isValid,\n      received_signature: signature,\n      event_type: $input.first().json.event_type\n    }\n  }\n];"
+      },
+      "id": "verify-hmac",
+      "name": "Verify HMAC Signature",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.signature_valid }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "check-signature",
+      "name": "Signature Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.event_type }}",
+              "value2": "partner.sync_request"
+            }
+          ]
+        }
+      },
+      "id": "route-sync",
+      "name": "Is Sync Request?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [850, 150]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.event_type }}",
+              "value2": "partner.data_update"
+            }
+          ]
+        }
+      },
+      "id": "route-update",
+      "name": "Is Data Update?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.event_type }}",
+              "value2": "partner.booking_request"
+            }
+          ]
+        }
+      },
+      "id": "route-booking",
+      "name": "Is Booking Request?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [850, 450]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.DJANGO_API_URL }}/api_rest/servicios/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "sync-services",
+      "name": "Fetch Services for Sync",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1050, 100]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.DJANGO_API_URL }}/api_rest/partner-updates/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.data) }}",
+        "options": {}
+      },
+      "id": "process-update",
+      "name": "Process Data Update",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1050, 250]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.DJANGO_API_URL }}/api_rest/reservas/partner/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.data) }}",
+        "options": {}
+      },
+      "id": "process-booking",
+      "name": "Process Booking Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1050, 400]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"status\": \"ack\",\n  \"event_type\": \"{{ $json.event_type }}\",\n  \"processed_at\": \"{{ $now.toISO() }}\",\n  \"result\": \"success\"\n}",
+        "options": {}
+      },
+      "id": "success-ack",
+      "name": "ACK Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1250, 250]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"status\": \"error\",\n  \"message\": \"Invalid HMAC signature\"\n}",
+        "options": {
+          "responseCode": 401
+        }
+      },
+      "id": "signature-error",
+      "name": "Signature Error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [850, 500]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"status\": \"ack\",\n  \"event_type\": \"{{ $json.event_type }}\",\n  \"processed_at\": \"{{ $now.toISO() }}\",\n  \"result\": \"unhandled_event_type\"\n}",
+        "options": {}
+      },
+      "id": "generic-ack",
+      "name": "Generic ACK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1050, 550]
+    }
+  ],
+  "connections": {
+    "Partner Webhook": {
+      "main": [
+        [
+          {
+            "node": "Verify HMAC Signature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify HMAC Signature": {
+      "main": [
+        [
+          {
+            "node": "Signature Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Signature Valid?": {
+      "main": [
+        [
+          {
+            "node": "Is Sync Request?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Is Data Update?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Is Booking Request?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Signature Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Sync Request?": {
+      "main": [
+        [
+          {
+            "node": "Fetch Services for Sync",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Generic ACK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Data Update?": {
+      "main": [
+        [
+          {
+            "node": "Process Data Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Booking Request?": {
+      "main": [
+        [
+          {
+            "node": "Process Booking Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Services for Sync": {
+      "main": [
+        [
+          {
+            "node": "ACK Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Data Update": {
+      "main": [
+        [
+          {
+            "node": "ACK Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Booking Request": {
+      "main": [
+        [
+          {
+            "node": "ACK Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "name": "partner",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "name": "pilar4",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    }
+  ],
+  "pinData": {},
+  "versionId": "1"
+}

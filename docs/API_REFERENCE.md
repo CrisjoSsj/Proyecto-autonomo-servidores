@@ -327,6 +327,83 @@ Password: admin123
 
 ---
 
+## Integración B2B: FindyourWork (Puerto 8002)
+
+### Registrar FindyourWork como Partner
+
+```
+POST http://localhost:8002/partners/register/findyourwork
+Content-Type: application/json
+
+{
+  "webhook_url": "http://localhost:8000/webhooks/partner/",
+  "contact_email": "dev@findyourwork.com"
+}
+```
+
+**Response:**
+```json
+{
+  "partner_id": "partner_findyourwork",
+  "partner_name": "FindyourWork",
+  "shared_secret": "whsec_abc123...",
+  "status": "active"
+}
+```
+
+---
+
+### Verificar Estado de Integración
+
+```
+GET http://localhost:8002/partners/findyourwork/status
+```
+
+---
+
+### Notificar Evento Corporativo a FindyourWork
+
+```
+POST http://localhost:8002/partners/findyourwork/notify-event
+Content-Type: application/json
+
+{
+  "reservation_id": "RES-2026-001",
+  "event_name": "Cena Corporativa TechCorp",
+  "date": "2026-02-15",
+  "time": "19:00",
+  "guests": 50,
+  "contact_name": "María García",
+  "contact_phone": "0991234567",
+  "contact_email": "maria@techcorp.com",
+  "services_requested": ["dj", "decoracion", "fotografia"],
+  "notes": "Celebración de aniversario"
+}
+```
+
+---
+
+### Recibir Webhooks de FindyourWork
+
+```
+POST http://localhost:8002/webhooks/partner/partner_findyourwork
+Content-Type: application/json
+X-HMAC-Signature: {firma_hmac}
+X-Partner-ID: findyourwork
+
+{
+  "event_type": "service.booked_for_event",
+  "data": {
+    "external_event_id": "RES-2026-001",
+    "service_name": "DJ Profesional",
+    "provider": { "name": "DJ Sounds Pro", "phone": "0998765432" },
+    "price": 250.00
+  }
+}
+```
+
+---
+
 ## Códigos de Error Comunes
 
 | Código | HTTP | Descripción |

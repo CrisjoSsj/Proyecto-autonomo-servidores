@@ -1,0 +1,34 @@
+# n8n Event Bus - .gitignore
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Docker volumes (if stored locally)
+n8n_data/
+postgres_data/
+redis_data/
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Backups
+*.bak
+*.backup

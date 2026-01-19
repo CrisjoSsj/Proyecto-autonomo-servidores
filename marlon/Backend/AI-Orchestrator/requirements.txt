@@ -1,0 +1,31 @@
+fastapi==0.101.1
+uvicorn[standard]==0.22.0
+pydantic>=2.5.2
+pydantic-settings>=0.1.7
+python-dotenv==1.0.0
+httpx==0.24.1
+openai==1.0.0
+huggingface-hub>=0.19.3,<1.0
+transformers==4.36.2
+sentence-transformers==2.2.2
+# Use a qdrant-client compatible with modern Python versions (>=3.11).
+# Pin to a recent, available release instead of 1.5.0 which is not found on PyPI.
+qdrant-client>=1.16.2
+python-multipart==0.0.6
+aiofiles==23.1.0
+# PDF and OCR
+PyMuPDF>=1.22.0
+pytesseract>=0.3.10
+Pillow>=10.1.0
+pdfplumber>=0.8.1
+# For test PDF creation
+reportlab>=4.0
+
+pytest==7.4.0
+pytest-asyncio==0.22.0
+cryptography==41.0.3
+PyJWT>=2.6.0
+
+# Background worker
+celery>=5.3.0
+redis>=4.5.0

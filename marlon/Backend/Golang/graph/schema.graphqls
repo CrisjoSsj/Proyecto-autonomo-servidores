@@ -1,0 +1,307 @@
+# ====================================
+# ESCALARES
+# ====================================
+scalar Date
+scalar Time
+scalar Decimal
+
+# ====================================
+# INPUTS PARA LOS FILTROS Y PAGINACIÓN
+# ====================================
+
+input Pagination {
+  limit: Int
+  offset: Int
+}
+
+input ReservaFilterInput {
+    clienteId: Int
+    estado: String
+    fechaDesde: String
+    fechaHasta: String
+}
+
+input ServicioFilterInput {
+    soloMios: Boolean
+    proveedorId: Int
+    categoriaId: Int
+
+    # Filtros adicionales que faltaban 
+    ciudad: String
+    minRating: Float
+    precioMin: Float
+    precioMax: Float
+    q: String
+}
+
+
+input TendenciasFilter {
+  fechaDesde: Date
+  fechaHasta: Date
+}
+
+
+# ====================================
+# MODELOS
+# ====================================
+
+type User {
+  id: Int!
+  username: String!
+  email: String!
+  firstName: String
+  lastName: String
+  rol: String!
+  createdAt: Time!
+  updatedAt: Time!
+  cliente: Cliente
+  proveedor: Proveedor
+}
+
+type Ubicacion {
+  id: Int!
+  direccion: String!
+  ciudad: String!
+  provincia: String!
+  pais: String!
+  createdAt: Time!
+  updatedAt: Time!
+  clientes: [Cliente!]
+  proveedores: [Proveedor!]
+  servicios: [Servicio!]
+}
+
+type Cliente {
+  id: Int!
+  user: User!
+  telefono: String!
+  ubicacion: Ubicacion
+  createdAt: Time!
+  updatedAt: Time!
+  reservas: [Reserva!]
+  calificaciones: [Calificacion!]
+  comentarios: [Comentario!]
+}
+
+type Proveedor {
+  id: Int!
+  user: User!
+  telefono: String!
+  descripcion: String
+  ubicacion: Ubicacion
+  createdAt: Time!
+  updatedAt: Time!
+  servicios: [Servicio!]
+}
+
+type Categoria {
+  id: Int!
+  nombre: String!
+  descripcion: String
+  createdAt: Time!
+  updatedAt: Time!
+  servicios: [Servicio!]
+}
+
+type Servicio {
+  id: Int!
+  proveedor: Proveedor
+  categoria: Categoria
+  nombreServicio: String!
+  descripcion: String
+  duracion: String
+  ratingPromedio: Float!
+  precio: Decimal!
+  ubicaciones: [Ubicacion!]
+  fotos: [FotoServicio!]
+  calificaciones: [Calificacion!]
+  comentarios: [Comentario!]
+  detallesReserva: [ReservaServicio!]
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+type ServicioUbicacion {
+  id: Int!
+  servicio: Servicio!
+  ubicacion: Ubicacion!
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+type FotoServicio {
+  id: Int!
+  servicio: Servicio!
+  urlFoto: String!
+  descripcion: String
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+type Reserva {
+  id: Int!
+  cliente: Cliente!
+  fecha: Date!
+  hora: String!
+  estado: String!
+  totalEstimado: Decimal!
+  detalles: [ReservaServicio!]
+  pagos: [Pago!]
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+type ReservaServicio {
+  id: Int!
+  reserva: Reserva!
+  servicio: Servicio!
+  cantidad: Int!
+  precioUnitario: Decimal!
+  subtotal: Decimal!
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+type Pago {
+  id: Int!
+  reserva: Reserva!
+  metodoPago: String!
+  monto: Decimal!
+  estado: String!
+  referencia: String
+  fechaPago: Time
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+type Calificacion {
+  id: Int!
+  cliente: Cliente!
+  servicio: Servicio!
+  fecha: Time!
+  puntuacion: Int!
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+type Comentario {
+  id: Int!
+  cliente: Cliente!
+  servicio: Servicio!
+  titulo: String!
+  texto: String!
+  respuesta: String
+  fecha: Time!
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+# ====================================
+# REPORTES
+# ====================================
+
+type ServicioVendido {
+  servicio: Servicio!
+  cantidadVendida: Int!
+  ingresosGenerados: Decimal!
+}
+
+type ReporteVentas {
+  periodo: String!
+  totalVentas: Decimal!
+  cantidadReservas: Int!
+  promedioPorReserva: Decimal!
+  serviciosMasVendidos: [ServicioVendido!]!
+}
+
+type DistribucionCalificacion {
+  puntuacion: Int!
+  cantidad: Int!
+  porcentaje: Float!
+}
+
+type ReporteSatisfaccion {
+  servicio: Servicio!
+  promedioCalificacion: Float!
+  totalCalificaciones: Int!
+  distribucionCalificaciones: [DistribucionCalificacion!]!
+}
+
+type ReporteProveedor {
+  proveedor: Proveedor!
+  totalServicios: Int!
+  ingresosTotales: Decimal!
+  promedioCalificacion: Float!
+  serviciosActivos: Int!
+}
+
+type ReporteCliente {
+  cliente: Cliente!
+  totalReservas: Int!
+  gastoTotal: Decimal!
+  promedioPorReserva: Decimal!
+  ultimaReserva: Date
+}
+
+type PuntoTendencia {
+  fecha: String!
+  valor: Decimal!
+  etiqueta: String
+}
+
+type MetricasGenerales {
+  totalUsuarios: Int!
+  totalClientes: Int!
+  totalProveedores: Int!
+  totalServicios: Int!
+  totalReservas: Int!
+  ingresosTotales: Decimal!
+  promedioSatisfaccion: Decimal!
+}
+
+
+# ====================================
+# QUERIES
+# ====================================
+
+type Query {
+  users(pagination: Pagination): [User!]!
+  user(id: Int!): User
+
+  ubicaciones(pagination: Pagination): [Ubicacion!]!
+  ubicacion(id: Int!): Ubicacion
+
+  clientes(pagination: Pagination): [Cliente!]!
+  cliente(id: Int!): Cliente
+
+  proveedores(pagination: Pagination): [Proveedor!]!
+  proveedor(id: Int!): Proveedor
+
+  categorias(pagination: Pagination): [Categoria!]!
+  categoria(id: Int!): Categoria
+
+  servicios(filter: ServicioFilterInput, pagination: Pagination): [Servicio!]!
+  servicio(id: Int!): Servicio
+
+  reservas(filter: ReservaFilterInput, pagination: Pagination): [Reserva!]!
+  reserva(id: Int!): Reserva
+
+  pagos(pagination: Pagination): [Pago!]!
+  pago(id: Int!): Pago
+
+  calificaciones(pagination: Pagination): [Calificacion!]!
+  comentarios(pagination: Pagination): [Comentario!]!
+
+  reporteVentas(pagination: Pagination): ReporteVentas!
+  reporteSatisfaccion(pagination: Pagination): [ReporteSatisfaccion!]!
+  reporteProveedores(pagination: Pagination): [ReporteProveedor!]!
+  reporteClientes(pagination: Pagination): [ReporteCliente!]!
+  metricasGenerales(pagination: Pagination): MetricasGenerales!
+
+  serviciosMasPopulares(limit: Int): [ServicioVendido!]!
+  proveedoresMejorCalificados(limit: Int): [ReporteProveedor!]!
+  clientesMasActivos(limit: Int): [ReporteCliente!]!
+
+  tendenciasVentas(filter: TendenciasFilter, pagination: Pagination): [PuntoTendencia!]!
+  tendenciasSatisfaccion(filter: TendenciasFilter, pagination: Pagination): [PuntoTendencia!]!
+}

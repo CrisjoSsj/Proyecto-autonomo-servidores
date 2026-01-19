@@ -5,11 +5,13 @@ Endpoint principal para interactuar con el asistente IA
 import uuid
 import base64
 import json
+import io
 from datetime import datetime, timezone
 from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
+import fitz  # PyMuPDF
 
 from database import get_db
 from models.conversation import Conversation, Message
@@ -300,6 +302,197 @@ async def send_message_with_image(
         "image_analyzed": True,
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
+
+
+@router.post("/message/with-pdf")
+async def send_message_with_pdf(
+    message: str = Form(...),
+    conversation_id: Optional[str] = Form(None),
+    channel: str = Form("web"),
+    pdf: UploadFile = File(...),
+    db: Session = Depends(get_db)
+):
+    """
+    Enviar mensaje con PDF (multimodal)
+    
+    El asistente extraerá texto del PDF y lo analizará según el contexto.
+    Útil para:
+    - Extraer datos de facturas
+    - Analizar contratos
+    - Procesar catálogos de productos
+    - Leer documentos de menú
+    """
+    llm = get_llm_provider()
+    mcp = get_mcp_server()
+    
+    # Validar tipo de archivo
+    if not pdf.filename.lower().endswith('.pdf'):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El archivo debe ser un PDF"
+        )
+    
+    try:
+        # Leer PDF
+        pdf_content = await pdf.read()
+        pdf_stream = io.BytesIO(pdf_content)
+        
+        # Abrir PDF con PyMuPDF
+        doc = fitz.open(stream=pdf_stream, filetype="pdf")
+        
+        # Extraer texto de todas las páginas
+        extracted_text = ""
+        total_pages = len(doc)
+        
+        for page_num in range(total_pages):
+            page = doc[page_num]
+            text = page.get_text()
+            extracted_text += f"\n--- Página {page_num + 1} ---\n{text}\n"
+        
+        doc.close()
+        
+        # Limitar tamaño del texto extraído (máximo 8000 caracteres para evitar tokens excesivos)
+        if len(extracted_text) > 8000:
+            extracted_text = extracted_text[:8000] + "\n... (texto truncado)"
+        
+        # Crear/obtener conversación
+        if conversation_id:
+            conversation = db.query(Conversation).filter(
+                Conversation.conversation_id == conversation_id
+            ).first()
+        else:
+            conversation = None
+        
+        if not conversation:
+            conversation = Conversation(
+                conversation_id=f"conv_{uuid.uuid4().hex[:12]}",
+                channel=channel
+            )
+            db.add(conversation)
+            db.commit()
+            db.refresh(conversation)
+        
+        # Construir prompt para el LLM
+        analysis_prompt = f"""El usuario envió un PDF con el mensaje: '{message}'
+
+Contenido extraído del PDF ({total_pages} páginas):
+{extracted_text}
+
+Analiza el contenido del PDF y responde de manera útil en el contexto de un restaurante. 
+Si el PDF contiene información relevante (facturas, contratos, menús, etc.), proporciona un resumen útil.
+Si el usuario hace una pregunta específica sobre el contenido, respóndela basándote en el texto extraído."""
+
+        # Construir historial de mensajes
+        messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+        
+        # Agregar mensajes previos de la conversación
+        prev_messages = db.query(Message).filter(
+            Message.conversation_id == conversation.id
+        ).order_by(Message.created_at.desc()).limit(5).all()
+        
+        for msg in reversed(prev_messages):
+            messages.append({"role": msg.role, "content": msg.content})
+        
+        # Agregar mensaje con análisis del PDF
+        messages.append({"role": "user", "content": analysis_prompt})
+        
+        # Guardar mensaje del usuario
+        user_message = Message(
+            conversation_id=conversation.id,
+            role="user",
+            content=f"[PDF adjunto: {pdf.filename}] {message}"
+        )
+        db.add(user_message)
+        
+        # Obtener herramientas MCP
+        tools = mcp.get_tools_for_llm()
+        
+        # Generar respuesta del LLM
+        response = await llm.generate(messages, tools=tools)
+        
+        tool_used = None
+        tool_result = None
+        final_response = response.content
+        
+        # Si el LLM quiere usar herramientas
+        if response.tool_calls:
+            tool_results = []
+            
+            for tool_call in response.tool_calls:
+                tool_used = tool_call.tool_name
+                result = await mcp.execute(tool_call.tool_name, tool_call.arguments)
+                tool_result = result
+                
+                tool_results.append({
+                    "call_id": tool_call.call_id,
+                    "tool_name": tool_call.tool_name,
+                    "result": result
+                })
+                
+                # Guardar resultado del tool
+                tool_message = Message(
+                    conversation_id=conversation.id,
+                    role="tool",
+                    content=json.dumps(result, ensure_ascii=False),
+                    tool_name=tool_call.tool_name,
+                    tool_result=json.dumps(result, ensure_ascii=False)
+                )
+                db.add(tool_message)
+            
+            # Agregar resultados al contexto y generar respuesta final
+            messages.append({
+                "role": "assistant",
+                "content": "",
+                "tool_calls": [
+                    {
+                        "id": tc.call_id,
+                        "type": "function",
+                        "function": {
+                            "name": tc.tool_name,
+                            "arguments": json.dumps(tc.arguments)
+                        }
+                    }
+                    for tc in response.tool_calls
+                ]
+            })
+            
+            for tr in tool_results:
+                messages.append({
+                    "role": "tool",
+                    "tool_call_id": tr["call_id"],
+                    "content": json.dumps(tr["result"], ensure_ascii=False)
+                })
+            
+            # Generar respuesta final con los resultados
+            final_response_obj = await llm.generate(messages)
+            final_response = final_response_obj.content
+        
+        # Guardar respuesta del asistente
+        assistant_message = Message(
+            conversation_id=conversation.id,
+            role="assistant",
+            content=final_response,
+            tool_name=tool_used
+        )
+        db.add(assistant_message)
+        db.commit()
+        
+        return {
+            "conversation_id": conversation.conversation_id,
+            "response": final_response,
+            "tool_used": tool_used,
+            "tool_result": tool_result,
+            "pdf_processed": True,
+            "pages_extracted": total_pages,
+            "filename": pdf.filename,
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error procesando PDF: {str(e)}"
+        )
 
 
 @router.get("/history/{conversation_id}", response_model=ConversationResponse)

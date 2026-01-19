@@ -3,7 +3,7 @@
  * Widget flotante para interactuar con el asistente de Chuwue Grill
  */
 import { useState, useRef, useEffect } from 'react';
-import { FaComments, FaTimes, FaPaperPlane, FaImage, FaSpinner } from 'react-icons/fa';
+import { FaComments, FaTimes, FaPaperPlane, FaImage, FaSpinner, FaFilePdf } from 'react-icons/fa';
 import '../css/ChatBot.css';
 
 interface Message {
@@ -33,9 +33,11 @@ export default function ChatBot({ apiUrl = 'http://localhost:8003' }: ChatBotPro
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [selectedPdf, setSelectedPdf] = useState<File | null>(null);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const pdfInputRef = useRef<HTMLInputElement>(null);
 
   // Auto-scroll al último mensaje
   useEffect(() => {
@@ -43,12 +45,12 @@ export default function ChatBot({ apiUrl = 'http://localhost:8003' }: ChatBotPro
   }, [messages]);
 
   const handleSendMessage = async () => {
-    if (!inputValue.trim() && !selectedImage) return;
+    if (!inputValue.trim() && !selectedImage && !selectedPdf) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: inputValue + (selectedImage ? ' [Imagen adjunta]' : ''),
+      content: inputValue + (selectedImage ? ' [Imagen adjunta]' : '') + (selectedPdf ? ` [PDF adjunto: ${selectedPdf.name}]` : ''),
       timestamp: new Date()
     };
 
@@ -59,7 +61,21 @@ export default function ChatBot({ apiUrl = 'http://localhost:8003' }: ChatBotPro
     try {
       let response;
 
-      if (selectedImage) {
+      if (selectedPdf) {
+        // Enviar con PDF
+        const formData = new FormData();
+        formData.append('message', inputValue || 'Analiza este PDF');
+        formData.append('pdf', selectedPdf);
+        if (conversationId) {
+          formData.append('conversation_id', conversationId);
+        }
+        formData.append('channel', 'web');
+
+        response = await fetch(`${apiUrl}/chat/message/with-pdf`, {
+          method: 'POST',
+          body: formData
+        });
+      } else if (selectedImage) {
         // Enviar con imagen
         const formData = new FormData();
         formData.append('message', inputValue);
@@ -123,6 +139,7 @@ export default function ChatBot({ apiUrl = 'http://localhost:8003' }: ChatBotPro
       setIsLoading(false);
       setSelectedImage(null);
       setImagePreview(null);
+      setSelectedPdf(null);
     }
   };
 
@@ -136,6 +153,8 @@ export default function ChatBot({ apiUrl = 'http://localhost:8003' }: ChatBotPro
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Limpiar PDF si hay imagen seleccionada
+      setSelectedPdf(null);
       setSelectedImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -145,11 +164,30 @@ export default function ChatBot({ apiUrl = 'http://localhost:8003' }: ChatBotPro
     }
   };
 
+  const handlePdfSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type === 'application/pdf') {
+      // Limpiar imagen si hay PDF seleccionado
+      setSelectedImage(null);
+      setImagePreview(null);
+      setSelectedPdf(file);
+    } else {
+      alert('Por favor selecciona un archivo PDF válido');
+    }
+  };
+
   const removeImage = () => {
     setSelectedImage(null);
     setImagePreview(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
+    }
+  };
+
+  const removePdf = () => {
+    setSelectedPdf(null);
+    if (pdfInputRef.current) {
+      pdfInputRef.current.value = '';
     }
   };
 
@@ -235,6 +273,22 @@ export default function ChatBot({ apiUrl = 'http://localhost:8003' }: ChatBotPro
             </div>
           )}
 
+          {/* Preview de PDF */}
+          {selectedPdf && (
+            <div className="chatbot-pdf-preview">
+              <div className="chatbot-pdf-info">
+                <FaFilePdf size={24} />
+                <span>{selectedPdf.name}</span>
+                <span className="chatbot-pdf-size">
+                  ({(selectedPdf.size / 1024).toFixed(1)} KB)
+                </span>
+              </div>
+              <button onClick={removePdf} className="chatbot-remove-pdf">
+                <FaTimes />
+              </button>
+            </div>
+          )}
+
           {/* Input */}
           <div className="chatbot-input-container">
             <input
@@ -244,14 +298,32 @@ export default function ChatBot({ apiUrl = 'http://localhost:8003' }: ChatBotPro
               onChange={handleImageSelect}
               style={{ display: 'none' }}
             />
+            <input
+              type="file"
+              ref={pdfInputRef}
+              accept="application/pdf"
+              onChange={handlePdfSelect}
+              style={{ display: 'none' }}
+            />
             
-            <button 
-              className="chatbot-attach-btn"
-              onClick={() => fileInputRef.current?.click()}
-              aria-label="Adjuntar imagen"
-            >
-              <FaImage />
-            </button>
+            <div className="chatbot-attach-buttons">
+              <button 
+                className="chatbot-attach-btn"
+                onClick={() => fileInputRef.current?.click()}
+                aria-label="Adjuntar imagen"
+                title="Adjuntar imagen"
+              >
+                <FaImage />
+              </button>
+              <button 
+                className="chatbot-attach-btn"
+                onClick={() => pdfInputRef.current?.click()}
+                aria-label="Adjuntar PDF"
+                title="Adjuntar PDF"
+              >
+                <FaFilePdf />
+              </button>
+            </div>
             
             <input
               type="text"
@@ -266,7 +338,7 @@ export default function ChatBot({ apiUrl = 'http://localhost:8003' }: ChatBotPro
             <button 
               className="chatbot-send-btn"
               onClick={handleSendMessage}
-              disabled={isLoading || (!inputValue.trim() && !selectedImage)}
+              disabled={isLoading || (!inputValue.trim() && !selectedImage && !selectedPdf)}
               aria-label="Enviar mensaje"
             >
               <FaPaperPlane />

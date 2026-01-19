@@ -1,0 +1,39 @@
+# Node modules
+/node_modules
+
+# Build output
+/dist
+/build
+
+# Logs
+logs
+*.log
+
+# Test coverage
+/coverage
+/.nyc_output
+
+# Environment variables
+.env*
+!.env.example
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime-workspace
+
+# OS files
+.DS_Store
+
+# Temporary files
+.temp
+.tmp
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Diagnostic reports
+report.*.json

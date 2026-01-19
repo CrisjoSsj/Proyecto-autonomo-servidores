@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Dashboard FindYourWork - Control de Negocio</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            color: #667eea;
+            margin: 0;
+        }
+
+        .header-info {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: #f0f4ff;
+            border-radius: 20px;
+            border: 2px solid #667eea;
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .refresh-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid #667eea;
+            transition: all 0.3s;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .kpi-card.financial { border-left-color: #10b981; }
+        .kpi-card.reservas { border-left-color: #f59e0b; }
+        .kpi-card.satisfaction { border-left-color: #f97316; }
+        .kpi-card.users { border-left-color: #3b82f6; }
+
+        .kpi-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .kpi-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+
+        .kpi-change {
+            font-size: 0.85rem;
+            color: #10b981;
+            font-weight: 500;
+        }
+
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            min-height: 300px;
+        }
+
+        .chart-card h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .chart-card canvas {
+            max-height: 250px !important;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .services-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+        }
+
+        .services-table h3 {
+            padding: 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 0;
+            font-size: 1.3rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f3f4f6;
+        }
+
+        th {
+            padding: 15px 25px;
+            text-align: left;
+            font-weight: 600;
+            color: #4b5563;
+            border-bottom: 2px solid #e5e7eb;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 15px 25px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .badge-success { background: #10b981; }
+        .badge-warning { background: #f59e0b; }
+        .badge-danger { background: #ef4444; }
+        .badge-info { background: #3b82f6; }
+
+        .activity-feed {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+        }
+
+        .activity-feed h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .activity-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            font-size: 1.5rem;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .activity-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .activity-text {
+            font-size: 0.95rem;
+            color: #4b5563;
+            font-weight: 500;
+        }
+
+        .activity-time {
+            font-size: 0.85rem;
+            color: #9ca3af;
+        }
+
+        .activity-monto {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #10b981;
+            white-space: nowrap;
+        }
+        .activity-time {
+            font-size: 0.85rem;
+            color: #9ca3af;
+            white-space: nowrap;
+        }
+
+        .proyeccion-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+        }
+
+        .proyeccion-section h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .proyeccion-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .proyeccion-card {
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .proyeccion-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .proyeccion-card.pagado {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border-color: #10b981;
+        }
+
+        .proyeccion-card.confirmado {
+            background: linear-gradient(135deg, #ede9fe 0%, #f3e8ff 100%);
+            border-color: #8b5cf6;
+        }
+
+        .proyeccion-card.pendiente {
+            background: linear-gradient(135deg, #fed7aa 0%, #fecaca 100%);
+            border-color: #ff8c42;
+        }
+
+        .proyeccion-card.proyectado {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-color: #3b82f6;
+        }
+
+        .proyeccion-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .proyeccion-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #6b7280;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .proyeccion-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+
+        .proyeccion-sublabel {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        .mes-progress {
+            background: linear-gradient(135deg, #f0f4ff 0%, #ede9fe 100%);
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px solid #e0e7ff;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 400px;
+            font-size: 1.2rem;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .kpi-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-card {
+                min-height: 300px;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>📊 Dashboard FindYourWork</h1>
+                <p style="color: #9ca3af; margin-top: 5px;">Control en tiempo real de tu negocio</p>
+            </div>
+            <div class="header-info">
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span id="status-text">Conectando...</span>
+                </div>
+                <button class="refresh-btn" onclick="location.reload()">🔄 Actualizar</button>
+            </div>
+        </header>
+
+        <!-- KPI CARDS -->
+        <div class="kpi-grid" id="kpi-container">
+            <div class="loading">Cargando métricas...</div>
+        </div>
+
+        <!-- DESGLOSE DE RESERVAS -->
+        <div style="margin-bottom: 30px;">
+            <h2 style="color: #667eea; font-size: 1.5rem; margin-bottom: 20px;">📋 Desglose de Reservas</h2>
+            <div class="kpi-grid" id="desglose-container">
+                <div class="loading">Cargando desglose...</div>
+            </div>
+        </div>
+
+        <!-- CHARTS -->
+        <div class="charts-section">
+            <div class="chart-card">
+                <h3>📅 Estado de Reservas</h3>
+                <canvas id="reservasChart"></canvas>
+            </div>
+        </div>
+
+        <!-- PROYECCIÓN DE INGRESOS -->
+        <div class="proyeccion-section" id="proyeccion-section">
+            <h3>💹 Proyección de Ingresos Mensuales</h3>
+            <div class="proyeccion-grid" id="proyeccion-container">
+                <div class="loading">Cargando proyección...</div>
+            </div>
+        </div>
+
+        <!-- TOP SERVICES -->
+        <div class="services-table">
+            <h3>🔥 Servicios Más Solicitados</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Servicio</th>
+                        <th>Rating</th>
+                        <th>Precio Promedio</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="services-tbody">
+                    <tr>
+                        <td colspan="5" class="loading" style="height: 50px;">Cargando servicios...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- MONTHLY TRENDS -->
+        <div class="services-table">
+            <h3>📊 Tendencia de Reservas por Mes</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mes</th>
+                        <th>Total</th>
+                        <th>Confirmadas</th>
+                        <th>Pendientes</th>
+                        <th>Canceladas</th>
+                    </tr>
+                </thead>
+                <tbody id="trends-tbody">
+                    <tr>
+                        <td colspan="5" class="loading" style="height: 50px;">Cargando tendencias...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ACTIVITY FEED -->
+        <div class="activity-feed">
+            <h3>⚡ Actividad en Tiempo Real</h3>
+            <div id="activity-feed"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:4000/api';
+        let reservasChart;
+        let events = [];
+
+        // Conectar WebSocket
+        const socket = io('http://localhost:4000/ws', {
+            reconnectionDelay: 1000,
+            reconnection: true,
+            reconnectionAttempts: 5,
+            transports: ['websocket']
+        });
+
+        socket.on('connect', () => {
+            console.log('✅ Conectado al WebSocket');
+            document.getElementById('status-text').textContent = '🟢 En línea';
+            loadDashboard();
+        });
+
+        socket.on('disconnect', () => {
+            console.log('❌ Desconectado del WebSocket');
+            document.getElementById('status-text').textContent = '🔴 Desconectado';
+        });
+
+        // Escuchar eventos en tiempo real
+        socket.on('reserva:creada', (data) => {
+            addActivityEvent('🆕', `Nueva reserva: ${data.cliente}`, 'info');
+            loadDashboard();
+        });
+
+        socket.on('pago:procesado', (data) => {
+            addActivityEvent('💳', `Pago procesado: $${data.monto}`, 'success');
+            loadDashboard();
+        });
+
+        socket.on('calificacion:creada', (data) => {
+            addActivityEvent('⭐', `Nueva calificación: ${data.puntuacion}/5`, 'success');
+        });
+
+        async function loadDashboard() {
+            try {
+                const [statsRes, flujoRes, actividadRes] = await Promise.all([
+                    fetch(`${API_BASE}/dashboard/stats`),
+                    fetch(`${API_BASE}/dashboard/reservas/flujo`),
+                    fetch(`${API_BASE}/dashboard/actividad/tiempo-real`)
+                ]);
+                
+                const data = await statsRes.json();
+                const flujoData = await flujoRes.json();
+                const actividadData = await actividadRes.json();
+                
+                console.log('📊 Datos del dashboard:', data);
+                
+                renderKPIs(data.kpis || data);
+                renderCharts(data);
+                renderTopServices(data.servicios?.top_servicios || []);
+                renderTrends(flujoData || []);
+                await renderDesglose();
+                await renderProyeccion();
+                renderActividad(actividadData || []);
+            } catch (error) {
+                console.error('Error cargando dashboard:', error);
+            }
+        }
+
+        function renderKPIs(kpis) {
+            const container = document.getElementById('kpi-container');
+            
+            const cards = [
+                {
+                    icon: '💵',
+                    label: 'Ingresos Totales',
+                    value: formatCurrency(kpis.ingresos_totales || 0),
+                    change: '+12% este mes',
+                    class: 'financial'
+                },
+                {
+                    icon: '✅',
+                    label: 'Reservas Confirmadas y Pagadas  ',
+                    value: kpis.reservas_confirmadas || 0,
+                    change: `Conversión: ${kpis.tasa_conversion || 0}%`,
+                    class: 'reservas'
+                },
+                {
+                    icon: '⏳',
+                    label: 'Reservas Pendientes',
+                    value: kpis.reservas_pendientes || 0,
+                    change: `Por confirmar`,
+                    class: 'reservas'
+                },
+                {
+                    icon: '⭐',
+                    label: 'Satisfacción Cliente',
+                    value: `${(kpis.satisfaccion_promedio || 0).toFixed(1)}/5`,
+                    change: `${kpis.calificaciones_totales || 0} calificaciones`,
+                    class: 'satisfaction'
+                },
+                {
+                    icon: '🔧',
+                    label: 'Servicios Activos',
+                    value: kpis.servicios_totales || 0,
+                    change: 'En la plataforma',
+                    class: 'users'
+                },
+                {
+                    icon: '👥',
+                    label: 'Clientes',
+                    value: kpis.clientes_totales || 0,
+                    change: 'Registrados',
+                    class: 'users'
+                },
+                {
+                    icon: '🏢',
+                    label: 'Proveedores',
+                    value: kpis.proveedores_totales || 0,
+                    change: 'Activos',
+                    class: 'users'
+                },
+                {
+                    icon: '❌',
+                    label: 'Tasa Cancelación',
+                    value: `${(kpis.tasa_cancelacion || 0).toFixed(1)}%`,
+                    change: 'De todas las reservas',
+                    class: 'reservas'
+                }
+            ];
+
+            container.innerHTML = cards.map(card => `
+                <div class="kpi-card ${card.class}">
+                    <div class="kpi-icon">${card.icon}</div>
+                    <div class="kpi-label">${card.label}</div>
+                    <div class="kpi-value">${card.value}</div>
+                    <div class="kpi-change">${card.change}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderCharts(data) {
+            const kpis = data.kpis || data;
+
+            // Chart: Reservas
+            const ctxReservas = document.getElementById('reservasChart').getContext('2d');
+            if (reservasChart) reservasChart.destroy();
+            reservasChart = new Chart(ctxReservas, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Confirmadas', 'Pendientes', 'Canceladas'],
+                    datasets: [{
+                        data: [
+                            kpis.reservas_confirmadas || 0,
+                            kpis.reservas_pendientes || 0,
+                            kpis.reservas_canceladas || 0
+                        ],
+                        backgroundColor: [
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(239, 68, 68, 0.8)'
+                        ],
+                        borderColor: ['rgb(16, 185, 129)', 'rgb(245, 158, 11)', 'rgb(239, 68, 68)'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderTopServices(services) {
+            const tbody = document.getElementById('services-tbody');
+            
+            if (!services || services.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #9ca3af;">Sin servicios registrados</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = services.slice(0, 5).map(service => `
+                <tr>
+                    <td><strong>${service.nombre}</strong></td>
+                    <td>⭐ ${service.rating.toFixed(1)}</td>
+                    <td>${formatCurrency(service.precio)}</td>
+                    <td><span class="badge badge-success">Activo</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function renderTrends(trends) {
+            const tbody = document.getElementById('trends-tbody');
+            
+            if (!trends || trends.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #9ca3af;">Sin datos de tendencias</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = trends.slice(-12).map(mes => `
+                <tr>
+                    <td><strong>${mes.mes}</strong></td>
+                    <td><span class="badge badge-info">${mes.total}</span></td>
+                    <td><span class="badge badge-success">${mes.confirmadas}</span></td>
+                    <td><span class="badge badge-warning">${mes.pendientes}</span></td>
+                    <td><span class="badge badge-danger">${mes.canceladas}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function renderActividad(actividades) {
+            const feed = document.getElementById('activity-feed');
+            feed.innerHTML = '';
+            
+            // Ya vienen ordenadas por fecha descendente del backend (más recientes primero)
+            actividades.forEach(evento => {
+                const item = document.createElement('div');
+                item.className = 'activity-item';
+                
+                const fecha = new Date(evento.fecha);
+                const tiempoFormato = fecha.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+                
+                item.innerHTML = `
+                    <div class="activity-icon">${evento.icono}</div>
+                    <div class="activity-content">
+                        <div class="activity-text">${evento.descripcion}</div>
+                        <div class="activity-time">${tiempoFormato}</div>
+                    </div>
+                    ${evento.monto ? `<div class="activity-monto">${formatCurrency(evento.monto)}</div>` : ''}
+                `;
+                
+                feed.appendChild(item);
+            });
+        }
+
+        function addActivityEvent(icon, text, type) {
+            const feed = document.getElementById('activity-feed');
+            const time = new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+            
+            const item = document.createElement('div');
+            item.className = 'activity-item';
+            item.innerHTML = `
+                <div class="activity-icon">${icon}</div>
+                <div class="activity-text">${text}</div>
+                <div class="activity-time">${time}</div>
+            `;
+            
+            feed.insertBefore(item, feed.firstChild);
+            
+            // Mantener máximo 20 items
+            while (feed.children.length > 20) {
+                feed.removeChild(feed.lastChild);
+            }
+        }
+
+        async function renderDesglose() {
+            try {
+                const response = await fetch(`${API_BASE}/dashboard/reservas/desglosadas`);
+                const desglose = await response.json();
+                
+                const container = document.getElementById('desglose-container');
+                
+                const cards = [
+                    {
+                        icon: '✅',
+                        label: 'Confirmadas por Proveedor',
+                        value: desglose.confirmadas_por_proveedor || 0,
+                        change: 'Aceptadas, sin pagar',
+                        class: 'financial'
+                    },
+                    {
+                        icon: '💳',
+                        label: 'Pagadas por Cliente',
+                        value: desglose.pagadas_por_cliente || 0,
+                        change: 'Completadas',
+                        class: 'satisfaction'
+                    },
+                    {
+                        icon: '⏳',
+                        label: 'Pendientes Confirmación',
+                        value: desglose.pendientes_confirmacion || 0,
+                        change: 'Aceptar o rechazar',
+                        class: 'reservas'
+                    },
+                    {
+                        icon: '💰',
+                        label: 'Pendientes Pago',
+                        value: desglose.pendientes_pago || 0,
+                        change: 'A la espera de cobro',
+                        class: 'reservas'
+                    }
+                ];
+                
+                container.innerHTML = cards.map(card => `
+                    <div class="kpi-card ${card.class}">
+                        <div class="kpi-icon">${card.icon}</div>
+                        <div class="kpi-label">${card.label}</div>
+                        <div class="kpi-value">${card.value}</div>
+                        <div class="kpi-change">${card.change}</div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error cargando desglose:', error);
+                document.getElementById('desglose-container').innerHTML = 
+                    '<div style="grid-column: 1 / -1; text-align: center; color: #9ca3af;">No se pudo cargar el desglose</div>';
+            }
+        }
+
+        async function renderProyeccion() {
+            try {
+                const response = await fetch(`${API_BASE}/dashboard/proyeccion/ingresos`);
+                const proyeccion = await response.json();
+                
+                const container = document.getElementById('proyeccion-container');
+                
+                const cards = [
+                    {
+                        icon: '💰',
+                        label: 'Ingresos Pagados',
+                        value: formatCurrency(proyeccion.ingresos_pagados_mes || 0),
+                        sublabel: 'Confirmados y pagados',
+                        class: 'pagado'
+                    },
+                    {
+                        icon: '✅',
+                        label: 'Ingresos Confirmados',
+                        value: formatCurrency(proyeccion.ingresos_confirmados_mes || 0),
+                        sublabel: 'Confirmadas (pagadas o no)',
+                        class: 'confirmado'
+                    },
+                    {
+                        icon: '⏳',
+                        label: 'Ingresos Pendientes',
+                        value: formatCurrency(proyeccion.ingresos_pendientes_mes || 0),
+                        sublabel: 'A la espera de cobro',
+                        class: 'pendiente'
+                    },
+                    {
+                        icon: '📊',
+                        label: 'Proyección (Pagado)',
+                        value: formatCurrency(proyeccion.proyeccion_pagado_mes || 0),
+                        sublabel: 'Estimado para fin de mes',
+                        class: 'proyectado'
+                    },
+                    {
+                        icon: '🎯',
+                        label: 'Proyección (Confirmado)',
+                        value: formatCurrency(proyeccion.proyeccion_confirmado_mes || 0),
+                        sublabel: 'Todas las confirmadas',
+                        class: 'proyectado'
+                    },
+                    {
+                        icon: '📈',
+                        label: 'Promedio Diario',
+                        value: formatCurrency(proyeccion.promedio_diario_pagado || 0),
+                        sublabel: 'Ingreso por día',
+                        class: 'pagado'
+                    }
+                ];
+                
+                let html = cards.map(card => `
+                    <div class="proyeccion-card ${card.class}">
+                        <div class="proyeccion-icon">${card.icon}</div>
+                        <div class="proyeccion-label">${card.label}</div>
+                        <div class="proyeccion-value">${card.value}</div>
+                        <div class="proyeccion-sublabel">${card.sublabel}</div>
+                    </div>
+                `).join('');
+                
+                // Agregar barra de progreso
+                html += `
+                    <div style="grid-column: 1 / -1;">
+                        <div class="mes-progress">
+                            <div class="progress-header">
+                                <span>Progreso del Mes</span>
+                                <span style="font-size: 1.3rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">${(proyeccion.porcentaje_mes || 0).toFixed(1)}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${proyeccion.porcentaje_mes || 0}%"></div>
+                            </div>
+                            <div class="progress-info">
+                                <span style="color: #10b981; font-weight: 600;">${proyeccion.dias_procesados || 0} de ${proyeccion.dias_totales_mes || 0} días</span>
+                                <span style="color: #ff8c42; font-weight: 600;">${proyeccion.dias_restantes || 0} días restantes</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                container.innerHTML = html;
+            } catch (error) {
+                console.error('Error cargando proyección:', error);
+                document.getElementById('proyeccion-container').innerHTML = 
+                    '<div style="grid-column: 1 / -1; text-align: center; color: #9ca3af;">No se pudo cargar la proyección</div>';
+            }
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('es-CO', {
+                style: 'currency',
+                currency: 'COP',
+                minimumFractionDigits: 0
+            }).format(value);
+        }
+
+        // Cargar dashboard al iniciar
+        loadDashboard();
+
+        // Actualizar cada 5 segundos
+        setInterval(loadDashboard, 5000);
+    </script>
+</body>
+</html>

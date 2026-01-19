@@ -273,6 +273,16 @@ Los usuarios pueden invocar estas herramientas de forma natural:
 | "Registrarme como cliente" | `registrar_cliente` |
 | "¿Cómo van las ventas hoy?" | `resumen_ventas` |
 
+## Entradas Multimodales
+
+El chatbot soporta múltiples tipos de entrada:
+
+- **Texto**: Comandos y consultas en lenguaje natural
+- **Imágenes**: Análisis visual con OCR (identificar platos, leer menús)
+- **PDFs**: Extracción de texto de documentos (facturas, contratos, catálogos)
+
+Para usar PDFs, adjunta el archivo usando el botón de PDF en el chat. El sistema extraerá automáticamente el texto y lo analizará.
+
 ---
 
 ## Integración con el Sistema

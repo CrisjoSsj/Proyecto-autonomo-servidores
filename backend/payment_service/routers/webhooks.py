@@ -218,23 +218,101 @@ async def process_partner_event(
     """
     Procesa eventos de partners según su tipo
     
-    PLACEHOLDER: Aquí se implementará la lógica de negocio
-    cuando se integre con el grupo partner real.
+    Integración real con FindyourWork y otros partners.
     """
+    import logging
+    logger = logging.getLogger(__name__)
     
-    # Eventos soportados (placeholder)
-    handlers = {
-        "reservation.confirmed": lambda d: {"action": "reservation_linked", "id": d.get("reservation_id")},
-        "payment.success": lambda d: {"action": "payment_registered", "id": d.get("payment_id")},
-        "tour.purchased": lambda d: {"action": "tour_linked", "id": d.get("tour_id")},
-        "service.activated": lambda d: {"action": "service_activated", "id": d.get("service_id")},
-    }
+    data = event_data.get("data", {})
+    source = event_data.get("source", partner.partner_name)
     
-    handler = handlers.get(event_type, lambda d: {"action": "logged", "event": event_type})
+    logger.info(f"📥 Procesando evento {event_type} de {source}")
     
-    result = handler(event_data.get("data", {}))
+    # ============================================
+    # Eventos de FindyourWork (Marketplace de Servicios)
+    # ============================================
     
-    # TODO: Integrar con Core API para ejecutar acciones reales
-    # Por ejemplo: crear reserva relacionada, actualizar estado, etc.
+    if event_type == "service.booked_for_event":
+        # Un servicio adicional fue contratado para un evento del restaurante
+        external_event_id = data.get("external_event_id")
+        service_name = data.get("service_name")
+        provider_name = data.get("provider", {}).get("name")
+        price = data.get("price")
+        
+        logger.info(f"🎉 Servicio '{service_name}' contratado para evento {external_event_id}")
+        logger.info(f"   Proveedor: {provider_name}, Precio: ${price}")
+        
+        # TODO: Actualizar la reserva en el Core API con el servicio adicional
+        # await update_reservation_services(external_event_id, data)
+        
+        return {
+            "action": "service_linked_to_event",
+            "reservation_id": external_event_id,
+            "service": service_name,
+            "provider": provider_name,
+            "price": price,
+            "message": f"Servicio {service_name} vinculado al evento {external_event_id}"
+        }
     
-    return result
+    elif event_type == "service.confirmed":
+        # Servicio confirmado (pago procesado en FindyourWork)
+        external_event_id = data.get("external_event_id")
+        service_id = data.get("service_id")
+        
+        logger.info(f"✅ Servicio {service_id} confirmado para evento {external_event_id}")
+        
+        return {
+            "action": "service_confirmed",
+            "reservation_id": external_event_id,
+            "service_id": service_id
+        }
+    
+    elif event_type == "service.cancelled":
+        # Servicio cancelado
+        external_event_id = data.get("external_event_id")
+        service_id = data.get("service_id")
+        reason = data.get("reason", "No especificado")
+        
+        logger.info(f"❌ Servicio {service_id} cancelado para evento {external_event_id}")
+        logger.info(f"   Razón: {reason}")
+        
+        return {
+            "action": "service_cancelled",
+            "reservation_id": external_event_id,
+            "service_id": service_id,
+            "reason": reason
+        }
+    
+    elif event_type == "provider.assigned":
+        # Proveedor asignado para el servicio
+        external_event_id = data.get("external_event_id")
+        provider = data.get("provider", {})
+        
+        logger.info(f"👤 Proveedor asignado para evento {external_event_id}")
+        logger.info(f"   Nombre: {provider.get('name')}, Tel: {provider.get('phone')}")
+        
+        return {
+            "action": "provider_assigned",
+            "reservation_id": external_event_id,
+            "provider": provider
+        }
+    
+    # ============================================
+    # Eventos genéricos de otros partners
+    # ============================================
+    
+    elif event_type == "reservation.confirmed":
+        return {"action": "reservation_linked", "id": data.get("reservation_id")}
+    
+    elif event_type == "payment.success":
+        return {"action": "payment_registered", "id": data.get("payment_id")}
+    
+    elif event_type == "tour.purchased":
+        return {"action": "tour_linked", "id": data.get("tour_id")}
+    
+    elif event_type == "service.activated":
+        return {"action": "service_activated", "id": data.get("service_id")}
+    
+    else:
+        logger.info(f"📋 Evento no manejado específicamente: {event_type}")
+        return {"action": "logged", "event": event_type}

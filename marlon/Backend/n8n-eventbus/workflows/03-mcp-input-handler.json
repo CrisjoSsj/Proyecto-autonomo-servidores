@@ -1,0 +1,374 @@
+{
+  "name": "MCP Input Handler - FindYourWork",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mcp-input",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-mcp",
+      "name": "MCP Input Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.channel }}",
+              "value2": "telegram"
+            }
+          ]
+        }
+      },
+      "id": "is-telegram",
+      "name": "Is Telegram?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [450, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.channel }}",
+              "value2": "email"
+            }
+          ]
+        }
+      },
+      "id": "is-email",
+      "name": "Is Email?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [450, 350]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.channel }}",
+              "value2": "whatsapp"
+            }
+          ]
+        }
+      },
+      "id": "is-whatsapp",
+      "name": "Is WhatsApp?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [450, 500]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Extraer contenido y adjuntos del mensaje\nconst item = $input.first().json;\n\nlet content = item.data.message || '';\nlet attachments = item.data.attachments || [];\nlet sender = item.data.sender_id;\nlet channel = item.channel;\nlet metadata = item.data.metadata || {};\n\n// Preparar prompt para AI Orchestrator\nlet prompt = content;\n\n// Si hay adjuntos, añadir contexto\nif (attachments.length > 0) {\n  prompt += `\\n\\n[Adjuntos: ${attachments.map(a => a.type).join(', ')}]`;\n}\n\nreturn [\n  {\n    json: {\n      channel: channel,\n      sender_id: sender,\n      original_message: content,\n      prompt: prompt,\n      attachments: attachments,\n      metadata: metadata,\n      context: {\n        username: metadata.username,\n        language: metadata.language_code || 'es'\n      }\n    }\n  }\n];"
+      },
+      "id": "extract-content",
+      "name": "Extract Content & Attachments",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.AI_ORCHESTRATOR_URL }}/chat",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"{{ $json.prompt }}\",\n  \"session_id\": \"{{ $json.channel }}_{{ $json.sender_id }}\",\n  \"context\": {{ JSON.stringify($json.context) }}\n}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "call-ai",
+      "name": "Send to AI Orchestrator",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Preparar respuesta para el canal correspondiente\nconst input = $input.first().json;\nconst prevItem = $('Extract Content & Attachments').first().json;\n\nlet response = input.response || input.answer || input.message || 'Lo siento, no pude procesar tu mensaje.';\n\nreturn [\n  {\n    json: {\n      channel: prevItem.channel,\n      sender_id: prevItem.sender_id,\n      response: response,\n      original_message: prevItem.original_message,\n      metadata: prevItem.metadata\n    }\n  }\n];"
+      },
+      "id": "prepare-response",
+      "name": "Prepare Response",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1050, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.channel }}",
+              "value2": "telegram"
+            }
+          ]
+        }
+      },
+      "id": "route-telegram",
+      "name": "Route to Telegram",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1250, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.channel }}",
+              "value2": "email"
+            }
+          ]
+        }
+      },
+      "id": "route-email",
+      "name": "Route to Email",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1250, 350]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.sender_id }}",
+        "text": "={{ $json.response }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "send-telegram",
+      "name": "Send Telegram Response",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [1450, 150],
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram-credentials",
+          "name": "Telegram Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM_ADDRESS }}",
+        "toEmail": "={{ $json.sender_id }}",
+        "subject": "Re: Tu consulta en FindYourWork",
+        "text": "={{ $json.response }}",
+        "options": {}
+      },
+      "id": "send-email-response",
+      "name": "Send Email Response",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1450, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v18.0/{{ $env.WHATSAPP_PHONE_NUMBER_ID }}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.WHATSAPP_ACCESS_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"to\": \"{{ $json.sender_id }}\",\n  \"type\": \"text\",\n  \"text\": {\n    \"body\": \"{{ $json.response }}\"\n  }\n}",
+        "options": {}
+      },
+      "id": "send-whatsapp",
+      "name": "Send WhatsApp Response",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1450, 450]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"status\": \"processed\",\n  \"channel\": \"{{ $json.channel }}\",\n  \"response_sent\": true\n}",
+        "options": {}
+      },
+      "id": "success-response",
+      "name": "Success Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1650, 300]
+    }
+  ],
+  "connections": {
+    "MCP Input Webhook": {
+      "main": [
+        [
+          {
+            "node": "Is Telegram?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Is Email?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Is WhatsApp?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract Content & Attachments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Content & Attachments": {
+      "main": [
+        [
+          {
+            "node": "Send to AI Orchestrator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send to AI Orchestrator": {
+      "main": [
+        [
+          {
+            "node": "Prepare Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Response": {
+      "main": [
+        [
+          {
+            "node": "Route to Telegram",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Route to Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route to Telegram": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send WhatsApp Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route to Email": {
+      "main": [
+        [
+          {
+            "node": "Send Email Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Telegram Response": {
+      "main": [
+        [
+          {
+            "node": "Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email Response": {
+      "main": [
+        [
+          {
+            "node": "Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send WhatsApp Response": {
+      "main": [
+        [
+          {
+            "node": "Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "name": "mcp",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "name": "ai",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "name": "pilar4",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    }
+  ],
+  "pinData": {},
+  "versionId": "1"
+}

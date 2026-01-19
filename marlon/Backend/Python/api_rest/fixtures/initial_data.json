@@ -1,0 +1,42 @@
+[
+  {
+    "model": "api_rest.categoria",
+    "pk": 1,
+    "fields": {
+      "nombre": "Servicios de limpieza",
+      "descripcion": "Servicios profesionales de limpieza para hogares y oficinas"
+    }
+  },
+  {
+    "model": "api_rest.categoria",
+    "pk": 2,
+    "fields": {
+      "nombre": "Reparaciones del hogar",
+      "descripcion": "Servicios de reparación y mantenimiento del hogar"
+    }
+  },
+  {
+    "model": "api_rest.categoria",
+    "pk": 3,
+    "fields": {
+      "nombre": "Clases particulares",
+      "descripcion": "Clases personalizadas de diferentes materias"
+    }
+  },
+  {
+    "model": "api_rest.categoria",
+    "pk": 4,
+    "fields": {
+      "nombre": "Servicios de belleza",
+      "descripcion": "Servicios de estética y cuidado personal"
+    }
+  },
+  {
+    "model": "api_rest.categoria",
+    "pk": 5,
+    "fields": {
+      "nombre": "Mudanzas",
+      "descripcion": "Servicios de transporte y mudanza"
+    }
+  }
+]

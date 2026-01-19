@@ -1,0 +1,34 @@
+# === Archivos de Python ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# === Entorno virtual ===
+venv/
+ENV/
+env/
+
+# === Base de datos local ===
+db.sqlite3
+
+# === Archivos de configuración locales ===
+*.env
+.env.*
+
+# === Logs ===
+*.log
+
+# === Archivos de IDE ===
+.vscode/
+.idea/
+
+# === Archivos del sistema operativo ===
+.DS_Store
+Thumbs.db
+
+# === Archivos de pruebas / coverage ===
+.coverage
+htmlcov/
+.pytest_cache/

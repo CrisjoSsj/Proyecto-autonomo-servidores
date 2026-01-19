@@ -1,0 +1,124 @@
+version: '3.8'
+
+# ============================================
+# n8n Event Bus - Pilar 4: FindYourWork
+# ============================================
+# Centraliza la orquestación de eventos externos
+# Principio: "Todo evento externo pasa por n8n"
+# ============================================
+
+services:
+  # ========================================
+  # n8n - Event Bus Principal
+  # ========================================
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: findyourwork-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      # Autenticación básica
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=${N8N_USER:-admin}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_PASSWORD:-admin123}
+      
+      # Configuración del host
+      - N8N_HOST=${N8N_HOST:-localhost}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=${N8N_PROTOCOL:-http}
+      - WEBHOOK_URL=${WEBHOOK_URL:-http://localhost:5678/}
+      
+      # Zona horaria
+      - GENERIC_TIMEZONE=${TIMEZONE:-America/Bogota}
+      
+      # Seguridad
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY:-findyourwork-n8n-encryption-key-32chars}
+      
+      # Base de datos PostgreSQL
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=n8n-db
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=n8n
+      - DB_POSTGRESDB_USER=${POSTGRES_USER:-n8n}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD:-n8n_password}
+      
+      # Configuración de ejecución
+      - EXECUTIONS_DATA_PRUNE=true
+      - EXECUTIONS_DATA_MAX_AGE=168  # 7 días
+      - N8N_METRICS=true
+      
+      # URLs de servicios internos (para workflows)
+      - DJANGO_API_URL=${DJANGO_API_URL:-http://host.docker.internal:8000}
+      - WEBSOCKET_SERVER_URL=${WEBSOCKET_SERVER_URL:-http://host.docker.internal:4000}
+      - AI_ORCHESTRATOR_URL=${AI_ORCHESTRATOR_URL:-http://host.docker.internal:8001}
+      - AUTH_SERVICE_URL=${AUTH_SERVICE_URL:-http://host.docker.internal:3000}
+      
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./workflows:/home/node/workflows:ro
+    depends_on:
+      n8n-db:
+        condition: service_healthy
+    networks:
+      - findyourwork-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:5678/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ========================================
+  # PostgreSQL para n8n
+  # ========================================
+  n8n-db:
+    image: postgres:15-alpine
+    container_name: n8n-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-n8n}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-n8n_password}
+      - POSTGRES_DB=n8n
+    volumes:
+      - n8n_postgres_data:/var/lib/postgresql/data
+    networks:
+      - findyourwork-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-n8n} -d n8n"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ========================================
+  # Redis para colas y cache (opcional)
+  # ========================================
+  n8n-redis:
+    image: redis:7-alpine
+    container_name: n8n-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - n8n_redis_data:/data
+    networks:
+      - findyourwork-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  n8n_data:
+    driver: local
+  n8n_postgres_data:
+    driver: local
+  n8n_redis_data:
+    driver: local
+
+networks:
+  findyourwork-network:
+    driver: bridge
+    name: findyourwork-eventbus

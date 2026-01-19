@@ -1,0 +1,287 @@
+{
+  "name": "Payment Handler - FindYourWork",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "payment-handler",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-payment",
+      "name": "Payment Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.data.status }}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "validate-payload",
+      "name": "Validate Payload",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ $env.DJANGO_API_URL }}/api_rest/reservas/{{ $json.data.reserva_id }}/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "estado",
+              "value": "confirmada"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "activate-reservation",
+      "name": "Activate Reservation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [650, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.WEBSOCKET_SERVER_URL }}/api/events/emit",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"payment_confirmed\",\n  \"data\": {\n    \"payment_id\": \"{{ $json.data.payment_id }}\",\n    \"reserva_id\": \"{{ $json.data.reserva_id }}\",\n    \"cliente_id\": \"{{ $json.data.cliente_id }}\",\n    \"proveedor_id\": \"{{ $json.data.proveedor_id }}\",\n    \"amount\": \"{{ $json.data.amount }}\",\n    \"status\": \"confirmed\"\n  },\n  \"timestamp\": \"{{ $now.toISO() }}\"\n}",
+        "options": {}
+      },
+      "id": "notify-websocket",
+      "name": "Notify WebSocket",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [850, 200]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM_ADDRESS }}",
+        "toEmail": "={{ $json.data.cliente_email }}",
+        "subject": "✅ Pago Confirmado - FindYourWork",
+        "text": "=¡Hola!\n\nTu pago ha sido confirmado exitosamente.\n\n📋 Detalles:\n- ID de Reserva: {{ $json.data.reserva_id }}\n- Monto: {{ $json.data.amount }} {{ $json.data.currency }}\n- Método: {{ $json.data.payment_method }}\n\n¡Gracias por usar FindYourWork!\n\nSaludos,\nEl equipo de FindYourWork",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "send-email",
+      "name": "Send Confirmation Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1050, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.PARTNER_WEBHOOK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-Event-Type",
+              "value": "payment.confirmed"
+            },
+            {
+              "name": "X-Partner-Signature",
+              "value": "={{ $json.signature }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"event_type\": \"payment.confirmed\",\n  \"timestamp\": \"{{ $now.toISO() }}\",\n  \"data\": {{ JSON.stringify($json.data) }}\n}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "notify-partner",
+      "name": "Notify Partner Webhook",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1250, 200]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"status\": \"processed\",\n  \"payment_id\": \"{{ $json.data.payment_id }}\",\n  \"reservation_activated\": true,\n  \"notifications_sent\": true\n}",
+        "options": {}
+      },
+      "id": "success-response",
+      "name": "Success Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1450, 200]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"status\": \"error\",\n  \"message\": \"Invalid payment payload\"\n}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "error-response",
+      "name": "Error Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [650, 400]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.DJANGO_API_URL }}/webhooks/callback/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"callback_type\": \"payment.processed\",\n  \"original_event\": \"{{ $json.event_type }}\",\n  \"result\": {\n    \"pago_id\": \"{{ $json.data.payment_id }}\",\n    \"reserva_id\": \"{{ $json.data.reserva_id }}\",\n    \"status\": \"confirmed\"\n  }\n}",
+        "options": {}
+      },
+      "id": "callback-django",
+      "name": "Callback to Django",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1250, 350]
+    }
+  ],
+  "connections": {
+    "Payment Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Payload": {
+      "main": [
+        [
+          {
+            "node": "Activate Reservation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Activate Reservation": {
+      "main": [
+        [
+          {
+            "node": "Notify WebSocket",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify WebSocket": {
+      "main": [
+        [
+          {
+            "node": "Send Confirmation Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Confirmation Email": {
+      "main": [
+        [
+          {
+            "node": "Notify Partner Webhook",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Callback to Django",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Partner Webhook": {
+      "main": [
+        [
+          {
+            "node": "Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "name": "payment",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "name": "pilar4",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    }
+  ],
+  "pinData": {},
+  "versionId": "1"
+}

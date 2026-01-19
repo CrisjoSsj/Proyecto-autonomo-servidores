@@ -258,3 +258,383 @@ async def deactivate_partner(partner_id: str, db: Session = Depends(get_db)):
     db.commit()
     
     return {"message": "Partner desactivado", "partner_id": partner_id}
+
+
+# ============================================
+# Integración con FindyourWork
+# ============================================
+
+class FindyourWorkRegisterRequest(BaseModel):
+    """Solicitud de registro rápido de FindyourWork"""
+    webhook_url: str = "http://localhost:8000/webhooks/partner/"
+    contact_email: Optional[str] = "dev@findyourwork.com"
+
+
+@router.post("/register/findyourwork", response_model=PartnerResponse, status_code=status.HTTP_201_CREATED)
+async def register_findyourwork(
+    request: FindyourWorkRegisterRequest = FindyourWorkRegisterRequest(),
+    db: Session = Depends(get_db)
+):
+    """
+    Registro rápido de FindyourWork como partner
+    
+    Crea el partner con eventos pre-configurados para la integración B2B.
+    
+    Eventos suscritos:
+    - event.reservation_confirmed
+    - event.updated
+    - event.cancelled
+    - payment.success
+    """
+    # Verificar si ya existe
+    existing = db.query(Partner).filter(
+        Partner.partner_name == "FindyourWork"
+    ).first()
+    
+    if existing:
+        # Retornar el existente (sin mostrar el secret)
+        return PartnerResponse(
+            partner_id=existing.partner_id,
+            partner_name=existing.partner_name,
+            webhook_url=existing.webhook_url,
+            subscribed_events=json.loads(existing.subscribed_events),
+            shared_secret="[OCULTO - Ya registrado previamente]",
+            status="active" if existing.is_active else "inactive",
+            created_at=existing.created_at.isoformat()
+        )
+    
+    # Eventos pre-configurados para FindyourWork
+    events = [
+        "event.reservation_confirmed",
+        "event.updated", 
+        "event.cancelled",
+        "payment.success"
+    ]
+    
+    # Generar IDs y secret
+    partner_id = "partner_findyourwork"
+    shared_secret = f"whsec_{secrets.token_urlsafe(32)}"
+    
+    # Crear partner
+    partner = Partner(
+        partner_id=partner_id,
+        partner_name="FindyourWork",
+        webhook_url=request.webhook_url,
+        shared_secret=shared_secret,
+        subscribed_events=json.dumps(events),
+        contact_email=request.contact_email,
+        is_active=True
+    )
+    
+    db.add(partner)
+    db.commit()
+    db.refresh(partner)
+    
+    return PartnerResponse(
+        partner_id=partner.partner_id,
+        partner_name=partner.partner_name,
+        webhook_url=partner.webhook_url,
+        subscribed_events=events,
+        shared_secret=shared_secret,
+        status="active",
+        created_at=partner.created_at.isoformat()
+    )
+
+
+class EventReservationRequest(BaseModel):
+    """Solicitud para notificar reserva de evento"""
+    reservation_id: str
+    event_name: str
+    date: str  # YYYY-MM-DD
+    time: str  # HH:MM
+    guests: int
+    contact_name: str
+    contact_phone: str
+    contact_email: Optional[str] = None
+    budget_range: Optional[str] = None
+    services_requested: List[str] = []  # ["dj", "decoracion", "fotografia"]
+    notes: Optional[str] = None
+
+
+@router.post("/findyourwork/notify-event")
+async def notify_findyourwork_event(
+    request: EventReservationRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Notificar a FindyourWork sobre un evento corporativo
+    
+    Envía webhook con los datos de la reserva para que FindyourWork
+    pueda ofrecer servicios adicionales (DJ, decoración, fotografía, etc.)
+    """
+    from utils.partner_notifier import PartnerNotifier
+    
+    # Buscar partner FindyourWork
+    partner = db.query(Partner).filter(
+        Partner.partner_name == "FindyourWork",
+        Partner.is_active == True
+    ).first()
+    
+    if not partner:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="FindyourWork no está registrado como partner. Use POST /partners/register/findyourwork primero."
+        )
+    
+    # Preparar datos del evento
+    event_data = {
+        "reservation_id": request.reservation_id,
+        "event_name": request.event_name,
+        "date": request.date,
+        "time": request.time,
+        "guests": request.guests,
+        "contact_name": request.contact_name,
+        "contact_phone": request.contact_phone,
+        "contact_email": request.contact_email,
+        "budget_range": request.budget_range,
+        "services_requested": request.services_requested,
+        "notes": request.notes,
+        "restaurant": {
+            "name": "Chuwue Grill",
+            "address": "Manta, Ecuador",
+            "phone": "0999999999"
+        }
+    }
+    
+    # Enviar webhook
+    notifier = PartnerNotifier()
+    success = await notifier.notify_findyourwork(
+        event_type="event.reservation_confirmed",
+        data=event_data,
+        shared_secret=partner.shared_secret,
+        webhook_url=partner.webhook_url
+    )
+    
+    if success:
+        partner.webhook_success_count += 1
+        partner.last_webhook_at = datetime.now(timezone.utc)
+    else:
+        partner.webhook_failure_count += 1
+    
+    db.commit()
+    
+    return {
+        "success": success,
+        "message": "Webhook enviado a FindyourWork" if success else "Error enviando webhook",
+        "event_type": "event.reservation_confirmed",
+        "reservation_id": request.reservation_id,
+        "webhook_url": partner.webhook_url
+    }
+
+
+@router.get("/findyourwork/status")
+async def findyourwork_status(db: Session = Depends(get_db)):
+    """
+    Verificar estado de la integración con FindyourWork
+    """
+    partner = db.query(Partner).filter(
+        Partner.partner_name == "FindyourWork"
+    ).first()
+    
+    if not partner:
+        return {
+            "registered": False,
+            "message": "FindyourWork no está registrado. Use POST /partners/register/findyourwork"
+        }
+    
+    return {
+        "registered": True,
+        "partner_id": partner.partner_id,
+        "is_active": partner.is_active,
+        "webhook_url": partner.webhook_url,
+        "subscribed_events": json.loads(partner.subscribed_events),
+        "stats": {
+            "webhooks_sent": partner.webhook_success_count,
+            "webhooks_failed": partner.webhook_failure_count,
+            "last_webhook": partner.last_webhook_at.isoformat() if partner.last_webhook_at else None
+        },
+        "created_at": partner.created_at.isoformat()
+    }
+
+
+# ============================================
+# Integración específica con FindyourWork
+# ============================================
+
+class FindyourWorkRegisterRequest(BaseModel):
+    """Registro simplificado para FindyourWork"""
+    webhook_url: str = "http://localhost:8000/webhooks/partner/"
+    contact_email: Optional[str] = "dev@findyourwork.com"
+
+
+@router.post("/findyourwork/register", status_code=status.HTTP_201_CREATED)
+async def register_findyourwork(
+    request: FindyourWorkRegisterRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Registro rápido de FindyourWork como partner
+    
+    Crea automáticamente la configuración de integración con:
+    - Eventos predefinidos para la integración
+    - Generación de shared_secret
+    """
+    # Verificar si ya existe
+    existing = db.query(Partner).filter(
+        Partner.partner_name == "FindyourWork"
+    ).first()
+    
+    if existing:
+        return {
+            "message": "FindyourWork ya está registrado",
+            "partner_id": existing.partner_id,
+            "webhook_url": existing.webhook_url,
+            "note": "Usa el shared_secret original o elimina y re-registra"
+        }
+    
+    # Eventos que FindyourWork recibirá de Chuwue Grill
+    events = [
+        "event.reservation_confirmed",
+        "event.updated", 
+        "event.cancelled",
+        "payment.success"
+    ]
+    
+    # Generar IDs y secret
+    partner_id = "partner_findyourwork"
+    shared_secret = f"whsec_{secrets.token_urlsafe(32)}"
+    
+    # Crear partner
+    partner = Partner(
+        partner_id=partner_id,
+        partner_name="FindyourWork",
+        webhook_url=request.webhook_url,
+        shared_secret=shared_secret,
+        subscribed_events=json.dumps(events),
+        contact_email=request.contact_email,
+        is_active=True
+    )
+    
+    db.add(partner)
+    db.commit()
+    db.refresh(partner)
+    
+    return {
+        "message": "FindyourWork registrado exitosamente",
+        "partner_id": partner.partner_id,
+        "partner_name": partner.partner_name,
+        "webhook_url": partner.webhook_url,
+        "subscribed_events": events,
+        "shared_secret": shared_secret,
+        "important": "Guarda el shared_secret. Solo se muestra una vez.",
+        "integration_docs": "/docs/INTEGRACION_FINDYOURWORK.md"
+    }
+
+
+class EventNotificationRequest(BaseModel):
+    """Datos para notificar evento a FindyourWork"""
+    reservation_id: str
+    event_name: str
+    date: str  # YYYY-MM-DD
+    time: str  # HH:MM
+    guests: int
+    contact_name: str
+    contact_phone: str
+    contact_email: Optional[str] = None
+    services_requested: Optional[List[str]] = None  # ["dj", "decoracion", "fotografia"]
+    notes: Optional[str] = None
+
+
+@router.post("/findyourwork/notify-event")
+async def notify_findyourwork_event(
+    request: EventNotificationRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Notifica a FindyourWork sobre un evento corporativo
+    
+    Envía un webhook con la información del evento para que
+    FindyourWork pueda ofrecer servicios adicionales.
+    """
+    from utils.partner_notifier import notify_event_reservation
+    
+    # Obtener partner FindyourWork
+    partner = db.query(Partner).filter(
+        Partner.partner_name == "FindyourWork",
+        Partner.is_active == True
+    ).first()
+    
+    if not partner:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="FindyourWork no está registrado. Usa /partners/findyourwork/register primero."
+        )
+    
+    # Preparar datos
+    reservation_data = {
+        "reservation_id": request.reservation_id,
+        "event_name": request.event_name,
+        "date": request.date,
+        "time": request.time,
+        "guests": request.guests,
+        "contact_name": request.contact_name,
+        "contact_phone": request.contact_phone,
+        "contact_email": request.contact_email,
+        "services_requested": request.services_requested or [],
+        "notes": request.notes,
+        "source_restaurant": "Chuwue Grill"
+    }
+    
+    # Enviar webhook
+    success = await notify_event_reservation(
+        reservation_data=reservation_data,
+        shared_secret=partner.shared_secret,
+        webhook_url=partner.webhook_url
+    )
+    
+    # Actualizar estadísticas
+    if success:
+        partner.webhook_success_count += 1
+    else:
+        partner.webhook_failure_count += 1
+    partner.last_webhook_at = datetime.now(timezone.utc)
+    db.commit()
+    
+    return {
+        "success": success,
+        "event_type": "event.reservation_confirmed",
+        "reservation_id": request.reservation_id,
+        "sent_to": partner.webhook_url,
+        "message": "Webhook enviado a FindyourWork" if success else "Error enviando webhook"
+    }
+
+
+@router.get("/findyourwork/status")
+async def findyourwork_status(db: Session = Depends(get_db)):
+    """
+    Verifica el estado de la integración con FindyourWork
+    """
+    partner = db.query(Partner).filter(
+        Partner.partner_name == "FindyourWork"
+    ).first()
+    
+    if not partner:
+        return {
+            "registered": False,
+            "message": "FindyourWork no está registrado",
+            "action": "POST /partners/findyourwork/register para registrar"
+        }
+    
+    return {
+        "registered": True,
+        "partner_id": partner.partner_id,
+        "webhook_url": partner.webhook_url,
+        "is_active": partner.is_active,
+        "subscribed_events": json.loads(partner.subscribed_events),
+        "stats": {
+            "webhooks_sent": partner.webhook_success_count,
+            "webhooks_failed": partner.webhook_failure_count,
+            "last_webhook": partner.last_webhook_at.isoformat() if partner.last_webhook_at else None
+        },
+        "created_at": partner.created_at.isoformat()
+    }
