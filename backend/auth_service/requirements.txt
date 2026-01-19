@@ -6,6 +6,7 @@ passlib[bcrypt]==1.7.4
 bcrypt==4.1.2
 pydantic==2.5.3
 pydantic-settings==2.1.0
+email-validator==2.1.0
 sqlalchemy==2.0.25
 python-multipart==0.0.6
 slowapi==0.1.9

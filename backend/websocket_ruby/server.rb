@@ -6,8 +6,8 @@ require_relative './app/channels/fila_virtual_channel'
 require_relative './app/channels/mesas_channel'
 require_relative './app/channels/reservas_channel'
 
-PORT = 8080
-HTTP_PORT = 8081
+PORT = 3001
+HTTP_PORT = 3002
 
 module EMHTTPHandler
   def receive_data(data)
