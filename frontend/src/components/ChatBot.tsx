@@ -3,6 +3,7 @@
  * Widget flotante para interactuar con el asistente de Chuwue Grill
  */
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FaComments, FaTimes, FaPaperPlane, FaImage, FaSpinner, FaFilePdf } from 'react-icons/fa';
 import '../css/ChatBot.css';
 
@@ -19,12 +20,15 @@ interface ChatBotProps {
 }
 
 export default function ChatBot({ apiUrl = 'http://localhost:8003' }: ChatBotProps) {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const [isInQueue, setIsInQueue] = useState(false);
+  const [queuePosition, setQueuePosition] = useState(0);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
       role: 'assistant',
-      content: '¡Hola! 👋 Soy el asistente de Chuwue Grill. ¿En qué puedo ayudarte? Puedo buscar platos, hacer reservas y más.',
+      content: '¡Bienvenido a Chuwue Grill! 🍗\n\n¿En qué puedo ayudarte hoy?\n\n1. Ver menú del día 🍽️\n2. Hacer una reserva 📅\n3. Unirme a la fila virtual 🎫\n4. Ver promociones actuales 🎉\n5. Hablar con un asistente 💬\n\nEscribe el número o tu pregunta.',
       timestamp: new Date()
     }
   ]);
@@ -47,6 +51,48 @@ export default function ChatBot({ apiUrl = 'http://localhost:8003' }: ChatBotPro
   const handleSendMessage = async () => {
     if (!inputValue.trim() && !selectedImage && !selectedPdf) return;
 
+    // Manejar opciones del menú
+    let messageToSend = inputValue;
+    
+    // Opción 1: Redirigir a Menú
+    if (inputValue === '1') {
+      setIsOpen(false);
+      navigate('/menu');
+      return;
+    }
+    
+    // Opción 3: Redirigir a Fila Virtual
+    if (inputValue === '3') {
+      setIsOpen(false);
+      navigate('/fila-virtual');
+      return;
+    }
+    
+    // Opción 5: Activar cola de espera
+    if (inputValue === '5') {
+      setIsInQueue(true);
+      const randomPosition = Math.floor(Math.random() * 5) + 1;
+      setQueuePosition(randomPosition);
+      
+      const queueMessage: Message = {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: `✅ Has sido agregado a la cola de atención.\n\n👥 Posición: ${randomPosition}\n⏱️ Tiempo estimado: ${randomPosition * 3} minutos\n\n💬 Un asistente te atenderá pronto. Gracias por tu paciencia.`,
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, queueMessage]);
+      setInputValue('');
+      return;
+    }
+    
+    // Opciones con mensajes predefinidos
+    if (inputValue === '2') {
+      messageToSend = 'Quiero hacer una reserva. ¿Qué información necesitas?';
+    } else if (inputValue === '4') {
+      messageToSend = '¿Qué promociones tienen disponibles actualmente?';
+    }
+
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
@@ -64,7 +110,7 @@ export default function ChatBot({ apiUrl = 'http://localhost:8003' }: ChatBotPro
       if (selectedPdf) {
         // Enviar con PDF
         const formData = new FormData();
-        formData.append('message', inputValue || 'Analiza este PDF');
+        formData.append('message', messageToSend || 'Analiza este PDF');
         formData.append('pdf', selectedPdf);
         if (conversationId) {
           formData.append('conversation_id', conversationId);
@@ -78,7 +124,7 @@ export default function ChatBot({ apiUrl = 'http://localhost:8003' }: ChatBotPro
       } else if (selectedImage) {
         // Enviar con imagen
         const formData = new FormData();
-        formData.append('message', inputValue);
+        formData.append('message', messageToSend);
         formData.append('image', selectedImage);
         if (conversationId) {
           formData.append('conversation_id', conversationId);
@@ -97,7 +143,7 @@ export default function ChatBot({ apiUrl = 'http://localhost:8003' }: ChatBotPro
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            message: inputValue,
+            message: messageToSend,
             conversation_id: conversationId,
             channel: 'web'
           })
@@ -205,7 +251,7 @@ export default function ChatBot({ apiUrl = 'http://localhost:8003' }: ChatBotPro
           aria-label="Abrir chat"
         >
           <FaComments size={24} />
-          <span className="chatbot-badge">1</span>
+          <span className="chatbot-badge">•</span>
         </button>
       )}
 
@@ -218,7 +264,9 @@ export default function ChatBot({ apiUrl = 'http://localhost:8003' }: ChatBotPro
               <div className="chatbot-avatar">🍗</div>
               <div>
                 <h3>Asistente Chuwue Grill</h3>
-                <span className="chatbot-status">En línea</span>
+                <span className="chatbot-status">
+                  {isInQueue ? `⏳ En cola - Posición: ${queuePosition}` : 'En línea'}
+                </span>
               </div>
             </div>
             <button 
@@ -328,17 +376,17 @@ export default function ChatBot({ apiUrl = 'http://localhost:8003' }: ChatBotPro
             <input
               type="text"
               className="chatbot-input"
-              placeholder="Escribe un mensaje..."
+              placeholder={isInQueue ? "⏳ Esperando tu turno en la cola..." : "Escribe tu mensaje aquí..."}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
-              disabled={isLoading}
+              disabled={isLoading || isInQueue}
             />
             
             <button 
               className="chatbot-send-btn"
               onClick={handleSendMessage}
-              disabled={isLoading || (!inputValue.trim() && !selectedImage && !selectedPdf)}
+              disabled={isLoading || isInQueue || (!inputValue.trim() && !selectedImage && !selectedPdf)}
               aria-label="Enviar mensaje"
             >
               <FaPaperPlane />

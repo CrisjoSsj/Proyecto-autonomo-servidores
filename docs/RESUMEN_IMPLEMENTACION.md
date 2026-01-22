@@ -188,7 +188,7 @@ class StripeAdapter(PaymentProvider):
 | Archivo | Qué hace |
 |---------|----------|
 | `adapters/base.py` | **Interface abstracta** `LLMProvider`: define `generate()` para chat y `analyze_image()` para visión. |
-| `adapters/groq_adapter.py` | **Implementación Groq** real. Usa `llama-3.1-70b-versatile` para chat y `llama-3.2-90b-vision-preview` para análisis de imágenes. Soporta tool calls. |
+| `adapters/groq_adapter.py` | **Implementación Groq** real. Usa `mixtral-8x7b-32768` para chat y análisis de imágenes. Soporta tool calls. |
 | `adapters/mock_adapter.py` | **Implementación Mock** para desarrollo sin API key. Simula respuestas y detecta cuándo usar herramientas. |
 
 ### Carpeta `mcp/` (MCP Server)

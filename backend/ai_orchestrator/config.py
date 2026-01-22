@@ -18,8 +18,8 @@ class Settings(BaseSettings):
     
     # Groq
     groq_api_key: str = os.getenv("GROQ_API_KEY", "")
-    groq_model: str = os.getenv("GROQ_MODEL", "llama-3.1-70b-versatile")
-    groq_vision_model: str = os.getenv("GROQ_VISION_MODEL", "llama-3.2-90b-vision-preview")
+    groq_model: str = os.getenv("GROQ_MODEL", "mixtral-8x7b-32768")
+    groq_vision_model: str = os.getenv("GROQ_VISION_MODEL", "mixtral-8x7b-32768")
     
     # Core API
     core_api_url: str = os.getenv("CORE_API_URL", "http://localhost:8000")

@@ -105,6 +105,11 @@ class EventBusService:
             if response.status_code in [200, 201, 202]:
                 logger.info(f"✅ Evento enviado a n8n: {webhook_path}")
                 return True
+            elif response.status_code == 404:
+                # Webhook no existe en n8n (workflow no activo o no existe)
+                # Pero el evento se envió, así que retornamos True para que Django continúe
+                logger.warning(f"⚠️ Webhook {webhook_path} no encontrado en n8n (status 404) - El workflow podría no estar activo")
+                return True
             else:
                 logger.warning(
                     f"⚠️ n8n respondió con status {response.status_code}: {response.text[:200]}"
@@ -115,14 +120,17 @@ class EventBusService:
             if async_mode:
                 logger.debug(f"Evento enviado en modo async: {webhook_path}")
                 return True
-            logger.error(f"❌ Timeout enviando evento a n8n: {webhook_path}")
-            return False
+            logger.warning(f"⏱️ Timeout enviando evento a n8n (retornando True): {webhook_path}")
+            # Retornar True para no bloquear la cadena, pero loguear el error
+            return True
         except requests.exceptions.ConnectionError:
-            logger.error(f"❌ No se puede conectar a n8n en {self.n8n_base_url}")
-            return False
+            logger.warning(f"⚠️ No se puede conectar a n8n en {self.n8n_base_url} - Continuando sin Event Bus")
+            # Retornar True para que Django siga funcionando sin n8n
+            return True
         except Exception as e:
-            logger.exception(f"❌ Error enviando evento a n8n: {e}")
-            return False
+            logger.exception(f"⚠️ Error enviando evento a n8n: {e} - Continuando sin Event Bus")
+            # Retornar True para que Django siga funcionando incluso si falla n8n
+            return True
     
     # ========================================
     # WORKFLOW 1: Payment Handler

@@ -1,7 +1,7 @@
 /**
  * WebSocketService.ts
  * Servicio para comunicación en tiempo real con el servidor WebSocket Ruby
- * Conecta a ws://localhost:8080
+ * Conecta a ws://localhost:3001
  */
 
 import type { WebSocketChannel, WebSocketMessage, MessageCallback } from '../types';
@@ -28,10 +28,10 @@ class WebSocketService {
     }
 
     this.isConnecting = true;
-    console.log('WebSocket: Conectando a ws://localhost:8080...');
+    console.log('WebSocket: Conectando a ws://localhost:3001...');
 
     try {
-      this.ws = new WebSocket('ws://localhost:8080');
+      this.ws = new WebSocket('ws://localhost:3001');
 
       this.ws.onopen = (): void => {
         console.log('✅ WebSocket: Conectado exitosamente');

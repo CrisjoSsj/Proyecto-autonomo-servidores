@@ -3,9 +3,29 @@
 # Segundo Parcial - Arquitectura de Microservicios
 # ===========================================
 
-version: '3.8'
-
 services:
+  # ===========================================
+  # Core API (REST) - API Principal
+  # ===========================================
+  core_api:
+    build: ./backend/apirest_python
+    container_name: chuwue-api
+    ports:
+      - "8000:8000"
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - DATABASE_URL=sqlite:///./restaurant.db
+    volumes:
+      - core_data:/app/data
+    networks:
+      - chuwue-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   # ===========================================
   # API Gateway - Nginx
   # ===========================================
@@ -15,10 +35,11 @@ services:
     ports:
       - "80:80"
     depends_on:
+      - core_api
+      - websocket
       - auth_service
       - payment_service
       - ai_orchestrator
-      - core_api
       - n8n
     networks:
       - chuwue-network
@@ -81,6 +102,8 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - LLM_PROVIDER=${LLM_PROVIDER:-groq}
       - GROQ_API_KEY=${GROQ_API_KEY}
+      - GROQ_MODEL=${GROQ_MODEL:-llama-3-70b-8192}
+      - GROQ_VISION_MODEL=${GROQ_VISION_MODEL:-mixtral-8x7b-32768}
       - CORE_API_URL=http://core_api:8000
       - DATABASE_URL=sqlite:///./chat.db
     volumes:
@@ -111,34 +134,36 @@ services:
   # ===========================================
   # Core API (REST) - Existente del P1
   # ===========================================
-  core_api:
-    build: ./backend/apirest_python
-    container_name: chuwue-api
-    ports:
-      - "8000:8000"
-    environment:
-      - JWT_SECRET=${JWT_SECRET}
-      - DATABASE_URL=sqlite:///./restaurant.db
-    volumes:
-      - core_data:/app/data
-    networks:
-      - chuwue-network
-    restart: unless-stopped
+  # Ya está habilitado arriba ↑
+  # core_api:
+  #   build: ./backend/apirest_python
+  #   container_name: chuwue-api
+  #   ports:
+  #     - "8000:8000"
+  #   environment:
+  #     - JWT_SECRET=${JWT_SECRET}
+  #     - DATABASE_URL=sqlite:///./restaurant.db
+  #   volumes:
+  #     - core_data:/app/data
+  #   networks:
+  #     - chuwue-network
+  #   restart: unless-stopped
 
   # ===========================================
   # GraphQL - Existente del P1
+  # Disabled: Missing Dockerfile
   # ===========================================
-  graphql:
-    build: ./backend/Graphql_tp
-    container_name: chuwue-graphql
-    ports:
-      - "3010:3010"
-    networks:
-      - chuwue-network
-    restart: unless-stopped
+  # graphql:
+  #   build: ./backend/Graphql_tp
+  #   container_name: chuwue-graphql
+  #   ports:
+  #     - "3010:3010"
+  #   networks:
+  #     - chuwue-network
+  #   restart: unless-stopped
 
   # ===========================================
-  # WebSocket - Existente del P1
+  # WebSocket - Servidor de Tiempo Real Ruby
   # ===========================================
   websocket:
     build: ./backend/websocket_ruby
@@ -148,6 +173,12 @@ services:
     networks:
       - chuwue-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   # ===========================================
   # Pilar 4: n8n Event Bus
@@ -158,41 +189,43 @@ services:
     ports:
       - "5678:5678"
     environment:
-      - N8N_BASIC_AUTH_ACTIVE=${N8N_BASIC_AUTH_ACTIVE:-true}
-      - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER:-admin}
-      - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD:-admin123}
+      - N8N_BASIC_AUTH_ACTIVE=false
+      - N8N_DEFAULT_USER_EMAIL=admin@chuwue.com
+      - N8N_DEFAULT_USER_PASSWORD=admin123
       - N8N_HOST=localhost
       - N8N_PORT=5678
       - N8N_PROTOCOL=http
       - WEBHOOK_URL=http://localhost:5678/
     volumes:
       - n8n_data:/home/node/.n8n
+      - ./n8n/workflows:/home/node/.n8n/workflows
     networks:
       - chuwue-network
     restart: unless-stopped
 
   # ===========================================
   # Frontend - React + Vite
+  # Disabled: Missing Dockerfile
   # ===========================================
-  frontend:
-    build: ./frontend
-    container_name: chuwue-frontend
-    ports:
-      - "5173:5173"
-    environment:
-      - VITE_API_URL=http://localhost:80
-    networks:
-      - chuwue-network
-    restart: unless-stopped
+  # frontend:
+  #   build: ./frontend
+  #   container_name: chuwue-frontend
+  #   ports:
+  #     - \"5173:5173\"
+  #   environment:
+  #     - VITE_API_URL=http://localhost:80
+  #   networks:
+  #     - chuwue-network
+  #   restart: unless-stopped
 
 # ===========================================
 # Volumes
 # ===========================================
 volumes:
+  core_data:
   auth_data:
   payment_data:
   ai_data:
-  core_data:
   evolution_data:
   n8n_data:
 

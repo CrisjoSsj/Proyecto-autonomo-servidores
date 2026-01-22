@@ -1,0 +1,688 @@
+{
+  "info": {
+    "_postman_id": "chuwue-grill-pilares",
+    "name": "Chuwue Grill - Pruebas de Pilares",
+    "description": "Colección de pruebas para los 4 Pilares del Segundo Parcial\n\nPilar 1: Auth Service (Puerto 8001)\nPilar 2: Payment Service (Puerto 8002)\nPilar 3: AI Orchestrator (Puerto 8003)\nPilar 4: n8n Event Bus (Puerto 5678)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "🔐 PILAR 1: Auth Service (8001)",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8001/docs",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8001",
+              "path": ["docs"]
+            },
+            "description": "Verifica si el servicio de autenticación está disponible"
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('access_token', jsonData.access_token);",
+                  "    pm.environment.set('refresh_token', jsonData.refresh_token);",
+                  "    pm.test('Token guardado en variables de entorno', function() {",
+                  "        pm.expect(pm.environment.get('access_token')).to.not.be.undefined;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8001/auth/login",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8001",
+              "path": ["auth", "login"]
+            },
+            "description": "Inicia sesión y obtiene los tokens JWT (access_token y refresh_token)\n\n**Variables de entorno generadas:**\n- access_token\n- refresh_token"
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8001/auth/me",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8001",
+              "path": ["auth", "me"]
+            },
+            "description": "Obtiene la información del usuario autenticado actual"
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('access_token', jsonData.access_token);",
+                  "    pm.test('Nuevo token actualizado', function() {",
+                  "        pm.expect(jsonData.access_token).to.not.be.undefined;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8001/auth/refresh",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8001",
+              "path": ["auth", "refresh"]
+            },
+            "description": "Renueva el access_token usando el refresh_token"
+          }
+        },
+        {
+          "name": "Validate Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{access_token}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8001/auth/validate",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8001",
+              "path": ["auth", "validate"]
+            },
+            "description": "Valida si un token JWT es válido (endpoint interno)"
+          }
+        },
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"newuser_{{$timestamp}}\",\n  \"email\": \"user_{{$timestamp}}@chuwuegrill.com\",\n  \"password\": \"SecurePass123!\",\n  \"full_name\": \"Nuevo Usuario\",\n  \"telefono\": \"0999999999\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8001/auth/register",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8001",
+              "path": ["auth", "register"]
+            },
+            "description": "Registra un nuevo usuario en el sistema"
+          }
+        }
+      ]
+    },
+    {
+      "name": "💳 PILAR 2: Payment Service (8002)",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8002/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["health"]
+            },
+            "description": "Verifica el estado del servicio de pagos"
+          }
+        },
+        {
+          "name": "Get Transactions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8002/payments/transactions",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["payments", "transactions"]
+            },
+            "description": "Lista todas las transacciones registradas"
+          }
+        },
+        {
+          "name": "Process Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 99.99,\n  \"currency\": \"USD\",\n  \"customer_id\": \"customer_{{$timestamp}}\",\n  \"description\": \"Pago de prueba - {{$timestamp}}\",\n  \"payment_method\": \"card\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8002/payments/process",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["payments", "process"]
+            },
+            "description": "Procesa un nuevo pago"
+          }
+        },
+        {
+          "name": "Register Partner",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"partner_name\": \"Partner_{{$timestamp}}\",\n  \"webhook_url\": \"https://partner-example.com/webhooks/chuwue\",\n  \"events\": [\n    \"payment.success\",\n    \"payment.failed\",\n    \"reservation.confirmed\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8002/partners/register",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["partners", "register"]
+            },
+            "description": "Registra un nuevo partner B2B y genera un shared_secret"
+          }
+        },
+        {
+          "name": "List Partners",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8002/partners/list",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["partners", "list"]
+            },
+            "description": "Lista todos los partners B2B registrados"
+          }
+        },
+        {
+          "name": "Get Payment History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8002/payments/history",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["payments", "history"]
+            },
+            "description": "Obtiene el historial de pagos del usuario actual"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🤖 PILAR 3: AI Orchestrator (8003)",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8003/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8003",
+              "path": ["health"]
+            },
+            "description": "Verifica si el servicio de IA está disponible"
+          }
+        },
+        {
+          "name": "Send Chat Message",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Respuesta de chat recibida', function() {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "    if (pm.response.code === 200) {",
+                  "        var jsonData = pm.response.json();",
+                  "        pm.expect(jsonData.response).to.not.be.undefined;",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"¿Qué platos tienen disponibles?\",\n  \"user_id\": \"test_user\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8003/chat/message",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8003",
+              "path": ["chat", "message"]
+            },
+            "description": "Envía un mensaje al chatbot IA y recibe respuesta procesada por Groq LLM"
+          }
+        },
+        {
+          "name": "Get Chat History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8003/chat/history/test_user",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8003",
+              "path": ["chat", "history", "test_user"]
+            },
+            "description": "Obtiene el historial de conversaciones de un usuario"
+          }
+        },
+        {
+          "name": "Get Available Tools",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8003/chat/tools",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8003",
+              "path": ["chat", "tools"]
+            },
+            "description": "Lista las herramientas MCP disponibles para el chatbot:\n- buscar_platos\n- ver_reserva\n- crear_reserva\n- registrar_cliente\n- resumen_ventas"
+          }
+        },
+        {
+          "name": "Clear Chat History",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8003/chat/history/test_user",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8003",
+              "path": ["chat", "history", "test_user"]
+            },
+            "description": "Elimina el historial de chat de un usuario"
+          }
+        },
+        {
+          "name": "Send Message with Image",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "message",
+                  "value": "¿Qué ves en esta imagen?",
+                  "type": "text"
+                },
+                {
+                  "key": "user_id",
+                  "value": "test_user",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8003/chat/message",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8003",
+              "path": ["chat", "message"]
+            },
+            "description": "Envía un mensaje con imagen al chatbot (soporte multimodal)\n\n**Nota:** Selecciona una imagen en el campo 'image'"
+          }
+        }
+      ]
+    },
+    {
+      "name": "⚙️ PILAR 4: n8n Event Bus (5678)",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5678/api/v1/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5678",
+              "path": ["api", "v1", "health"]
+            },
+            "description": "Verifica el estado de n8n"
+          }
+        },
+        {
+          "name": "Access Web Interface",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5678/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5678",
+              "path": [""]
+            },
+            "description": "Accede a la interfaz web de n8n\n\n**Credenciales por defecto:**\n- Usuario: admin\n- Contraseña: admin123"
+          }
+        },
+        {
+          "name": "List Workflows",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5678/api/v1/workflows",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5678",
+              "path": ["api", "v1", "workflows"]
+            },
+            "description": "Lista todos los workflows configurados en n8n\n\nWorkflows esperados:\n1. payment_handler - Maneja eventos de pago\n2. partner_handler - Maneja integraciones con partners\n3. whatsapp_handler - Envía notificaciones por WhatsApp\n4. scheduled_tasks - Ejecuta tareas programadas (cron diario)"
+          }
+        },
+        {
+          "name": "Get Workflow Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5678/api/v1/workflows/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5678",
+              "path": ["api", "v1", "workflows", "1"]
+            },
+            "description": "Obtiene los detalles de un workflow específico\n\n**Nota:** Reemplaza '1' con el ID del workflow que deseas consultar"
+          }
+        },
+        {
+          "name": "Trigger Workflow",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"payment_id\": \"pay_{{$timestamp}}\",\n  \"amount\": 150.50,\n  \"status\": \"success\",\n  \"customer_email\": \"customer@example.com\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5678/webhook/payment-handler",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5678",
+              "path": ["webhook", "payment-handler"]
+            },
+            "description": "Dispara el workflow de pagos mediante webhook"
+          }
+        },
+        {
+          "name": "List Executions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5678/api/v1/executions",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5678",
+              "path": ["api", "v1", "executions"]
+            },
+            "description": "Lista las ejecuciones recientes de workflows"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📋 PRUEBAS INTEGRADAS",
+      "item": [
+        {
+          "name": "Flujo Completo: Reserva + Pago",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_name\": \"Juan Pérez\",\n  \"customer_email\": \"juan@example.com\",\n  \"reservation_date\": \"2024-02-15\",\n  \"reservation_time\": \"19:30\",\n  \"num_guests\": 4,\n  \"special_requests\": \"Mesa cerca de la ventana\",\n  \"total_amount\": 85.50,\n  \"currency\": \"USD\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8002/payments/process",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["payments", "process"]
+            },
+            "description": "Prueba integrada que procesa una reserva con pago"
+          }
+        },
+        {
+          "name": "Consulta IA: Buscar platos disponibles",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Muéstrame los platos de pollo disponibles\",\n  \"user_id\": \"customer_{{$timestamp}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8003/chat/message",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8003",
+              "path": ["chat", "message"]
+            },
+            "description": "Prueba la herramienta MCP 'buscar_platos' mediante el chatbot IA"
+          }
+        },
+        {
+          "name": "Crear Reserva vía IA",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Quiero reservar una mesa para 4 personas el próximo sábado a las 7 de la noche\",\n  \"user_id\": \"customer_{{$timestamp}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8003/chat/message",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8003",
+              "path": ["chat", "message"]
+            },
+            "description": "Prueba la herramienta MCP 'crear_reserva' mediante el chatbot IA"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

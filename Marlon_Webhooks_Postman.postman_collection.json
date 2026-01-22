@@ -1,0 +1,371 @@
+{
+  "info": {
+    "_postman_id": "marlon-webhooks-collection-v2",
+    "name": "🚀 FindYourWork - Marlon Webhooks [ACTUALIZADO]",
+    "description": "Colección completa de webhooks para testing con Django. Status: ✅ OPERATIVO (meta update, sin cambios funcionales)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "PAYMENT WEBHOOKS",
+      "item": [
+        {
+          "name": "✅ Stripe - Charge Succeeded",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.environment.set('timestamp', Math.floor(Date.now() / 1000));",
+                  "pm.environment.set('random_id', Math.floor(Math.random() * 90000) + 10000);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('✅ Status 200 o 201 (Éxito)', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+                  "});",
+                  "",
+                  "pm.test('✅ Response contiene status', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('status');",
+                  "});",
+                  "",
+                  "pm.test('✅ Response time < 500ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Stripe-Signature",
+                "value": "test_signature_{{timestamp}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"evt_test_{{random_id}}\",\n  \"type\": \"charge.succeeded\",\n  \"created\": {{timestamp}},\n  \"data\": {\n    \"object\": {\n      \"id\": \"ch_test_{{random_id}}\",\n      \"amount\": 9999,\n      \"currency\": \"usd\",\n      \"customer\": \"cus_test_12345\",\n      \"status\": \"succeeded\",\n      \"receipt_email\": \"test@findyourwork.com\"\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": Error al procesar con Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}",
+              "protocol": "http",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "webhooks",
+                "payments",
+                "stripe",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "✅ MercadoPago - Payment Created",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.environment.set('timestamp', Math.floor(Date.now() / 1000));",
+                  "pm.environment.set('random_id', Math.floor(Math.random() * 90000) + 10000);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('✅ Status 200 (Éxito)', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test('✅ Response contiene evento', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('event_type');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{random_id}}\",\n  \"type\": \"payment\",\n  \"data\": {\n    \"id\": \"payment_{{random_id}}\",\n    \"status\": \"approved\",\n    \"status_detail\": \"accredited\",\n    \"amount\": 99.99,\n    \"currency_id\": \"USD\",\n    \"date_created\": \"{{timestamp}}\",\n    \"payer\": {\n      \"email\": \"test@findyourwork.com\",\n      \"id\": \"123456789\"\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "http://{{base_url}}/webhooks/payments/mercadopago/",
+              "protocol": "http",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "webhooks",
+                "payments",
+                "mercadopago",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "✅ PayU - Transaction Confirmed",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.environment.set('timestamp', Math.floor(Date.now() / 1000));",
+                  "pm.environment.set('random_id', Math.floor(Math.random() * 90000) + 10000);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('✅ Status 200 (Éxito)', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{random_id}}\",\n  \"state\": \"CONFIRMED\",\n  \"reference\": \"order_{{random_id}}\",\n  \"value\": \"99.99\",\n  \"currency\": \"USD\",\n  \"lapTransactionState\": \"OK\",\n  \"transactionDate\": \"{{timestamp}}\"\n}"
+            },
+            "url": {
+              "raw": "http://{{base_url}}/webhooks/payments/payu/",
+              "protocol": "http",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "webhooks",
+                "payments",
+                "payu",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "INTEGRATION WEBHOOKS",
+      "item": [
+        {
+          "name": "✅ Partner - Sync Services",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.environment.set('timestamp', Math.floor(Date.now() / 1000));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('✅ Status 200 (Éxito)', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event\": \"partner_sync\",\n  \"timestamp\": {{timestamp}},\n  \"data\": {\n    \"partner_id\": \"partner_test_001\",\n    \"action\": \"sync\",\n    \"status\": \"active\",\n    \"company_name\": \"Test Company\",\n    \"services\": [\n      {\n        \"id\": \"svc_001\",\n        \"name\": \"Plumbing Service\",\n        \"category\": \"plumbing\",\n        \"price\": 50.00\n      }\n    ]\n  }\n}"
+            },
+            "url": {
+              "raw": "http://{{base_url}}/webhooks/partner/",
+              "protocol": "http",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "webhooks",
+                "partner",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "✅ Telegram - New Message",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.environment.set('timestamp', Math.floor(Date.now() / 1000));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('✅ Status 200 (Éxito)', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"update_id\": 123456,\n  \"message\": {\n    \"message_id\": 1,\n    \"date\": {{timestamp}},\n    \"chat\": {\n      \"id\": -1001234567890,\n      \"type\": \"supergroup\"\n    },\n    \"text\": \"/webhook_test Alert\",\n    \"from\": {\n      \"id\": 123456789,\n      \"is_bot\": false,\n      \"first_name\": \"TestBot\",\n      \"username\": \"testuser\"\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "http://{{base_url}}/webhooks/telegram/",
+              "protocol": "http",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "webhooks",
+                "telegram",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "TESTING UTILITIES",
+      "item": [
+        {
+          "name": "🏥 GET - Webhook Health Check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('✅ Status 200 (Django Corriendo)', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "",
+                  "pm.test('✅ Response contiene health status', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('status');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://{{base_url}}/webhooks/health/",
+              "protocol": "http",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "webhooks",
+                "health",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "📋 GET - List Recent Events",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://{{base_url}}/webhooks/events/",
+              "protocol": "http",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "webhooks",
+                "events",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "localhost:8004",
+      "type": "string",
+      "description": "URL base de Django - Cambiar si usas servidor remoto"
+    },
+    {
+      "key": "timestamp",
+      "value": "",
+      "type": "string",
+      "description": "Timestamp generado automáticamente en pre-request"
+    },
+    {
+      "key": "random_id",
+      "value": "",
+      "type": "string",
+      "description": "ID aleatorio para evitar duplicados"
+    }
+  ]
+}

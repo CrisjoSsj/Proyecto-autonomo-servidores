@@ -16,7 +16,7 @@ services:
     container_name: findyourwork-n8n
     restart: unless-stopped
     ports:
-      - "5678:5678"
+      - "5679:5679"
     environment:
       # Autenticación básica
       - N8N_BASIC_AUTH_ACTIVE=true

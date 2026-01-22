@@ -1,0 +1,104 @@
+{
+  "name": "Webhook Payment Processor",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "webhooks/payments/stripe",
+        "responseMode": "onReceived",
+        "responseData": "{\n  \"status\": \"received\",\n  \"timestamp\": \"{{ $now.toISO() }}\"\n}",
+        "options": {}
+      },
+      "id": "webhook_stripe",
+      "name": "Webhook Stripe",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "path": "webhooks/partner",
+        "responseMode": "onReceived",
+        "responseData": "{\n  \"status\": \"received\",\n  \"timestamp\": \"{{ $now.toISO() }}\"\n}",
+        "options": {}
+      },
+      "id": "webhook_partner",
+      "name": "Webhook Partner",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 450]
+    },
+    {
+      "parameters": {
+        "path": "webhooks/telegram",
+        "responseMode": "onReceived",
+        "responseData": "{\n  \"ok\": true\n}",
+        "options": {}
+      },
+      "id": "webhook_telegram",
+      "name": "Webhook Telegram",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 600]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:8004/webhooks/callback/",
+        "method": "POST",
+        "bodyParametersUi": "json",
+        "bodyJson": "{\n  \"event_type\": \"{{ $node.\\\"Webhook Stripe\\\".json.type }}\",\n  \"data\": \"{{ $node.\\\"Webhook Stripe\\\".json }}\",\n  \"processed_at\": \"{{ $now.toISO() }}\"\n}",
+        "options": {}
+      },
+      "id": "http_callback",
+      "name": "HTTP Callback to Django",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [550, 400]
+    },
+    {
+      "parameters": {
+        "content": "Webhook recibido:\\nTipo: {{ $node.\\\"Webhook Stripe\\\".json.type }}\\nDatos: {{ JSON.stringify($node.\\\"Webhook Stripe\\\".json) }}"
+      },
+      "id": "debug_log",
+      "name": "Log",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 1,
+      "position": [550, 550]
+    }
+  ],
+  "connections": {
+    "webhook_stripe": {
+      "main": [
+        [
+          {
+            "node": "http_callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "webhook_partner": {
+      "main": [
+        [
+          {
+            "node": "http_callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "webhook_telegram": {
+      "main": [
+        [
+          {
+            "node": "http_callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true
+}

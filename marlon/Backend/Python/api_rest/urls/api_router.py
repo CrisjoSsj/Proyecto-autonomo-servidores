@@ -1,5 +1,6 @@
 from rest_framework import routers
 from .. import views
+from ..views.menu_views import PlatoViewSet, CategoriaViewSet
 
 router = routers.DefaultRouter()
 
@@ -16,3 +17,7 @@ router.register(r'pago', views.PagoView, 'pago')
 router.register(r'comentario', views.ComentarioView, 'comentario')
 router.register(r'calificacion', views.CalificacionView, 'calificacion')
 router.register(r'document', views.DocumentView, 'document')
+
+# Menu endpoints para Chuwue Grill
+router.register(r'platos', PlatoViewSet, 'platos')
+router.register(r'categorias-menu', CategoriaViewSet, 'categorias-menu')
