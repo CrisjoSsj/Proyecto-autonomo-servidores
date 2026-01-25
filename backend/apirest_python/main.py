@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 from routers import user, Restaurante, Reserva, Menu, Plato, Mesa, FilaVirtual, Cliente, CategoriaMenu, auth
 
@@ -28,6 +28,12 @@ app.include_router(CategoriaMenu.router)
 @app.get("/")
 def root():
     return {"api-rest activo"}
+
+# Estado de la integración del Pilar 2 (B2B)
+@app.get("/integracion/pilar2/status")
+def pilar2_status(response: Response):
+    response.headers["X-Pilar2"] = "enabled"
+    return {"pilar": 2, "status": "ok", "b2b": True}
 
 if __name__ == "__main__":
     import uvicorn

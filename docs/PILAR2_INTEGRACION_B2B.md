@@ -249,6 +249,24 @@ async def receive_partner_webhook(partner_id: str, request: Request):
 | POST | `/partners/findyourwork/notify-event` | Notificar evento a FindyourWork |
 | POST | `/webhooks/partner/{partner_id}` | Recibir webhooks de partners |
 
+#### Endpoint de estado Pilar 2 (API REST)
+
+Para diagnósticos rápidos desde Chuwue/FindyourWork, se expone un endpoint de estado no intrusivo que devuelve la disponibilidad del Pilar 2 y añade un encabezado informativo.
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/integracion/pilar2/status` | Verifica disponibilidad del Pilar 2 y añade `X-Pilar2: enabled` |
+
+Ejemplo de respuesta:
+
+```json
+{
+    "pilar": 2,
+    "status": "ok",
+    "b2b": true
+}
+```
+
 ---
 
 ## Implementación en FindyourWork (Marlon)
