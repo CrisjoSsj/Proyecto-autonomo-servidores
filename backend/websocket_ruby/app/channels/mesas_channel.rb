@@ -65,8 +65,21 @@ class MesasChannel
 
     ApiClient.update_mesa(payload)
 
+    # Notificar al cliente que envió la solicitud
     ack = MessageBuilder.build("mesas", "actualizacion_enviada", payload.merge(channel_action: "update_estado"))
     ws.send(ack.to_json)
+
+    # Hacer broadcast a todos los clientes de la actualización de mesa (para sincronizar FilaVirtual, Reservas, etc.)
+    require_relative '../connections/connection_manager'
+    broadcast_message = {
+      "channel" => "mesas",
+      "action" => "mesa_actualizada",
+      "data" => {
+        "mesa" => payload,
+        "timestamp" => Time.now.iso8601
+      }
+    }
+    ConnectionManager.broadcast(broadcast_message)
   rescue ApiClientError => e
     ws.send(MessageBuilder.build("mesas", "error", { error: e.message }).to_json)
   end
@@ -103,6 +116,18 @@ class MesasChannel
 
       ack = MessageBuilder.build("mesas", "creacion_enviada", mesa_creada.merge(channel_action: "agregar_mesa"))
       ws.send(ack.to_json)
+
+      # Hacer broadcast a todos los clientes de la nueva mesa
+      require_relative '../connections/connection_manager'
+      broadcast_message = {
+        "channel" => "mesas",
+        "action" => "nueva_mesa",
+        "data" => {
+          "mesa" => mesa_creada,
+          "timestamp" => Time.now.iso8601
+        }
+      }
+      ConnectionManager.broadcast(broadcast_message)
     rescue => e
       ws.send(MessageBuilder.build("mesas", "error", { error: "Error agregando mesa: #{e.message}" }).to_json)
     end
@@ -119,6 +144,18 @@ class MesasChannel
     ApiClient.delete_mesa(id)
     ack = MessageBuilder.build("mesas", "eliminacion_enviada", { "id_mesa" => id.to_i, channel_action: "eliminar_mesa" })
     ws.send(ack.to_json)
+
+    # Hacer broadcast a todos los clientes de la eliminación de mesa
+    require_relative '../connections/connection_manager'
+    broadcast_message = {
+      "channel" => "mesas",
+      "action" => "mesa_eliminada",
+      "data" => {
+        "id_mesa" => id.to_i,
+        "timestamp" => Time.now.iso8601
+      }
+    }
+    ConnectionManager.broadcast(broadcast_message)
   rescue ApiClientError => e
     ws.send(MessageBuilder.build("mesas", "error", { error: e.message }).to_json)
   end
