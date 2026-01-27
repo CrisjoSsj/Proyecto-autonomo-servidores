@@ -16,9 +16,9 @@ class GroqAdapter(LLMProvider):
     Adapter para Groq
     
     Groq ofrece inferencia ultra-rápida para modelos como:
-    - mixtral-8x7b-32768 (chat general y visión)
-    - llama-3-70b-8192 (chat optimizado)
-    - llama-3-8b-8192 (modelos más pequeños)
+    - mixtral-8x7b-32768 (recomendado, chat general y visión)
+    - llama-3-8b-8192 (modelos más pequeños, más rápido)
+    - llama3-70b-8192 (si tienes acceso)
     """
     
     def __init__(self):

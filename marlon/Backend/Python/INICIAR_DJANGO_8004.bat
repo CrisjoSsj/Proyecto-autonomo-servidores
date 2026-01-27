@@ -10,6 +10,9 @@ echo ║                 INICIAR MARLON DJANGO - PUERTO 8004                    
 echo ╚════════════════════════════════════════════════════════════════════════════╝
 echo.
 
+REM Navegar al directorio del script
+cd /d "%~dp0"
+
 REM Verificar que estamos en el directorio correcto
 if not exist "manage.py" (
     echo ❌ ERROR: manage.py no encontrado
