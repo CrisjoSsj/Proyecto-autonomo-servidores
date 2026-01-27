@@ -1,0 +1,88 @@
+{
+  "name": "🤖 Chuwue Grill - Event Orchestrator",
+  "description": "Orquesta eventos de negocio y notificaciones\nManeja: reservas, eventos, servicios, pagos\nIntegración con AI Orchestrator para recomendaciones",
+  "nodes": [
+    {
+      "id": "node-1",
+      "type": "webhook",
+      "position": [100, 100],
+      "parameters": {
+        "path": "webhooks/events/reservation-confirmed",
+        "method": "POST"
+      },
+      "name": "Webhook - Reservation Confirmed"
+    },
+    {
+      "id": "node-2",
+      "type": "webhook",
+      "position": [100, 250],
+      "parameters": {
+        "path": "webhooks/events/event-updated",
+        "method": "POST"
+      },
+      "name": "Webhook - Event Updated"
+    },
+    {
+      "id": "node-3",
+      "type": "http",
+      "position": [300, 100],
+      "parameters": {
+        "url": "http://localhost:8003/mcp/search-menu",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "{\n  \"event_id\": \"={{$json.event_id}}\",\n  \"guest_count\": \"={{$json.guest_count}}\"\n}"
+      },
+      "name": "Query AI Recommendations"
+    },
+    {
+      "id": "node-4",
+      "type": "http",
+      "position": [300, 250],
+      "parameters": {
+        "url": "http://localhost:5678/webhook/send-notifications",
+        "method": "POST",
+        "body": "{\n  \"event_type\": \"notification.event_confirmed\",\n  \"recipients\": \"={{$json.attendees}}\",\n  \"event_details\": \"={{$json}}\"\n}"
+      },
+      "name": "Queue Notifications"
+    },
+    {
+      "id": "node-5",
+      "type": "http",
+      "position": [500, 175],
+      "parameters": {
+        "url": "http://localhost:8000/webhooks/chuwue/event-confirmed/",
+        "method": "POST",
+        "body": "{\n  \"event_type\": \"event.reservation_confirmed\",\n  \"timestamp\": \"={{$now.toISO()}}\",\n  \"data\": \"={{$json}}\"\n}"
+      },
+      "name": "Notify FindYourWork"
+    },
+    {
+      "id": "node-6",
+      "type": "no-op",
+      "position": [700, 175],
+      "name": "Workflow Complete"
+    }
+  ],
+  "connections": {
+    "node-1": {
+      "main": [[
+        {"node": "node-3", "type": "main", "index": 0},
+        {"node": "node-4", "type": "main", "index": 0}
+      ]]
+    },
+    "node-2": {
+      "main": [[{"node": "node-4", "type": "main", "index": 0}]]
+    },
+    "node-3": {
+      "main": [[{"node": "node-5", "type": "main", "index": 0}]]
+    },
+    "node-4": {
+      "main": [[{"node": "node-5", "type": "main", "index": 0}]]
+    },
+    "node-5": {
+      "main": [[{"node": "node-6", "type": "main", "index": 0}]]
+    }
+  }
+}

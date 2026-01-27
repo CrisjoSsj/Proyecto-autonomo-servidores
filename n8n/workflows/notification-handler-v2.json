@@ -1,0 +1,92 @@
+{
+  "name": "🔔 Chuwue Grill - Notification Handler",
+  "description": "Distribuye notificaciones por múltiples canales\nSoporta: Email, SMS, WhatsApp, Push\nIntegración con n8n Event Bus",
+  "nodes": [
+    {
+      "id": "node-1",
+      "type": "webhook",
+      "position": [100, 100],
+      "parameters": {
+        "path": "webhooks/notifications",
+        "method": "POST"
+      },
+      "name": "Notification Request"
+    },
+    {
+      "id": "node-2",
+      "type": "switch",
+      "position": [300, 100],
+      "parameters": {
+        "mode": "expression",
+        "expression": "={{$json.channel}}"
+      },
+      "name": "Route by Channel"
+    },
+    {
+      "id": "node-3",
+      "type": "sendgrid",
+      "position": [500, 50],
+      "parameters": {
+        "operation": "send",
+        "toEmail": "={{$json.recipient}}",
+        "subject": "={{$json.subject}}",
+        "htmlBody": "={{$json.template}}"
+      },
+      "name": "Send Email"
+    },
+    {
+      "id": "node-4",
+      "type": "twilio",
+      "position": [500, 150],
+      "parameters": {
+        "operation": "sendSms",
+        "toNumber": "={{$json.phone}}",
+        "message": "={{$json.message}}"
+      },
+      "name": "Send SMS"
+    },
+    {
+      "id": "node-5",
+      "type": "http",
+      "position": [500, 250],
+      "parameters": {
+        "url": "https://api.whatsapp.com/send",
+        "method": "POST",
+        "body": "{\n  \"phone\": \"={{$json.phone}}\",\n  \"message\": \"={{$json.message}}\"\n}"
+      },
+      "name": "Send WhatsApp"
+    },
+    {
+      "id": "node-6",
+      "type": "http",
+      "position": [700, 150],
+      "parameters": {
+        "url": "http://localhost:8002/webhooks/notification-log",
+        "method": "POST",
+        "body": "{\n  \"notification_id\": \"={{$json.id}}\",\n  \"channel\": \"={{$json.channel}}\",\n  \"status\": \"sent\",\n  \"timestamp\": \"={{$now.toISO()}}\"\n}"
+      },
+      "name": "Log Notification"
+    }
+  ],
+  "connections": {
+    "node-1": {
+      "main": [[{"node": "node-2", "type": "main", "index": 0}]]
+    },
+    "node-2": {
+      "main": [[
+        {"node": "node-3", "type": "main", "index": 0},
+        {"node": "node-4", "type": "main", "index": 0},
+        {"node": "node-5", "type": "main", "index": 0}
+      ]]
+    },
+    "node-3": {
+      "main": [[{"node": "node-6", "type": "main", "index": 0}]]
+    },
+    "node-4": {
+      "main": [[{"node": "node-6", "type": "main", "index": 0}]]
+    },
+    "node-5": {
+      "main": [[{"node": "node-6", "type": "main", "index": 0}]]
+    }
+  }
+}

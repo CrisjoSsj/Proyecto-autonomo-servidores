@@ -1,0 +1,109 @@
+{
+  "name": "🚀 Chuwue Grill - Payment Webhook Processor",
+  "description": "Procesa webhooks de pagos de Stripe, MercadoPago y PayU\nOrquesta notificaciones y eventos B2B\nIntegración bidireccional con FindYourWork",
+  "nodes": [
+    {
+      "id": "node-1",
+      "type": "webhook",
+      "position": [100, 100],
+      "parameters": {
+        "path": "webhooks/payments/stripe",
+        "method": "POST",
+        "options": {}
+      },
+      "name": "Webhook - Stripe"
+    },
+    {
+      "id": "node-2",
+      "type": "webhook",
+      "position": [100, 200],
+      "parameters": {
+        "path": "webhooks/payments/mercadopago",
+        "method": "POST",
+        "options": {}
+      },
+      "name": "Webhook - MercadoPago"
+    },
+    {
+      "id": "node-3",
+      "type": "webhook",
+      "position": [100, 300],
+      "parameters": {
+        "path": "webhooks/payments/payu",
+        "method": "POST",
+        "options": {}
+      },
+      "name": "Webhook - PayU"
+    },
+    {
+      "id": "node-4",
+      "type": "switch",
+      "position": [300, 200],
+      "parameters": {
+        "mode": "expression",
+        "expression": "={{$json.type}}"
+      },
+      "name": "Classify Payment Event"
+    },
+    {
+      "id": "node-5",
+      "type": "http",
+      "position": [500, 100],
+      "parameters": {
+        "url": "http://localhost:8002/webhooks/callback",
+        "method": "POST",
+        "headerParametersUi": "single",
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Event-Type": "payment.processed"
+        },
+        "body": "{\n  \"event_type\": \"payment.processed\",\n  \"timestamp\": \"={{$now.toISO()}}\",\n  \"data\": \"={{$json}}\"\n}"
+      },
+      "name": "Send to Payment Service"
+    },
+    {
+      "id": "node-6",
+      "type": "http",
+      "position": [500, 250],
+      "parameters": {
+        "url": "http://localhost:8000/webhooks/chuwue/payment-received/",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Webhook-Signature": "sha256=test"
+        },
+        "body": "{\n  \"event_type\": \"payment.received\",\n  \"timestamp\": \"={{$now.toISO()}}\",\n  \"payment_data\": \"={{$json}}\"\n}"
+      },
+      "name": "Notify FindYourWork"
+    },
+    {
+      "id": "node-7",
+      "type": "no-op",
+      "position": [700, 150],
+      "name": "Success Response"
+    }
+  ],
+  "connections": {
+    "node-1": {
+      "main": [[{"node": "node-4", "type": "main", "index": 0}]]
+    },
+    "node-2": {
+      "main": [[{"node": "node-4", "type": "main", "index": 0}]]
+    },
+    "node-3": {
+      "main": [[{"node": "node-4", "type": "main", "index": 0}]]
+    },
+    "node-4": {
+      "main": [[
+        {"node": "node-5", "type": "main", "index": 0},
+        {"node": "node-6", "type": "main", "index": 0}
+      ]]
+    },
+    "node-5": {
+      "main": [[{"node": "node-7", "type": "main", "index": 0}]]
+    },
+    "node-6": {
+      "main": [[{"node": "node-7", "type": "main", "index": 0}]]
+    }
+  }
+}

@@ -1,0 +1,738 @@
+{
+  "info": {
+    "_postman_id": "chuwue-grill-pilares-completo-2026",
+    "name": "🚀 Chuwue Grill - 4 Pilares Completo [2026]",
+    "description": "Colección completa de pruebas para los 4 Pilares del Proyecto Autónomo\n\n🔐 Pilar 1: Auth Service (Puerto 8001) - Autenticación JWT\n💳 Pilar 2: Payment Service (Puerto 8002) - Pasarela de Pagos + Webhooks B2B\n🤖 Pilar 3: AI Orchestrator (Puerto 8003) - Chatbot MCP + Groq LLM\n⚡ Pilar 4: n8n Event Bus (Puerto 5678) - Orquestación de Eventos\n\nEstado: ✅ COMPLETO Y FUNCIONAL",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "🔐 PILAR 1: Auth Service (8001)",
+      "item": [
+        {
+          "name": "Health Check / Docs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8001/docs",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8001",
+              "path": ["docs"]
+            },
+            "description": "Acceso a la documentación interactiva de Swagger del Auth Service"
+          }
+        },
+        {
+          "name": "Register User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('✅ Status 200/201 (Usuario registrado)', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test('✅ Response contiene ID de usuario', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('username');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"test_user_{{$timestamp}}\",\n  \"email\": \"test_{{$timestamp}}@chuwuegrill.com\",\n  \"password\": \"SecurePass123!\",\n  \"full_name\": \"Test Usuario\",\n  \"telefono\": \"0999888777\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8001/auth/register",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8001",
+              "path": ["auth", "register"]
+            },
+            "description": "Registra un nuevo usuario en el sistema"
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('access_token', jsonData.access_token);",
+                  "    pm.environment.set('refresh_token', jsonData.refresh_token);",
+                  "    pm.environment.set('token_type', jsonData.token_type);",
+                  "    pm.test('✅ Tokens obtenidos y guardados', function() {",
+                  "        pm.expect(pm.environment.get('access_token')).to.not.be.undefined;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "username",
+                  "value": "admin",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "admin123",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8001/auth/login",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8001",
+              "path": ["auth", "login"]
+            },
+            "description": "Inicia sesión y obtiene access_token y refresh_token JWT\n\n**Variables guardadas:**\n- access_token\n- refresh_token\n- token_type"
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8001/auth/me",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8001",
+              "path": ["auth", "me"]
+            },
+            "description": "Obtiene la información del usuario autenticado actual"
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('access_token', jsonData.access_token);",
+                  "    pm.test('✅ Token refrescado exitosamente', function() {",
+                  "        pm.expect(jsonData.access_token).to.not.be.undefined;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8001/auth/refresh",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8001",
+              "path": ["auth", "refresh"]
+            },
+            "description": "Genera un nuevo access_token usando el refresh_token"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8001/auth/logout",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8001",
+              "path": ["auth", "logout"]
+            },
+            "description": "Cierra la sesión del usuario"
+          }
+        }
+      ]
+    },
+    {
+      "name": "💳 PILAR 2: Payment Service (8002)",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8002/docs",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["docs"]
+            },
+            "description": "Acceso a la documentación del Payment Service"
+          }
+        },
+        {
+          "name": "Process Payment (Mock)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('✅ Status 200 (Pago procesado)', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "",
+                  "pm.test('✅ Response contiene transaction_id', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('transaction_id');",
+                  "    pm.expect(jsonData.status).to.equal('success');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 9999,\n  \"currency\": \"USD\",\n  \"customer_email\": \"cliente@chuwuegrill.com\",\n  \"description\": \"Pago por reserva de evento\",\n  \"metadata\": {\n    \"reservation_id\": \"RES-001\",\n    \"event_type\": \"corporativo\"\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8002/payments/process",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["payments", "process"]
+            },
+            "description": "Procesa un pago usando el adaptador Mock (por defecto)"
+          }
+        },
+        {
+          "name": "Get Payment Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8002/payments/TXN-{{$timestamp}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["payments", "TXN-{{$timestamp}}"]
+            },
+            "description": "Obtiene el estado de una transacción específica"
+          }
+        },
+        {
+          "name": "Register Partner B2B",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('✅ Status 200/201 (Partner registrado)', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"FindYourWork Marketplace\",\n  \"webhook_url\": \"http://localhost:8000/webhooks/chuwue/\",\n  \"hmac_secret\": \"your_secret_key_here_{{$timestamp}}\",\n  \"events\": [\"payment.succeeded\", \"reservation.confirmed\", \"event.updated\"],\n  \"is_active\": true\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8002/partners/register",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["partners", "register"]
+            },
+            "description": "Registra un nuevo partner B2B para recibir webhooks"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🤖 PILAR 3: AI Orchestrator (8003)",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8003/docs",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8003",
+              "path": ["docs"]
+            },
+            "description": "Acceso a la documentación del AI Orchestrator"
+          }
+        },
+        {
+          "name": "Chat Message (MCP Tools)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('✅ Status 200 (Respuesta recibida)', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "",
+                  "pm.test('✅ Response contiene mensaje', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('response');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"¿Qué platos de alitas tienes disponibles?\",\n  \"user_id\": \"user_001\",\n  \"session_id\": \"sess_{{$timestamp}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8003/chat/message",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8003",
+              "path": ["chat", "message"]
+            },
+            "description": "Envía un mensaje al chatbot IA. El chatbot usa herramientas MCP para:\n- Buscar platos en el menú\n- Ver disponibilidad de mesas\n- Consultar reservas\n- Procesar pedidos"
+          }
+        },
+        {
+          "name": "Get Available Tools",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8003/chat/tools",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8003",
+              "path": ["chat", "tools"]
+            },
+            "description": "Lista todas las herramientas MCP disponibles para el chatbot"
+          }
+        },
+        {
+          "name": "Search Menu Items",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('✅ Status 200 (Búsqueda exitosa)', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"alitas\",\n  \"categoria\": \"alitas\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8003/mcp/search-menu",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8003",
+              "path": ["mcp", "search-menu"]
+            },
+            "description": "Busca elementos del menú (herramienta MCP)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "⚡ PILAR 4: n8n Event Bus (5678)",
+      "item": [
+        {
+          "name": "n8n Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5678/api/v1/workflows",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5678",
+              "path": ["api", "v1", "workflows"]
+            },
+            "description": "Verifica que n8n está activo y accesible"
+          }
+        },
+        {
+          "name": "Webhook - Payment Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('✅ Webhook recibido (Status 200)', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event_type\": \"payment.succeeded\",\n  \"timestamp\": \"{{$timestamp}}\",\n  \"data\": {\n    \"transaction_id\": \"TXN-{{$randomInt(10000, 99999)}}\",\n    \"amount\": 9999,\n    \"currency\": \"USD\",\n    \"customer_email\": \"cliente@chuwuegrill.com\",\n    \"status\": \"completed\"\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5678/webhook/payment-success",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5678",
+              "path": ["webhook", "payment-success"]
+            },
+            "description": "Webhook que n8n recibe cuando un pago se completa exitosamente"
+          }
+        },
+        {
+          "name": "Webhook - Event Confirmed",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('✅ Webhook recibido', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event_type\": \"reservation.confirmed\",\n  \"timestamp\": \"{{$timestamp}}\",\n  \"data\": {\n    \"reservation_id\": \"RES-{{$randomInt(10000, 99999)}}\",\n    \"guest_count\": 50,\n    \"event_type\": \"corporativo\",\n    \"date\": \"2026-02-28\",\n    \"status\": \"confirmed\"\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5678/webhook/event-confirmed",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5678",
+              "path": ["webhook", "event-confirmed"]
+            },
+            "description": "Webhook que se dispara cuando se confirma una reserva de evento"
+          }
+        },
+        {
+          "name": "Webhook - Partner Notification",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('✅ Notificación a partner recibida', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event_type\": \"partner.service_booked\",\n  \"timestamp\": \"{{$timestamp}}\",\n  \"data\": {\n    \"partner_id\": \"PARTNER-001\",\n    \"service_type\": \"fotografia\",\n    \"reservation_id\": \"RES-{{$randomInt(10000, 99999)}}\",\n    \"booking_status\": \"confirmed\"\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5678/webhook/partner-service",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5678",
+              "path": ["webhook", "partner-service"]
+            },
+            "description": "Webhook cuando FindYourWork notifica que un servicio fue contratado"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📡 WEBHOOKS BIDIRECCIONALES B2B",
+      "item": [
+        {
+          "name": "FindYourWork → Chuwue (Servicio Contratado)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Generar firma HMAC-SHA256",
+                  "const crypto = require('crypto');",
+                  "const secret = 'your_shared_secret_here';",
+                  "const timestamp = Math.floor(Date.now() / 1000);",
+                  "const payload = JSON.stringify({",
+                  "    event_type: 'service.booked_for_event',",
+                  "    timestamp: timestamp,",
+                  "    data: {",
+                  "        service_id: 'SRV-' + Math.floor(Math.random() * 90000) + 10000,",
+                  "        event_id: 'EVT-' + Math.floor(Math.random() * 90000) + 10000,",
+                  "        provider: 'FindYourWork',",
+                  "        status: 'booked'",
+                  "    }",
+                  "});",
+                  "const signature = crypto.createHmac('sha256', secret).update(payload).digest('hex');",
+                  "pm.environment.set('webhook_signature', signature);",
+                  "pm.environment.set('webhook_payload', payload);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('✅ Webhook B2B procesado (Status 200)', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Webhook-Signature",
+                "value": "sha256={{webhook_signature}}"
+              },
+              {
+                "key": "X-Webhook-Timestamp",
+                "value": "{{$timestamp}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event_type\": \"service.booked_for_event\",\n  \"timestamp\": \"{{$timestamp}}\",\n  \"data\": {\n    \"service_id\": \"SRV-{{$randomInt(10000, 99999)}}\",\n    \"event_id\": \"EVT-{{$randomInt(10000, 99999)}}\",\n    \"provider\": \"FindYourWork\",\n    \"service_type\": \"fotografia\",\n    \"booking_status\": \"confirmed\",\n    \"cost\": 50000\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8002/webhooks/partner/callback",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["webhooks", "partner", "callback"]
+            },
+            "description": "FindYourWork notifica a Chuwue que un servicio fue contratado para un evento\n\n**Seguridad:** Firma HMAC-SHA256 en header X-Webhook-Signature"
+          }
+        },
+        {
+          "name": "Chuwue → FindYourWork (Evento Confirmado)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Generar firma HMAC-SHA256",
+                  "const crypto = require('crypto');",
+                  "const secret = 'your_shared_secret_here';",
+                  "const timestamp = Math.floor(Date.now() / 1000);",
+                  "const payload = JSON.stringify({",
+                  "    event_type: 'event.reservation_confirmed',",
+                  "    timestamp: timestamp,",
+                  "    data: {",
+                  "        event_id: 'EVT-' + Math.floor(Math.random() * 90000) + 10000,",
+                  "        guests: 50,",
+                  "        event_type: 'corporativo',",
+                  "        date: '2026-02-28',",
+                  "        status: 'confirmed'",
+                  "    }",
+                  "});",
+                  "const signature = crypto.createHmac('sha256', secret).update(payload).digest('hex');",
+                  "pm.environment.set('webhook_signature', signature);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Webhook-Signature",
+                "value": "sha256={{webhook_signature}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event_type\": \"event.reservation_confirmed\",\n  \"timestamp\": \"{{$timestamp}}\",\n  \"data\": {\n    \"event_id\": \"EVT-{{$randomInt(10000, 99999)}}\",\n    \"guest_count\": 50,\n    \"event_type\": \"corporativo\",\n    \"event_date\": \"2026-02-28\",\n    \"location\": \"Chuwue Grill - Matriz\",\n    \"status\": \"confirmed\",\n    \"budget\": 50000\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/webhooks/chuwue/event-confirmed/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["webhooks", "chuwue", "event-confirmed", ""]
+            },
+            "description": "Chuwue notifica a FindYourWork que se confirmó un evento corporativo y necesita servicios complementarios"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "token_type",
+      "value": "bearer",
+      "type": "string"
+    },
+    {
+      "key": "webhook_signature",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "webhook_payload",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

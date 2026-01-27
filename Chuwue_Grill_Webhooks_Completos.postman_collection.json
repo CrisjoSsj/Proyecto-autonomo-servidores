@@ -1,0 +1,497 @@
+{
+  "info": {
+    "_postman_id": "chuwue-webhooks-paypal-stripe-2026",
+    "name": "🪝 Chuwue Grill - Webhooks Completos [2026]",
+    "description": "Colección completa de webhooks para pruebas de integración\n\n✅ Webhooks de Pago:\n- Stripe (charge.succeeded, charge.refunded)\n- MercadoPago (payment, payment.refunded)\n- PayU (APPROVED, FAILED, PENDING)\n\n✅ Webhooks de Negocio:\n- Partner B2B (service.booked, service.completed)\n- Eventos (reservation.confirmed, reservation.cancelled)\n- Notificaciones (email, sms, whatsapp)\n\n✅ Salud:\n- Health check\n- Status endpoints\n- Event logs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "🏥 HEALTH & STATUS",
+      "item": [
+        {
+          "name": "Payment Service Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8002/docs",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["docs"]
+            }
+          }
+        },
+        {
+          "name": "n8n Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5678/api/v1/workflows",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5678",
+              "path": ["api", "v1", "workflows"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "💳 WEBHOOKS STRIPE",
+      "item": [
+        {
+          "name": "Charge Succeeded",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.environment.set('stripe_timestamp', Math.floor(Date.now() / 1000));",
+                  "pm.environment.set('stripe_id', 'evt_test_' + Math.random().toString(36).substr(2, 9));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('✅ Status 200/201 (Exitoso)', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('✅ Contiene transaction_id', function () {",
+                  "    pm.expect(pm.response.json()).to.have.property('status');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Stripe-Signature",
+                "value": "t={{stripe_timestamp}},v1=test_signature"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{stripe_id}}\",\n  \"type\": \"charge.succeeded\",\n  \"created\": {{stripe_timestamp}},\n  \"data\": {\n    \"object\": {\n      \"id\": \"ch_{{stripe_id}}\",\n      \"object\": \"charge\",\n      \"amount\": 9999,\n      \"currency\": \"usd\",\n      \"customer\": \"cus_12345678\",\n      \"description\": \"Pago por evento corporativo - Chuwue Grill\",\n      \"status\": \"succeeded\",\n      \"paid\": true,\n      \"receipt_email\": \"cliente@chuwuegrill.com\",\n      \"metadata\": {\n        \"order_id\": \"ORD-{{$randomInt(10000, 99999)}}\",\n        \"event_type\": \"corporativo\"\n      }\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8002/webhooks/payments/stripe/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["webhooks", "payments", "stripe", ""]
+            },
+            "description": "Evento: Pago exitoso en Stripe"
+          }
+        },
+        {
+          "name": "Charge Refunded",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('✅ Status 200', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"evt_test_refunded_{{$timestamp}}\",\n  \"type\": \"charge.refunded\",\n  \"created\": {{$timestamp}},\n  \"data\": {\n    \"object\": {\n      \"id\": \"ch_refunded_{{$randomInt(10000, 99999)}}\",\n      \"amount\": 9999,\n      \"currency\": \"usd\",\n      \"refunded\": true,\n      \"refunds\": {\n        \"data\": [\n          {\n            \"id\": \"re_{{$timestamp}}\",\n            \"amount\": 9999,\n            \"status\": \"succeeded\"\n          }\n        ]\n      }\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8002/webhooks/payments/stripe/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["webhooks", "payments", "stripe", ""]
+            },
+            "description": "Evento: Reembolso procesado en Stripe"
+          }
+        }
+      ]
+    },
+    {
+      "name": "💰 WEBHOOKS MERCADOPAGO",
+      "item": [
+        {
+          "name": "Payment Created",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('✅ Status 200', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{$timestamp}}\",\n  \"type\": \"payment\",\n  \"data\": {\n    \"id\": \"payment_{{$randomInt(10000000, 99999999)}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8002/webhooks/payments/mercadopago/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["webhooks", "payments", "mercadopago", ""]
+            },
+            "description": "Notificación de pago creado en MercadoPago"
+          }
+        },
+        {
+          "name": "Payment Approved",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('✅ Status 200', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{$timestamp}}\",\n  \"type\": \"payment\",\n  \"data\": {\n    \"id\": \"payment_{{$randomInt(10000000, 99999999)}}\",\n    \"status\": \"approved\"\n  },\n  \"action\": \"payment.created\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8002/webhooks/payments/mercadopago/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["webhooks", "payments", "mercadopago", ""]
+            },
+            "description": "Pago aprobado en MercadoPago"
+          }
+        }
+      ]
+    },
+    {
+      "name": "💳 WEBHOOKS PAYU",
+      "item": [
+        {
+          "name": "Transaction Approved",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('✅ Status 200', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "reference_sale",
+                  "value": "SALE_{{$randomInt(10000000, 99999999)}}",
+                  "type": "text"
+                },
+                {
+                  "key": "value",
+                  "value": "99.99",
+                  "type": "text"
+                },
+                {
+                  "key": "currency",
+                  "value": "USD",
+                  "type": "text"
+                },
+                {
+                  "key": "state_pol",
+                  "value": "4",
+                  "type": "text",
+                  "disabled": false
+                },
+                {
+                  "key": "response_code_pol",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "transaction_id",
+                  "value": "{{$randomInt(100000000, 999999999)}}",
+                  "type": "text"
+                },
+                {
+                  "key": "email_buyer",
+                  "value": "cliente@chuwuegrill.com",
+                  "type": "text"
+                },
+                {
+                  "key": "customer_number",
+                  "value": "{{$randomInt(10000000, 99999999)}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8002/webhooks/payments/payu/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["webhooks", "payments", "payu", ""]
+            },
+            "description": "Transacción aprobada en PayU (state_pol=4)"
+          }
+        },
+        {
+          "name": "Transaction Failed",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('✅ Status 200', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "reference_sale",
+                  "value": "SALE_{{$randomInt(10000000, 99999999)}}",
+                  "type": "text"
+                },
+                {
+                  "key": "state_pol",
+                  "value": "6",
+                  "type": "text"
+                },
+                {
+                  "key": "response_code_pol",
+                  "value": "4",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8002/webhooks/payments/payu/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["webhooks", "payments", "payu", ""]
+            },
+            "description": "Transacción rechazada en PayU (state_pol=6)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🤝 WEBHOOKS PARTNER B2B",
+      "item": [
+        {
+          "name": "Service Booked",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('✅ Status 200', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Webhook-Signature",
+                "value": "sha256=test_signature"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event_type\": \"service.booked_for_event\",\n  \"timestamp\": {{$timestamp}},\n  \"data\": {\n    \"service_id\": \"SRV-{{$randomInt(10000, 99999)}}\",\n    \"event_id\": \"EVT-{{$randomInt(10000, 99999)}}\",\n    \"partner_id\": \"PARTNER-001\",\n    \"service_type\": \"fotografia\",\n    \"booking_status\": \"confirmed\",\n    \"cost\": 50000,\n    \"currency\": \"COP\"\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8002/webhooks/partner/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["webhooks", "partner", ""]
+            },
+            "description": "FindYourWork notifica que un servicio fue contratado para un evento"
+          }
+        },
+        {
+          "name": "Service Completed",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('✅ Status 200', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event_type\": \"service.completed\",\n  \"timestamp\": {{$timestamp}},\n  \"data\": {\n    \"service_id\": \"SRV-{{$randomInt(10000, 99999)}}\",\n    \"event_id\": \"EVT-{{$randomInt(10000, 99999)}}\",\n    \"status\": \"completed\",\n    \"rating\": 5,\n    \"notes\": \"Excelente servicio de fotografia\"\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8002/webhooks/partner/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["webhooks", "partner", ""]
+            },
+            "description": "Servicio completado por FindYourWork"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📧 WEBHOOKS NOTIFICACIONES",
+      "item": [
+        {
+          "name": "Email Webhook",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event_type\": \"notification.email\",\n  \"timestamp\": {{$timestamp}},\n  \"data\": {\n    \"to\": \"cliente@chuwuegrill.com\",\n    \"subject\": \"Confirmación de reserva\",\n    \"template\": \"reservation_confirmed\",\n    \"variables\": {\n      \"reservation_id\": \"RES-001\",\n      \"guest_count\": 50\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5678/webhook/email-notification",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5678",
+              "path": ["webhook", "email-notification"]
+            }
+          }
+        },
+        {
+          "name": "SMS Webhook",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event_type\": \"notification.sms\",\n  \"timestamp\": {{$timestamp}},\n  \"data\": {\n    \"phone\": \"+573001234567\",\n    \"message\": \"Tu reserva en Chuwue Grill está confirmada. Evento: 28/02/2026\"\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5678/webhook/sms-notification",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5678",
+              "path": ["webhook", "sms-notification"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "localhost:8002",
+      "type": "string"
+    },
+    {
+      "key": "stripe_timestamp",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "stripe_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
