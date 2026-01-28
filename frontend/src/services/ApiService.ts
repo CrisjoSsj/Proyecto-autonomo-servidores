@@ -544,6 +544,9 @@ class ApiService {
   async refundPayment(paymentId: string): Promise<{ success: boolean; payment_id: string; status: string; message?: string }> {
     const url = `${this.paymentServiceURL}/payments/${paymentId}/refund`;
     
+    console.log('🔄 [ApiService] - Iniciando reembolso para pago:', paymentId);
+    console.log('🔄 [ApiService] - URL de reembolso:', url);
+    
     const config: RequestInit = {
       method: 'POST',
       headers: {
@@ -562,16 +565,23 @@ class ApiService {
 
     try {
       const response = await fetch(url, config);
+      console.log('🔄 [ApiService] - Respuesta del servidor (status):', response.status);
+      
+      const responseData = await response.json();
+      console.log('🔄 [ApiService] - Datos de respuesta:', responseData);
       
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.detail || 'Error al reembolsar el pago');
+        const errorMsg = responseData.detail || responseData.message || 'Error al reembolsar el pago';
+        console.error('❌ [ApiService] - Error en respuesta:', errorMsg);
+        throw new Error(errorMsg);
       }
       
-      return await response.json();
+      console.log('✅ [ApiService] - Reembolso completado exitosamente');
+      return responseData;
     } catch (error) {
-      console.error('Error reembolsando pago:', error);
-      throw error;
+      const errorMsg = (error as Error).message || 'Error desconocido al reembolsar';
+      console.error('❌ [ApiService] - Error reembolsando pago:', errorMsg, error);
+      throw new Error(errorMsg);
     }
   }
 }

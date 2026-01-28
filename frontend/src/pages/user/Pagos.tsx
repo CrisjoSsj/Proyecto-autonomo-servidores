@@ -164,19 +164,29 @@ export default function Pagos() {
     try {
       console.log('💸 [Pagos] - Reembolsando pago:', paymentId);
       setLoading(true);
+      setError(null);
+      
       const result = await apiService.refundPayment(paymentId);
       console.log('✅ [Pagos] - Resultado del reembolso:', result);
+      console.log('✅ [Pagos] - Success:', result.success, 'Status:', result.status);
       
       if (result.success) {
+        console.log('🎉 [Pagos] - Reembolso exitoso');
         alert('Pago reembolsado exitosamente');
         await loadPayments();
         setSelectedPayment(null);
       } else {
-        alert('Error al reembolsar el pago: ' + result.message);
+        const errorMsg = result.message || 'No se pudo procesar el reembolso';
+        console.error('⚠️ [Pagos] - Reembolso sin éxito:', errorMsg);
+        setError(`Error al reembolsar: ${errorMsg}`);
+        alert('Error al reembolsar el pago: ' + errorMsg);
       }
     } catch (err) {
-      console.error('❌ [Pagos] - Error reembolsando pago:', err);
-      alert('Error al reembolsar el pago: ' + (err as Error).message);
+      const errorMsg = (err as Error).message || 'Error desconocido';
+      console.error('❌ [Pagos] - Error reembolsando pago:', errorMsg);
+      console.error('❌ [Pagos] - Error completo:', err);
+      setError(`Error al reembolsar: ${errorMsg}`);
+      alert('Error al reembolsar el pago: ' + errorMsg);
     } finally {
       setLoading(false);
     }

@@ -47,11 +47,9 @@ class MockAdapter(PaymentProvider):
             status = PaymentStatus.FAILED
             message = "Monto mínimo es $1.00"
             success = False
-        elif amount >= 100:
-            status = PaymentStatus.PENDING
-            message = "Pago pendiente de confirmación"
-            success = True
         else:
+            # Para simular y pruebas: todos los pagos se crean como COMPLETED
+            # para que se puedan probar reembolsos sin problemas
             status = PaymentStatus.COMPLETED
             message = "Pago completado exitosamente"
             success = True
@@ -80,22 +78,14 @@ class MockAdapter(PaymentProvider):
     async def get_payment_status(self, payment_id: str) -> PaymentResult:
         """Obtiene estado de un pago simulado"""
         
-        if payment_id not in self._payments:
-            return PaymentResult(
-                success=False,
-                payment_id=payment_id,
-                status=PaymentStatus.FAILED,
-                message="Pago no encontrado"
-            )
-        
-        payment = self._payments[payment_id]
-        
+        # En modo mock, retornamos que el pago está completado
+        # Los datos reales están en la BD, no en memoria del adapter
         return PaymentResult(
             success=True,
             payment_id=payment_id,
-            provider_payment_id=payment["provider_payment_id"],
-            status=PaymentStatus(payment["status"]),
-            metadata=payment.get("metadata")
+            provider_payment_id=f"mock_{payment_id[-12:]}",
+            status=PaymentStatus.COMPLETED,
+            message="Pago en estado completado"
         )
     
     async def refund_payment(
@@ -105,32 +95,15 @@ class MockAdapter(PaymentProvider):
     ) -> PaymentResult:
         """Simula reembolso"""
         
-        if payment_id not in self._payments:
-            return PaymentResult(
-                success=False,
-                payment_id=payment_id,
-                status=PaymentStatus.FAILED,
-                message="Pago no encontrado"
-            )
-        
-        payment = self._payments[payment_id]
-        
-        if payment["status"] != PaymentStatus.COMPLETED.value:
-            return PaymentResult(
-                success=False,
-                payment_id=payment_id,
-                status=PaymentStatus(payment["status"]),
-                message="Solo se pueden reembolsar pagos completados"
-            )
-        
-        payment["status"] = PaymentStatus.REFUNDED.value
-        
+        # En modo mock, siempre retornamos éxito para poder probar
+        # La validación del pago ya se hizo en la BD (router)
+        # Los datos reales están en la BD, no en memoria del adapter
         return PaymentResult(
             success=True,
             payment_id=payment_id,
-            provider_payment_id=payment["provider_payment_id"],
+            provider_payment_id=f"refund_{payment_id[-12:]}",
             status=PaymentStatus.REFUNDED,
-            message="Reembolso procesado"
+            message="Reembolso procesado exitosamente"
         )
     
     async def verify_webhook(
