@@ -2,9 +2,8 @@ import { useState, useEffect } from "react";
 import Navbar from "../../components/user/Navbar";
 import MenuCard from "../../components/user/MenuCard";
 import PiePagina from "../../components/user/PiePagina";
+import { API_BASE_URL } from "../../config/constants";
 import "../../css/user/Menu.css";
-
-const API_BASE_URL = 'http://127.0.0.1:8004';
 
 interface Plato {
   id_plato: number;
