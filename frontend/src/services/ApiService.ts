@@ -25,17 +25,23 @@ import type {
   DisponibilidadResponse,
   VerificacionDisponibilidad,
   ReservasHoy,
+  Payment,
+  CreatePaymentRequest,
+  PaymentResponse,
 } from '../types';
 
 // Configuración base de la API
 const API_BASE_URL = 'http://localhost:8000';
+const PAYMENT_SERVICE_URL = 'http://localhost:8002';
 
 // Clase para manejar las llamadas API
 class ApiService {
   private baseURL: string;
+  private paymentServiceURL: string;
 
-  constructor(baseURL: string = API_BASE_URL) {
+  constructor(baseURL: string = API_BASE_URL, paymentServiceURL: string = PAYMENT_SERVICE_URL) {
     this.baseURL = baseURL;
+    this.paymentServiceURL = paymentServiceURL;
   }
 
   // Método genérico para hacer peticiones
@@ -422,6 +428,151 @@ class ApiService {
     return this.request<{ mensaje: string; persona: PersonaFila }>('/fila-virtual/admin/llamar-siguiente', {
       method: 'POST',
     });
+  }
+
+  // ===== PAGOS =====
+
+  // Crear un nuevo pago
+  async createPayment(paymentData: CreatePaymentRequest): Promise<PaymentResponse> {
+    const url = `${this.paymentServiceURL}/payments/create`;
+    
+    const config: RequestInit = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(paymentData),
+    };
+
+    // Agregar token si existe
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      config.headers = {
+        ...config.headers,
+        'Authorization': `Bearer ${token}`,
+      };
+    }
+
+    try {
+      const response = await fetch(url, config);
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail?.message || 'Error al crear el pago');
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Error creando pago:', error);
+      throw error;
+    }
+  }
+
+  // Obtener un pago por ID
+  async getPayment(paymentId: string): Promise<PaymentResponse> {
+    const url = `${this.paymentServiceURL}/payments/${paymentId}`;
+    
+    const config: RequestInit = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+
+    // Agregar token si existe
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      config.headers = {
+        ...config.headers,
+        'Authorization': `Bearer ${token}`,
+      };
+    }
+
+    try {
+      const response = await fetch(url, config);
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail?.message || 'Error al obtener el pago');
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Error obteniendo pago:', error);
+      throw error;
+    }
+  }
+
+  // Listar todos los pagos
+  async listPayments(skip: number = 0, limit: number = 20, statusFilter?: string): Promise<PaymentResponse[]> {
+    let url = `${this.paymentServiceURL}/payments/?skip=${skip}&limit=${limit}`;
+    
+    if (statusFilter) {
+      url += `&status_filter=${statusFilter}`;
+    }
+    
+    const config: RequestInit = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+
+    // Agregar token si existe
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      config.headers = {
+        ...config.headers,
+        'Authorization': `Bearer ${token}`,
+      };
+    }
+
+    try {
+      const response = await fetch(url, config);
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail?.message || 'Error al listar pagos');
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Error listando pagos:', error);
+      throw error;
+    }
+  }
+
+  // Reembolsar un pago
+  async refundPayment(paymentId: string): Promise<{ success: boolean; payment_id: string; status: string; message?: string }> {
+    const url = `${this.paymentServiceURL}/payments/${paymentId}/refund`;
+    
+    const config: RequestInit = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+
+    // Agregar token si existe
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      config.headers = {
+        ...config.headers,
+        'Authorization': `Bearer ${token}`,
+      };
+    }
+
+    try {
+      const response = await fetch(url, config);
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || 'Error al reembolsar el pago');
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Error reembolsando pago:', error);
+      throw error;
+    }
   }
 }
 

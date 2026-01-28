@@ -7,6 +7,7 @@ const elementosNavegacion = [
   { nombre: "Menú", ruta: "/menu" },
   { nombre: "Reservas", ruta: "/reservas" },
   { nombre: "Fila Virtual", ruta: "/filavirtual" },
+  { nombre: "Pagos", ruta: "/pagos" },
 ];
 
 export default function Navbar() {

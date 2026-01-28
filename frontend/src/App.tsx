@@ -5,6 +5,7 @@ import Home from "./pages/user/Home";
 import Menu from "./pages/user/Menu";
 import Reservas from "./pages/user/Reservas";
 import FilaVirtual from "./pages/user/FilaVirtual";
+import Pagos from "./pages/user/Pagos";
 // Páginas de administración
 import Login from "./pages/admin/Login";
 import Dashboard from "./pages/admin/Dashboard";
@@ -30,6 +31,7 @@ function App() {
         <Route path="/menu" element={<Menu />} />
         <Route path="/reservas" element={<Reservas />} />
         <Route path="/filavirtual" element={<FilaVirtual />} />
+        <Route path="/pagos" element={<Pagos />} />
         
         {/* Rutas de administración */}
         <Route path="/admin/login" element={<Login />} />

@@ -325,3 +325,43 @@ export interface MesaFormData {
 
 export type FormChangeEvent = React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>;
 export type FormSubmitEvent = React.FormEvent<HTMLFormElement>;
+
+// ============================================================
+// PAGOS
+// ============================================================
+
+export type PaymentStatus = 'pending' | 'processing' | 'completed' | 'failed' | 'refunded' | 'cancelled';
+
+export interface Payment {
+  payment_id: string;
+  user_id?: number;
+  amount: number;
+  currency: string;
+  status: PaymentStatus;
+  provider: string;
+  provider_payment_id?: string;
+  description?: string;
+  metadata?: Record<string, unknown>;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface CreatePaymentRequest {
+  amount: number;
+  currency?: string;
+  description: string;
+  metadata?: Record<string, unknown>;
+  user_id: number;
+}
+
+export interface PaymentResponse {
+  payment_id: string;
+  status: string;
+  amount: number;
+  currency: string;
+  provider: string;
+  provider_payment_id?: string;
+  message?: string;
+  redirect_url?: string;
+  created_at: string;
+}
