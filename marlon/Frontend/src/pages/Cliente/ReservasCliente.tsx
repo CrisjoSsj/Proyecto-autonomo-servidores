@@ -37,6 +37,7 @@ export function ReservasCliente() {
         estado: r.estado,
         total_estimado: Number(r.totalEstimado ?? 0),
         detalles: [],
+        pagos: r.pagos || [],
       }));
 
       setReservas(mapped);
@@ -111,6 +112,8 @@ export function ReservasCliente() {
         socket.on("reservation_created", reload);
         socket.on("reservation_deleted", reload);
         socket.on("payment_updated", reload);
+        socket.on("payment_created", reload);
+        socket.on("pago:confirmado", reload);
 
         isConnected = true;
       } catch (error) {
@@ -126,6 +129,8 @@ export function ReservasCliente() {
         socket.off("reservation_created");
         socket.off("reservation_deleted");
         socket.off("payment_updated");
+        socket.off("payment_created");
+        socket.off("pago:confirmado");
       }
     };
   }, [clienteId]);
@@ -171,20 +176,24 @@ export function ReservasCliente() {
                 <span
                   style={{
                     color:
-                      reserva.estado === "pendiente"
-                        ? "#ff9800"
-                        : reserva.estado === "confirmada"
+                      (reserva as any).pagos?.length > 0
                         ? "#4caf50"
-                        : "#f44336",
+                        : reserva.estado === "cancelada"
+                        ? "#f44336"
+                        : "#ff9800",
                     fontWeight: "bold",
                   }}
                 >
-                  {(reserva.estado ?? "pendiente").toUpperCase()}
+                  {(reserva as any).pagos?.length > 0
+                    ? "PAGADO"
+                    : reserva.estado === "cancelada"
+                    ? "CANCELADA"
+                    : "PENDIENTE"}
                 </span>
               </p>
 
-              {/* Botones cuando la reserva está pendiente */}
-              {reserva.estado === "pendiente" && (
+              {/* Botones cuando la reserva está pendiente y NO está pagada */}
+              {reserva.estado !== "cancelada" && (
                 <>
                   <button
                     onClick={() =>
@@ -197,26 +206,34 @@ export function ReservasCliente() {
                       ? "Ocultar servicios"
                       : "Ver servicios"}
                   </button>
-                  <button
-                    style={{ 
-                      marginLeft: "0.5rem", 
-                      backgroundColor: "#4caf50",
-                      color: "#fff",
-                      border: "none",
-                      padding: "0.5rem 1rem",
-                      borderRadius: "4px",
-                      cursor: "pointer"
-                    }}
-                    onClick={() => navigate(`/pago/${reserva.id}`)}
-                  >
-                    💳 Pagar ${reserva.total_estimado}
-                  </button>
-                  <button
-                    style={{ marginLeft: "0.5rem", backgroundColor: "#f44336" }}
-                    onClick={() => actualizarEstado(reserva.id ?? 0, "cancelada")}
-                  >
-                    Cancelar
-                  </button>
+                  
+                  {/* Solo mostrar botón de pagar si NO hay pagos */}
+                  {!((reserva as any).pagos?.length > 0) && (
+                    <button
+                      style={{ 
+                        marginLeft: "0.5rem", 
+                        backgroundColor: "#4caf50",
+                        color: "#fff",
+                        border: "none",
+                        padding: "0.5rem 1rem",
+                        borderRadius: "4px",
+                        cursor: "pointer"
+                      }}
+                      onClick={() => navigate(`/pago/${reserva.id}`)}
+                    >
+                      💳 Pagar ${reserva.total_estimado}
+                    </button>
+                  )}
+                  
+                  {/* Solo mostrar cancelar si no está pagada */}
+                  {!((reserva as any).pagos?.length > 0) && (
+                    <button
+                      style={{ marginLeft: "0.5rem", backgroundColor: "#f44336" }}
+                      onClick={() => actualizarEstado(reserva.id ?? 0, "cancelada")}
+                    >
+                      Cancelar
+                    </button>
+                  )}
                 </>
               )}
 

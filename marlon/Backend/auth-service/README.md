@@ -426,3 +426,5 @@ openssl rsa -in keys/jwt_private.pem -pubout -out keys/jwt_public.pem
 ---
 
 Documento generado automáticamente: resumen de cambios y funcionamiento REST del microservicio de autenticación.
+
+ngrok http 8000

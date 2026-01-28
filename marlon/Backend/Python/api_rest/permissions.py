@@ -28,19 +28,27 @@ class DashboardReadOnly(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
+        import logging
+        logger = logging.getLogger(__name__)
+        
         # GET requests sin autenticación (acceso anónimo para lectura)
         if request.method in permissions.SAFE_METHODS:
             return True
         
         # Usuarios autenticados vía JWT pueden hacer cualquier cosa
         payload = getattr(request, 'jwt_payload', None)
+        logger.info(f"DashboardReadOnly: method={request.method}, jwt_payload={payload}, user={request.user}")
+        
         if payload and payload.get('sub'):
+            logger.info(f"DashboardReadOnly: JWT valid, allowing access")
             return True
         
         # Usuarios autenticados vía TokenAuthentication (service tokens) pueden hacer cualquier cosa
         if request.user and request.user.is_authenticated:
+            logger.info(f"DashboardReadOnly: User authenticated, allowing access")
             return True
         
+        logger.warning(f"DashboardReadOnly: Access denied for {request.method} {request.path}")
         return False
 
 

@@ -42,7 +42,7 @@
     },
     {
       "parameters": {
-        "url": "http://ai_orchestrator:8003/chat/message",
+        "url": "http://localhost:8003/chat/message",
         "method": "POST",
         "sendBody": true,
         "specifyBody": "json",
@@ -56,7 +56,7 @@
     },
     {
       "parameters": {
-        "url": "http://evolution-api:8080/message/sendText/chuwue-grill",
+        "url": "http://localhost:8080/message/sendText/chuwue-grill",
         "method": "POST",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",

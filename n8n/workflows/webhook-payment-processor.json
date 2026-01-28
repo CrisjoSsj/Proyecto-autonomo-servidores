@@ -42,7 +42,7 @@
     },
     {
       "parameters": {
-        "url": "http://localhost:8004/webhooks/callback/",
+        "url": "http://localhost:8002/webhooks/callback/",
         "method": "POST",
         "bodyParametersUi": "json",
         "bodyJson": "{\n  \"event_type\": \"{{ $node.\\\"Webhook Stripe\\\".json.type }}\",\n  \"data\": \"{{ $node.\\\"Webhook Stripe\\\".json }}\",\n  \"processed_at\": \"{{ $now.toISO() }}\"\n}",

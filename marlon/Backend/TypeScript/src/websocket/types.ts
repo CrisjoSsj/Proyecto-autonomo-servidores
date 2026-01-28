@@ -7,14 +7,25 @@ export type EventType =
   | 'reserva:creada'
   | 'reserva:actualizada'
   | 'reserva:cancelada'
+  // English equivalents for interoperability
+  | 'reservation_created'
+  | 'reservation_updated'
+  | 'reservation_deleted'
   | 'servicio:creado'
   | 'servicio:actualizado'
   | 'calificacion:creada'
   | 'cliente:nuevo'
   | 'proveedor:nuevo'
   | 'pago:procesado'
+  | 'payment_created'
+  | 'payment_updated'
   | 'dashboard:metrics'
-  | 'dashboard:refresh';
+  | 'dashboard:refresh'
+  | 'reservation_created'
+  | 'reservation_updated'
+  | 'reservation_deleted'
+  | 'payment_created'
+  | 'payment_updated';
 
 export interface AuthPayload {
   token: string;

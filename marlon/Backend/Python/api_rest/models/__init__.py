@@ -5,7 +5,6 @@ from .comentario import Comentario
 from .document import Document
 from .foto_servicio import FotoServicio
 from .pago import Pago
-from .plato import Plato
 from .proveedor import Proveedor
 from .reserva_servicio import ReservaServicio
 from .reserva import Reserva

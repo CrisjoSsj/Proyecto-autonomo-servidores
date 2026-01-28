@@ -20,6 +20,13 @@ export const QUERY_RESERVAS = `
       hora
       estado
       totalEstimado
+      pagos {
+        id
+        monto
+        estado
+        metodoPago
+        fechaPago
+      }
     }
   }
 `;

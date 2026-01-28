@@ -87,16 +87,22 @@ export class WebSocketService {
     // Emitir de acuerdo al tipo de evento
     switch (event.type) {
       case 'reserva:creada':
+      case 'reservation_created':
         this.server.emit('reserva:nueva', wsEvent.payload);
+        this.server.emit('reservation_created', wsEvent.payload);
         this.server.to('admin').emit('reserva:notificacion', wsEvent.payload);
         break;
 
       case 'reserva:actualizada':
+      case 'reservation_updated':
         this.server.emit('reserva:cambio', wsEvent.payload);
+        this.server.emit('reservation_updated', wsEvent.payload);
         break;
 
       case 'reserva:cancelada':
+      case 'reservation_deleted':
         this.server.emit('reserva:cancelacion', wsEvent.payload);
+        this.server.emit('reservation_deleted', wsEvent.payload);
         break;
 
       case 'servicio:creado':
@@ -113,7 +119,11 @@ export class WebSocketService {
         break;
 
       case 'pago:procesado':
+      case 'payment_created':
+      case 'payment_updated':
         this.server.emit('pago:confirmado', wsEvent.payload);
+        this.server.emit('payment_created', wsEvent.payload);
+        this.server.emit('payment_updated', wsEvent.payload);
         break;
     }
   }

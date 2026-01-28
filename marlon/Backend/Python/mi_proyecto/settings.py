@@ -14,11 +14,19 @@ from pathlib import Path
 from dotenv import load_dotenv
 import os
 
-# Cargar variables de entorno desde .env
-load_dotenv()
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Cargar variables de entorno desde .env (ruta explícita)
+env_path = BASE_DIR / '.env'
+load_dotenv(dotenv_path=env_path)
+
+# Debug: verificar que se cargó JWT_PUBLIC_KEY
+jwt_key = os.environ.get('JWT_PUBLIC_KEY', '')
+if jwt_key:
+    print(f"✅ JWT_PUBLIC_KEY cargada ({len(jwt_key)} chars)")
+else:
+    print("⚠️ JWT_PUBLIC_KEY no encontrada en .env")
 
 
 # Quick-start development settings - unsuitable for production
@@ -30,7 +38,7 @@ SECRET_KEY = 'django-insecure-8w--3m7cxoc_h-*1#*w=^q#ru$w6(xbogc8zhp7vtzap^&t*x&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'host.docker.internal', 'kubernetes.docker.internal']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'host.docker.internal', 'kubernetes.docker.internal', '.ngrok-free.dev']
 
 
 # Application definition
@@ -179,10 +187,6 @@ EVENT_BUS_ENABLED = os.environ.get('EVENT_BUS_ENABLED', 'true').lower() == 'true
 PARTNER_WEBHOOK_SECRET = os.environ.get('PARTNER_WEBHOOK_SECRET', 'your-partner-secret')
 PARTNER_WEBHOOK_URL = os.environ.get('PARTNER_WEBHOOK_URL', '')
 
-# Integración con Chuwue Grill (Partner B2B)
-CHUWUE_GRILL_WEBHOOK_URL = os.environ.get('CHUWUE_GRILL_WEBHOOK_URL', 'http://localhost:8002/webhooks/partner/findyourwork')
-CHUWUE_GRILL_WEBHOOK_SECRET = os.environ.get('CHUWUE_GRILL_WEBHOOK_SECRET', 'shared_secret_chuwue_findyourwork')
-
 # Payment Gateway Webhooks
 STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET', '')
 PAYU_MERCHANT_ID = os.environ.get('PAYU_MERCHANT_ID', '')
@@ -214,11 +218,10 @@ SPECTACULAR_SETTINGS = {
     # OTHER SETTINGS
 }
 
-load_dotenv()
-
+# JWT_PUBLIC_KEY ya se cargó al inicio con load_dotenv(dotenv_path=env_path)
 JWT_PUBLIC_KEY = os.environ.get("JWT_PUBLIC_KEY")
 
 if not JWT_PUBLIC_KEY:
-    raise RuntimeError("JWT_PUBLIC_KEY no está definida en el entorno")
+    raise RuntimeError("JWT_PUBLIC_KEY no está definida en el entorno. Verifica el archivo .env")
 JWT_PUBLIC_KEY = JWT_PUBLIC_KEY.replace("\\n", "\n")
 

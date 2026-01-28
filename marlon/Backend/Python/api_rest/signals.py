@@ -17,7 +17,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 # URL del servidor WebSocket NestJS
-WEBSOCKET_SERVER_URL = 'http://localhost:4000/api/events/emit'
+WEBSOCKET_SERVER_URL = 'http://localhost:4000/dashboard/emit-event'
 
 
 def notify_websocket(event_type: str, data: dict):
@@ -134,6 +134,8 @@ def reserva_deleted(sender, instance, **kwargs):
 def pago_saved(sender, instance, created, **kwargs):
     """Se activa cuando se crea o actualiza un pago."""
     event_type = 'payment_created' if created else 'payment_updated'
+    
+    logger.info(f"🔔 Signal PAGO disparado: {event_type} - pago_id={instance.id}, reserva_id={instance.reserva.id}")
     
     data = {
         'id': instance.id,

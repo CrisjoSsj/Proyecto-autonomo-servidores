@@ -109,6 +109,7 @@ class WebhookSubscription(models.Model):
         ('booking.completed', 'Reserva completada'),
         # Eventos de pagos
         ('payment.success', 'Pago exitoso'),
+        ('payment.succeeded', 'Pago exitoso (succeeded)'),
         ('payment.failed', 'Pago fallido'),
         ('payment.refunded', 'Pago reembolsado'),
         # Eventos de servicios
@@ -116,6 +117,8 @@ class WebhookSubscription(models.Model):
         ('service.updated', 'Servicio actualizado'),
         ('service.activated', 'Servicio activado'),
         ('service.deactivated', 'Servicio desactivado'),
+        # Eventos de adopciones
+        ('adoption.completed', 'Adopción completada'),
         # Eventos externos (recibidos del partner)
         ('order.created', 'Orden creada (partner)'),
         ('tour.purchased', 'Tour comprado (partner)'),

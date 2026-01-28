@@ -6,7 +6,6 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api_rest', '0006_document_and_more'),
         ('api_rest', '0006_document_partner_paymenttransaction_webhookdelivery_and_more'),
     ]
 

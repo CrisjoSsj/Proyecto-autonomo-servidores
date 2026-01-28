@@ -1,8 +1,8 @@
 {
   "info": {
     "_postman_id": "marlon-webhooks-collection-v2",
-    "name": "🚀 FindYourWork - Marlon Webhooks [ACTUALIZADO]",
-    "description": "Colección completa de webhooks para testing con Django. Status: ✅ OPERATIVO (meta update, sin cambios funcionales)",
+    "name": "🚀 FindYourWork - Marlon Webhooks [ACTUALIZADO 2026]",
+    "description": "Colección completa de webhooks para testing con API REST. Status: ✅ OPERATIVO con nuevas rutas de microservicios (API: 8000, Auth: 8001, Payments: 8002, AI: 8003)",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -58,7 +58,7 @@
               "raw": "{\n  \"id\": \"evt_test_{{random_id}}\",\n  \"type\": \"charge.succeeded\",\n  \"created\": {{timestamp}},\n  \"data\": {\n    \"object\": {\n      \"id\": \"ch_test_{{random_id}}\",\n      \"amount\": 9999,\n      \"currency\": \"usd\",\n      \"customer\": \"cus_test_12345\",\n      \"status\": \"succeeded\",\n      \"receipt_email\": \"test@findyourwork.com\"\n    }\n  }\n}"
             },
             "url": {
-              "raw": Error al procesar con Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}",
+              "raw": "http://{{base_url}}/webhooks/payments/stripe/",
               "protocol": "http",
               "host": [
                 "{{base_url}}"
@@ -351,9 +351,9 @@
   "variable": [
     {
       "key": "base_url",
-      "value": "localhost:8004",
+      "value": "localhost:8000",
       "type": "string",
-      "description": "URL base de Django - Cambiar si usas servidor remoto"
+      "description": "URL base de API REST - Core API en puerto 8000"
     },
     {
       "key": "timestamp",

@@ -20,7 +20,7 @@
     },
     {
       "parameters": {
-        "url": "http://ai_orchestrator:8003/chat/message",
+        "url": "http://localhost:8003/chat/message",
         "method": "POST",
         "sendBody": true,
         "specifyBody": "json",
@@ -54,7 +54,7 @@
     },
     {
       "parameters": {
-        "url": "http://auth_service:8001/cleanup/tokens",
+        "url": "http://localhost:8001/cleanup/tokens",
         "method": "DELETE"
       },
       "id": "cleanup-tokens",

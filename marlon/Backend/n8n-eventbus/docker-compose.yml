@@ -16,7 +16,7 @@ services:
     container_name: findyourwork-n8n
     restart: unless-stopped
     ports:
-      - "5679:5679"
+      - "5679:5678"
     environment:
       # Autenticación básica
       - N8N_BASIC_AUTH_ACTIVE=true
@@ -25,9 +25,9 @@ services:
       
       # Configuración del host
       - N8N_HOST=${N8N_HOST:-localhost}
-      - N8N_PORT=5678
+      - N8N_PORT=5679
       - N8N_PROTOCOL=${N8N_PROTOCOL:-http}
-      - WEBHOOK_URL=${WEBHOOK_URL:-http://localhost:5678/}
+      - WEBHOOK_URL=${WEBHOOK_URL:-http://localhost:5679/}
       
       # Zona horaria
       - GENERIC_TIMEZONE=${TIMEZONE:-America/Bogota}

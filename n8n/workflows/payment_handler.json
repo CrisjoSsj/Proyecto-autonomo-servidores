@@ -15,7 +15,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Validar payload del webhook\nconst payload = $input.all()[0].json;\n\nif (!payload.payment_id || !payload.event_type) {\n  throw new Error('Payload inválido: falta payment_id o event_type');\n}\n\n// Normalizar evento\nconst normalizedEvent = {\n  payment_id: payload.payment_id,\n  event_type: payload.event_type,\n  status: payload.status || 'unknown',\n  amount: payload.amount || 0,\n  currency: payload.currency || 'USD',\n  timestamp: new Date().toISOString(),\n  metadata: payload.metadata || {}\n};\n\nreturn [{ json: normalizedEvent }];"
+        "jsCode": "// Acceder a los datos recibidos\nconst input = $input.all()[0] || {};\nconst payload = input.json || {};\nconst data = payload.data || {};\n\n// Extraer IDs - buscar en diferentes lugares\nconst paymentId = payload.payment_id || data.transaction_id || data.payment_id || payload.id || data.id;\n\n// Extraer event_type\nconst eventType = payload.event_type || payload.type || data.event_type || data.type;\n\n// Log simple para debugging\nconsole.log('Event Type:', eventType);\nconsole.log('Payment ID:', paymentId);\n\nif (!paymentId) {\n  throw new Error('Falta payment_id o transaction_id');\n}\n\nif (!eventType) {\n  throw new Error('Falta event_type');\n}\n\n// Normalizar evento\nconst normalizedEvent = {\n  payment_id: paymentId,\n  event_type: eventType,\n  status: data.status || 'unknown',\n  amount: data.amount || 0,\n  currency: data.currency || 'USD',\n  timestamp: payload.timestamp || new Date().toISOString(),\n  customer_email: data.customer_email || '',\n  metadata: payload.metadata || {}\n};\n\nreturn [{ json: normalizedEvent }];"
       },
       "id": "validate-payload",
       "name": "Validar Payload",
@@ -42,7 +42,7 @@
     },
     {
       "parameters": {
-        "url": "http://core_api:8000/reservas/activate",
+        "url": "http://localhost:8000/reservas/activate",
         "method": "POST",
         "sendBody": true,
         "bodyParameters": {
@@ -62,7 +62,7 @@
     },
     {
       "parameters": {
-        "url": "http://websocket:3001/broadcast",
+        "url": "http://localhost:3001/broadcast",
         "method": "POST",
         "sendBody": true,
         "bodyParameters": {
@@ -86,7 +86,7 @@
     },
     {
       "parameters": {
-        "url": "http://payment_service:8002/partners/notify",
+        "url": "http://localhost:8002/partners/notify",
         "method": "POST",
         "sendBody": true,
         "bodyParameters": {

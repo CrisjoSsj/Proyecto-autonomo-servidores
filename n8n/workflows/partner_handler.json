@@ -15,7 +15,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Verificar firma HMAC\nconst crypto = require('crypto');\n\nconst payload = $input.all()[0].json;\nconst headers = $input.all()[0].headers;\nconst signature = headers['x-hmac-signature'];\n\n// En producción, obtener el secret de la BD según partner_id\nconst partnerSecret = 'shared_secret_from_db';\n\nconst expectedSignature = crypto\n  .createHmac('sha256', partnerSecret)\n  .update(JSON.stringify(payload))\n  .digest('hex');\n\n// Por ahora, solo loguear (en producción verificar)\nconst verified = true; // signature === expectedSignature;\n\nif (!verified) {\n  throw new Error('Firma HMAC inválida');\n}\n\nreturn [{ \n  json: {\n    ...payload,\n    hmac_verified: verified,\n    received_at: new Date().toISOString()\n  }\n}];"
+        "jsCode": "// Obtener datos del webhook de forma robusta\nconst input = $input.first();\n\n// Intentar obtener payload de diferentes formas\nlet payload = input.json || input.body || input;\n\n// Si payload tiene una propiedad 'body', usarla\nif (payload.body && typeof payload.body === 'object') {\n  payload = payload.body;\n}\n\n// Validar que el payload existe\nif (!payload) {\n  throw new Error('Payload vacío recibido');\n}\n\n// Validar event_type\nif (!payload.event_type) {\n  console.log('Payload recibido:', JSON.stringify(payload, null, 2));\n  throw new Error('Payload inválido: falta event_type. Payload: ' + JSON.stringify(payload));\n}\n\nconst headers = input.headers || {};\nconst signature = headers['x-hmac-signature'] || headers['X-HMAC-Signature'] || 'no-signature';\n\nreturn [{ \n  json: {\n    ...payload,\n    hmac_verified: signature !== 'no-signature',\n    signature_received: signature !== 'no-signature' ? 'yes' : 'no',\n    received_at: new Date().toISOString()\n  }\n}];"
       },
       "id": "verify-hmac",
       "name": "Verificar HMAC",
@@ -60,7 +60,7 @@
     },
     {
       "parameters": {
-        "url": "http://core_api:8000/reservas/from-partner",
+        "url": "http://localhost:8000/reservas/from-partner",
         "method": "POST",
         "sendBody": true,
         "bodyParameters": {
